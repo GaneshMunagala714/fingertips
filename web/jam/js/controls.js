@@ -68,7 +68,7 @@ export function setExpr({ volume, filter }, force = false) {
   if (filter != null) play.filter = clamp(filter);
   const now = performance.now();
   const changed = Math.abs(play.volume - play._sentVol) > 0.02 || Math.abs(play.filter - play._sentFil) > 0.02;
-  if (!force && (!changed || now - play._lastExpr < 50)) return;
+  if (!force && (!changed || now - play._lastExpr < 25)) return;
   play._lastExpr = now; play._sentVol = play.volume; play._sentFil = play.filter;
   bus.emit({ type: 'expr', volume: +play.volume.toFixed(3), filter: +play.filter.toFixed(3), instrument: play.instrument });
 }

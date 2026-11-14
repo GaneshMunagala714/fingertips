@@ -8,12 +8,18 @@ import { play, fromHands, onHandLost, bindKeyboard, playChord, stopChord, noteOn
 import { Stage, view, PLAYER_STYLE } from './visuals.js';
 import { net } from './net.js';
 import { recorder } from './recorder.js';
-import { haptics } from './haptics.js';
+import { haptics, patternFor } from './haptics.js';
 import { KEYS, midiToName, diatonicChord, roman } from './theory.js';
 
 const $ = (id) => document.getElementById(id);
 const MODE_LABEL = { chord: 'Chords', melody: 'Melody', rhythm: 'Rhythm' };
-const SHAPE_GLYPH = { circle: '●', diamond: '◆', square: '■', triangle: '▲' };
+const ICON = {
+  play: '<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.8v10.4a.6.6 0 0 0 .9.5l8.3-5.2a.6.6 0 0 0 0-1L5.4 2.3a.6.6 0 0 0-.9.5Z" fill="currentColor"/></svg>',
+  stop: '<svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="3.5" width="9" height="9" rx="1.6" fill="currentColor"/></svg>',
+  rec:  '<svg class="ic rec-dot" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="4.6" fill="currentColor"/></svg>',
+};
+const setBtn = (el, icon, label) => { el.innerHTML = `${ICON[icon]}<span>${label}</span>`; };
+const shapeMark = (shape, hue) => `<i class="shape ${shape}" style="--h:${hue}" aria-hidden="true"></i>`;
 
 let ctx = null, engine = null, tracker = null;
 let running = false, audioOn = true, cameraWanted = true;
@@ -28,7 +34,8 @@ const stage = new Stage($('stage'), () => engine);
 function ensureAudio() {
   if (ctx) return;
   const AC = window.AudioContext || window.webkitAudioContext;
-  ctx = new AC({ latencyHint: 'interactive' });
+  // ask for the smallest output buffer the device allows; fall back where a number isn't accepted
+  try { ctx = new AC({ latencyHint: 0 }); } catch (_) { ctx = new AC({ latencyHint: 'interactive' }); }
   clock.ctx = ctx;
   engine = new AudioEngine(ctx);
   transport.engine = engine;
@@ -41,8 +48,14 @@ bus.on((ev) => {
   const key = ev.origin === 'replay' ? 'r' + ev.playerId : ev.playerId;
   if (engine) {
     try {
-      const when = clock.toAudio(ev.at);
+      // your own gestures play the instant they're recognised; only remote, replayed or
+      // quantised events go through the room clock
+      const immediate = ev.origin === 'local' && ev.at - clock.now() < 3;
+      const when = immediate ? 0 : clock.toAudio(ev.at);
       engine.handle(ev, when, key);
+      if (ev.origin === 'local' && ev.type !== 'expr' && tracker?.running && performance.now() - tracker.frameCapture < 300) {
+        metrics.m2s = performance.now() - tracker.frameCapture + ((ctx.baseLatency || 0) + (ctx.outputLatency || 0)) * 1000;
+      }
       metrics.lead = Math.max(0, (when - ctx.currentTime) * 1000);
     } catch (e) { console.error('audio failed for event', ev, e); }
   }
@@ -50,7 +63,7 @@ bus.on((ev) => {
   recorder.capture(ev);
   if (ev.type === 'noteOn' || ev.type === 'chord' || ev.type === 'drum') {
     const d = ev.at - clock.now();
-    d > 5 ? setTimeout(() => haptics.note(), d) : haptics.note();
+    d > 5 ? setTimeout(() => feel(ev, key), d) : feel(ev, key);
   }
   net.forward(ev);
   metrics.dispatch = performance.now() - ev.dispatchedAt;
@@ -58,6 +71,34 @@ bus.on((ev) => {
   if (ev.origin === 'local') tour.onEvent(ev);
   if (ev.origin === 'local' && ev.type === 'chord') announce(`${ev.chord} chord: ${ev.notes.map(midiToName).join(', ')}`);
 });
+
+// ------------------------------------------------------------------ haptics, felt and seen
+
+function feel(ev, key) {
+  const pattern = patternFor(ev);
+  if (!pattern.length) return;
+  const hue = PLAYER_STYLE[key.replace(/^r/, '')]?.hue ?? 34;
+  if (haptics.notes) haptics.play(pattern, hue);
+  if (!haptics.visual) return;
+  const o = hapticOrigin(ev);
+  const strong = (ev.type === 'drum' && ev.drum === 'kick') || (ev.type === 'chord' && ev.origin === 'local');
+  stage.ripple(o.x, o.y, key, pattern, strong);
+}
+
+/** Where a pulse should appear: the hand that played it, else the note's spot on the now line. */
+function hapticOrigin(ev) {
+  const H = ev.origin === 'local' && tracker?.running ? tracker.hands : null;
+  let hand = null;
+  if (H) {
+    if (ev.type === 'chord') hand = play.oneHand ? (H.right.present ? H.right : H.left) : H.left;
+    else if (ev.type === 'noteOn') hand = H.right.present ? H.right : H.left;
+    else if (ev.type === 'drum') hand = [H.left, H.right].find((h) => h.present && h.pinch) || null;
+  }
+  if (hand?.present) return { x: hand.x * innerWidth, y: hand.y * innerHeight };
+  if (ev.type === 'drum') return { x: stage.X0, y: stage.bottom };
+  const midi = ev.type === 'chord' ? ev.notes[Math.floor(ev.notes.length / 2)] : ev.midi;
+  return { x: stage.X0, y: stage.y(midi) };
+}
 
 const patternHistory = [JSON.stringify(transport.pattern)];
 let restoring = false;
@@ -71,7 +112,7 @@ bus.onSignal((name, data) => {
         stage.onBeat(data);
         beatDot.className = 'beat-dot ' + (data.downbeat ? 'down' : 'on');
         setTimeout(() => (beatDot.className = 'beat-dot'), 110);
-        haptics.beat(data.downbeat);
+        if (haptics.beats) haptics.play(patternFor({ type: 'beat', downbeat: data.downbeat }), null);
       }, d);
       break;
     }
@@ -119,8 +160,18 @@ async function startCamera() {
   try {
     tracker = tracker || new HandTracker();
     tracker.onLoss = (side) => onHandLost(side);
-    await tracker.start($('video'));
+    const video = $('video');
+    await tracker.start(video);
     $('camStatus').textContent = 'Hand tracking on';
+    // run detection the moment each camera frame is decoded, not on the next screen refresh
+    if (video.requestVideoFrameCallback) {
+      const onFrame = (_now, meta) => {
+        if (!tracker?.running) return;
+        if (tracker.detect(meta?.captureTime)) fromHands(tracker.hands, performance.now());
+        video.requestVideoFrameCallback(onFrame);
+      };
+      video.requestVideoFrameCallback(onFrame);
+    }
   } catch (e) {
     console.warn('camera / hand tracking unavailable', e);
     tracker?.stop();
@@ -174,7 +225,7 @@ function updateNetUI(d) {
     const s = PLAYER_STYLE[p.id];
     const el = document.createElement('span');
     el.style.borderColor = `hsl(${s.hue},85%,62%)`;
-    el.textContent = `${SHAPE_GLYPH[s.shape]} ${s.name}${p.id === d.me ? ' (you)' : ''} · ${p.role} · ${INSTRUMENTS[p.instrument]?.label || p.instrument}`;
+    el.innerHTML = `${shapeMark(s.shape, s.hue)}${s.name}${p.id === d.me ? ' (you)' : ''} · ${p.role} · ${INSTRUMENTS[p.instrument]?.label || p.instrument}`;
     list.appendChild(el);
   }
   if (d.state === 'connected' && !roleApplied) {
@@ -183,7 +234,7 @@ function updateNetUI(d) {
     if (mine) {
       if (mine.instrument !== 'drums') { allOff(); play.instrument = mine.instrument; $('instSel').value = mine.instrument; }
       setMode({ Harmony: 'chord', Melody: 'melody', Rhythm: 'rhythm' }[mine.role] || 'chord');
-      toast(`You are ${PLAYER_STYLE[d.me].name} ${SHAPE_GLYPH[PLAYER_STYLE[d.me].shape]} — ${mine.role}`);
+      toast(`You are ${PLAYER_STYLE[d.me].name} (${PLAYER_STYLE[d.me].shape}) · ${mine.role}`);
     }
   }
   if (d.state === 'connected') tour.onNet(d.players.length);
@@ -209,6 +260,7 @@ function loop(t) {
     stage.melodyIdx = play.melody ? lad.indexOf(play.melody.midi) : play.melodyIdx;
   }
   stage.frame(dt);
+  if (running) haptics.drawStrip($('hapticStrip'));
   if (running && t - lastHud > 100) {
     lastHud = t; updateHud(); drawPreview();
     const tbTop = $('toolbar').getBoundingClientRect().top;
@@ -286,6 +338,7 @@ function updateHud() {
       `event dispatch     ${metrics.dispatch.toFixed(2)} ms`,
       `audio scheduled    +${metrics.lead.toFixed(0)} ms ahead`,
       `audio output       ${al}`,
+      `camera → sound     ${metrics.m2s != null ? metrics.m2s.toFixed(0) + ' ms (frame captured → audio out)' : '—'}`,
       `render             ${stage.fps.toFixed(0)} fps · draw ${(stage.drawMs || 0).toFixed(1)} ms · q ${stage.quality.toFixed(1)}`,
       `network one-way    ${net.latency != null ? net.latency.toFixed(0) + ' ms (½ RTT)' : 'solo'}`,
       `last remote event  ${metrics.netDelay != null ? metrics.netDelay.toFixed(0) + ' ms after sent' : '—'}`,
@@ -371,7 +424,7 @@ function setTransport(playing, tempo = transport.tempo) {
   if (!playing) { transport.tempo = tempo; updateTransportUI(); }
 }
 function updateTransportUI() {
-  $('beatBtn').textContent = transport.playing ? '■ Beat' : '▶ Beat';
+  setBtn($('beatBtn'), transport.playing ? 'stop' : 'play', 'Beat');
   $('beatBtn').setAttribute('aria-pressed', String(transport.playing));
   $('tempoVal').textContent = transport.tempo;
 }
@@ -380,9 +433,9 @@ function updateModeUI() {
 }
 function updateRecUI(s) {
   $('recBtn').setAttribute('aria-pressed', String(s.recording));
-  $('recBtn').textContent = s.recording ? '■ Stop rec' : '● Record';
+  setBtn($('recBtn'), s.recording ? 'stop' : 'rec', s.recording ? 'Stop' : 'Record');
   $('playBtn').disabled = !s.count || s.recording;
-  $('playBtn').textContent = s.replaying ? '■ Stop' : 'Replay';
+  setBtn($('playBtn'), s.replaying ? 'stop' : 'play', s.replaying ? 'Stop' : 'Replay');
   $('saveBtn').disabled = !s.count;
 }
 
@@ -478,7 +531,7 @@ function renderLocalList() {
   for (const item of recorder.listLocal()) {
     const li = document.createElement('li'); const b = document.createElement('button');
     b.type = 'button'; b.className = 'btn sm ghost';
-    b.textContent = `▶ ${item.name} · ${item.data.events.length} events · ${new Date(item.savedAt).toLocaleString()}`;
+    b.textContent = `${item.name} · ${item.data.events.length} events · ${new Date(item.savedAt).toLocaleString()}`;
     b.onclick = () => { recorder.load(item.data); $('saveDlg').close(); recorder.replay(); };
     li.appendChild(b); ul.appendChild(li);
   }
@@ -518,7 +571,10 @@ $('clearRec').onclick = () => { recorder.clear(); $('saveDlg').close(); };
   bindCheck('sQuantize', (v) => (transport.quantize = v));
   bindCheck('sClick', (v) => (transport.click = v));
   bindCheck('sSwap', (v) => (tuning.swapHands = v));
-  bindCheck('sHaptics', (v) => (haptics.enabled = v));
+  const hapticMode = () => { $('hapticMode').textContent = [haptics.visual && 'visible', haptics.enabled && 'vibration'].filter(Boolean).join(' + ') || 'off'; };
+  bindCheck('sHaptics', (v) => { haptics.enabled = v; hapticMode(); });
+  bindCheck('sHapticVisual', (v) => { haptics.visual = v; hapticMode(); });
+  bindCheck('sHapticBeats', (v) => (haptics.beats = v));
   $('sIntensity').addEventListener('input', (e) => { view.intensity = +e.target.value; stage._seedParticles(); });
   sk.addEventListener('change', (e) => { allOff(); play.key = e.target.value; buildPads(); });
   $('sScale').addEventListener('change', (e) => { noteOff(); play.scale = e.target.value; buildPads(); });
@@ -541,9 +597,9 @@ $('clearRec').onclick = () => { recorder.clear(); $('saveDlg').close(); };
 const STEPS = [
   { title: 'Open your hand', body: 'Raise a hand in front of the camera and spread your fingers. The ring on screen follows it and shows how many fingers it sees. No camera? Press Next.' },
   { title: 'Select a chord', body: 'Hold up 1–5 fingers on your LEFT hand (or press keys 1–5). The chord’s notes appear on the right as connected, labelled stars: C major is C, E and G.' },
-  { title: 'Raise your other hand', body: 'Lift your RIGHT hand higher to play louder, lower to play softer (or use ↑ ↓). Watch the ribbons widen and glow as the sound grows.' },
+  { title: 'Raise your other hand', body: 'Lift your RIGHT hand higher to play louder, lower to play softer (or the Up / Down arrow keys). Watch the ribbons widen and glow as the sound grows, and feel each chord roll under your hand.' },
   { title: 'Play a melody', body: 'Switch to Melody (point at the button for a second, or press W). Slide left/right along the note strip and pinch to play. Higher notes appear higher.' },
-  { title: 'Add a beat', body: 'Press ▶ Beat (or Space). Switch to Rhythm (E) and pinch in the kick / snare / hi-hat zones, or press Z X C. Hits land on the beat grid below.' },
+  { title: 'Add a beat', body: 'Press Beat (or Space). Switch to Rhythm (E) and pinch in the kick / snare / hi-hat zones, or press Z X C. Hits land on the beat grid below.' },
   { title: 'Invite a friend', body: 'Press “Invite friend” and send the link. Their notes join your canvas with their own colour and shape — you play together in real time.' },
 ];
 const tour = {
@@ -581,6 +637,10 @@ $('tutBack').onclick = () => { if (tour.step > 0) { tour.step--; tour.render(); 
 $('tutClose').onclick = () => tour.close();
 
 // ------------------------------------------------------------------ welcome
+
+updateTransportUI();
+setBtn($('recBtn'), 'rec', 'Record');
+setBtn($('playBtn'), 'play', 'Replay');
 
 if (inviteRoom) {
   $('joinBanner').hidden = false;

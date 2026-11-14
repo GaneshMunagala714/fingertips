@@ -6,11 +6,14 @@ import { midiToFreq } from './theory.js';
 
 export const INSTRUMENTS = {
   piano:   { label: 'Piano',     attack: 0.005, decay: 1.4, sustain: 0.12, release: 0.45, peak: 0.30 },
-  strings: { label: 'Strings',   attack: 0.22,  decay: 0.4, sustain: 0.80, release: 0.7,  peak: 0.20 },
+  strings: { label: 'Strings',   attack: 0.22,  decay: 0.4, sustain: 0.80, release: 0.7,  peak: 0.20, onset: 0.6 },
   bells:   { label: 'Bells',     attack: 0.002, decay: 2.6, sustain: 0.0,  release: 1.2,  peak: 0.28 },
-  pad:     { label: 'Synth pad', attack: 0.55,  decay: 0.6, sustain: 0.75, release: 1.3,  peak: 0.16 },
+  pad:     { label: 'Synth pad', attack: 0.45,  decay: 0.6, sustain: 0.75, release: 1.3,  peak: 0.16, onset: 0.55 },
   drums:   { label: 'Drums',     attack: 0.001, decay: 0.3, sustain: 0.0,  release: 0.1,  peak: 0.9 },
 };
+// Slow instruments still speak at once: they jump to `onset` x peak in ONSET_S, then swell to the peak.
+// Without this a pad took ~0.5 s to be heard, which felt like lag between the hand and the sound.
+export const ONSET_S = 0.012;
 export const DRUM_ENV = { kick: { decay: 0.35, peak: 1 }, snare: { decay: 0.2, peak: 0.7 }, hat: { decay: 0.06, peak: 0.35 } };
 
 /**
@@ -21,6 +24,8 @@ export function envAmp(instrument, velocity, tOn, tOff, now) {
   const p = INSTRUMENTS[instrument] || INSTRUMENTS.piano;
   const seg = (t) => {
     if (t < 0) return 0;
+    if (p.onset && t < ONSET_S) return (t / ONSET_S) * p.onset;
+    if (p.onset && t < p.attack) return p.onset + (1 - p.onset) * (t - ONSET_S) / (p.attack - ONSET_S);
     if (t < p.attack) return t / p.attack;
     const d = t - p.attack;
     // exponential approach to sustain level, same shape as setTargetAtTime(decay/4)
@@ -124,8 +129,8 @@ export class AudioEngine {
       case 'drum': this._drum(key, ev.drum, ev.velocity ?? 0.9, t); break;
       case 'expr': {
         const ch = this.channel(key);
-        if (ev.volume != null) { ch.volume = ev.volume; ch.vol.gain.setTargetAtTime(ev.volume, t, 0.05); }
-        if (ev.filter != null) { ch.filterAmt = ev.filter; ch.filter.frequency.setTargetAtTime(cutoff(ev.filter), t, 0.06); }
+        if (ev.volume != null) { ch.volume = ev.volume; ch.vol.gain.setTargetAtTime(ev.volume, t, 0.02); }
+        if (ev.filter != null) { ch.filterAmt = ev.filter; ch.filter.frequency.setTargetAtTime(cutoff(ev.filter), t, 0.025); }
         break;
       }
       case 'allOff': this.allOff(key, t); break;
@@ -149,6 +154,7 @@ export class AudioEngine {
     const ch = this.channel(key);
     const env = ctx.createGain();
     env.gain.setValueAtTime(0, t);
+    if (p.onset) env.gain.linearRampToValueAtTime(p.peak * vel * p.onset, t + ONSET_S);
     env.gain.linearRampToValueAtTime(p.peak * vel, t + p.attack);
     env.gain.setTargetAtTime(p.peak * vel * p.sustain, t + p.attack, p.decay / 4);
     env.connect(ch.vol);

@@ -65,6 +65,10 @@
         <div><dt>Tempo</dt><dd id="iTempo">96 BPM · stopped</dd></div>
         <div><dt>Instrument</dt><dd id="iInst">Synth pad</dd></div>
       </dl>
+      <div class="haptic-panel">
+        <div class="haptic-head"><span>Haptics</span><span id="hapticMode" class="haptic-mode">visible</span></div>
+        <canvas id="hapticStrip" class="haptic-strip" aria-hidden="true"></canvas>
+      </div>
       <p id="handHint" class="hand-hint"></p>
     </aside>
     <div id="announce" class="sr-only" aria-live="polite"></div>
@@ -91,11 +95,11 @@
     </section>
 
     <footer id="toolbar" class="toolbar glass" aria-label="Studio controls">
-      <button id="beatBtn" class="tb" aria-pressed="false" title="Start / stop the beat (Space)">▶ Beat</button>
+      <button id="beatBtn" class="tb" aria-pressed="false" title="Start / stop the beat (Space)">Beat</button>
       <span class="tempo"><button id="tempoDown" class="tb sm" aria-label="Slower">−</button><span id="tempoVal">96</span><button id="tempoUp" class="tb sm" aria-label="Faster">+</button></span>
       <button id="loopBtn" class="tb" aria-pressed="false" title="Record drum hits into the loop">Loop rec</button>
       <button id="undoBtn" class="tb" title="Undo last loop change">Undo</button>
-      <button id="recBtn" class="tb rec" aria-pressed="false" title="Record your piece (R)">● Record</button>
+      <button id="recBtn" class="tb rec" aria-pressed="false" title="Record your piece (R)">Record</button>
       <button id="playBtn" class="tb" disabled title="Replay recording">Replay</button>
       <button id="saveBtn" class="tb" disabled title="Save or export">Save…</button>
       <label class="tb select"><span class="sr-only">Instrument</span>
@@ -152,12 +156,15 @@
         <fieldset><legend>Gesture tuning</legend>
           <label class="check"><input type="checkbox" id="sSwap"> Swap left / right hands</label>
           <label>Pinch sensitivity <input type="range" id="sPinch" min="0.2" max="0.5" step="0.01" value="0.33"></label>
-          <label>Gesture hold time <input type="range" id="sStable" min="60" max="400" step="10" value="140"> <output id="sStableOut">140 ms</output></label>
+          <label>Gesture hold time <input type="range" id="sStable" min="0" max="300" step="10" value="50"> <output id="sStableOut">50 ms</output></label>
         </fieldset>
         <fieldset><legend>Sound &amp; touch</legend>
           <label>Master volume <input type="range" id="sMaster" min="0" max="1" step="0.01" value="1"></label>
-          <label class="check"><input type="checkbox" id="sHaptics"> Vibrate on the beat</label>
+          <label class="check"><input type="checkbox" id="sHapticVisual" checked> Visible haptics (rings where you play)</label>
+          <label class="check"><input type="checkbox" id="sHaptics"> Vibrate this device</label>
+          <label class="check"><input type="checkbox" id="sHapticBeats" checked> Include the beat</label>
           <p id="hapticNote" class="note"></p>
+          <p class="note">Every sound has its own touch: kick is a thump, snare a double tap, hi-hat a tick, a chord rolls one tap per note, and low melody notes feel heavier than high ones. In a jam you feel your friends' notes too.</p>
         </fieldset>
       </div>
       <div class="dlg-actions"><button class="btn primary" value="close">Done</button></div>
@@ -170,7 +177,7 @@
       <div class="grid3">
         <section><h3>Chords mode</h3>
           <ul>
-            <li><b>Left hand fingers</b> pick the chord: ☝ 1 = I (C) · ✌ 2 = ii (Dm) · 3 = iii (Em) · 4 = IV (F) · 🖐 5 = V (G)</li>
+            <li><b>Left hand fingers</b> pick the chord: 1 = I (C) · 2 = ii (Dm) · 3 = iii (Em) · 4 = IV (F) · 5 = V (G)</li>
             <li><b>Fist</b> stops the chord</li>
             <li><b>Right hand height</b> = volume · <b>tilt</b> = tone</li>
             <li><b>Right pinch</b> = sustain (hold the chord) · <b>move right</b> = inversions</li>

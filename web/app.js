@@ -153,9 +153,9 @@ setInterval(() => {
 }, 500)
 
 fetch('/api/health').then((r) => r.json()).then((h) => {
-  const bits = [h.twilio ? 'Twilio ✓' : 'Twilio ✗ (not set up)',
-    h.public_url ? 'Public URL ✓' : 'Public URL ✗',
-    h.gemini.configured ? (h.gemini.ok ? `Gemini ✓ (${h.gemini.model})` : `Gemini ✗ (${h.gemini.model})`) : 'Gemini off (rules only)']
+  const bits = [h.twilio ? 'Twilio ready' : 'Twilio not set up',
+    h.public_url ? 'Public URL ready' : 'Public URL missing',
+    h.gemini.configured ? (h.gemini.ok ? `Gemini ready (${h.gemini.model})` : `Gemini unreachable (${h.gemini.model})`) : 'Gemini off (rules only)']
   $('health').textContent = bits.join(' · ')
 }).catch(() => {})
 

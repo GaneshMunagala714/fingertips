@@ -12,10 +12,10 @@ import { clock } from './clock.js';
 import { transport } from './transport.js';
 
 export const PLAYER_STYLE = {
-  p1: { hue: 36, shape: 'circle', name: 'Player 1' },
-  p2: { hue: 188, shape: 'diamond', name: 'Player 2' },
-  p3: { hue: 275, shape: 'square', name: 'Player 3' },
-  p4: { hue: 135, shape: 'triangle', name: 'Player 4' },
+  p1: { hue: 34, shape: 'circle', name: 'Player 1' },
+  p2: { hue: 196, shape: 'diamond', name: 'Player 2' },
+  p3: { hue: 352, shape: 'square', name: 'Player 3' },
+  p4: { hue: 140, shape: 'triangle', name: 'Player 4' },
 };
 const styleFor = (key) => PLAYER_STYLE[key.replace(/^r/, '')] || PLAYER_STYLE.p1;
 
@@ -51,6 +51,8 @@ export class Stage {
     this.sprites = new Map();
     this.hands = null; this.mode = null; this.ladder = []; this.melodyIdx = -1;
     this.inset = 90;                  // px reserved at the bottom for the toolbar / pads
+    this.ripples = [];                // visible haptics: one ring per haptic pulse
+    this.thump = null;                // strong pulses nudge the whole stage
     this.resize();
     addEventListener('resize', () => this.resize());
   }
@@ -182,13 +184,14 @@ export class Stage {
     g.globalCompositeOperation = 'source-over';
     if (view.highContrast) { g.fillStyle = '#000'; g.fillRect(0, 0, W, H); }
     else {
-      const bg = g.createRadialGradient(W * 0.6, H * 0.45, 0, W * 0.6, H * 0.45, Math.max(W, H) * 0.8);
-      bg.addColorStop(0, `hsl(${235 + this.glow * 20},45%,${9 + this.glow * 7 * view.intensity}%)`);
-      bg.addColorStop(1, 'hsl(240,40%,3%)');
-      g.fillStyle = bg; g.fillRect(0, 0, W, H);
+      // flat neutral black that lifts slightly with the measured output level
+      g.fillStyle = `hsl(30,4%,${2 + this.glow * 5 * view.intensity}%)`;
+      g.fillRect(0, 0, W, H);
     }
     if (!view.simplified && !view.highContrast) this._particles(now, motion);
     if (!this.mode) { this._trackFrame(dtMs, t0); return; } // welcome screen: ambience only
+    const shake = this._shake(motion);
+    if (shake) { g.save(); g.translate(shake.x, shake.y); }
     this._pitchGuide();
     this._beatLines(now);
 
@@ -208,6 +211,8 @@ export class Stage {
     if (this.mode === 'melody') this._ladder();
     if (this.mode === 'rhythm') this._drumZones();
     this._beatGrid(now);
+    if (shake) g.restore();
+    this._ripples(motion);
     if (view.showCursors) this._cursors();
 
     this._trackFrame(dtMs, t0);
@@ -225,7 +230,7 @@ export class Stage {
 
   _particles(now, motion) {
     const g = this.g;
-    g.fillStyle = `rgba(200,210,255,${0.25 * view.intensity})`;
+    g.fillStyle = `rgba(255,255,255,${0.14 * view.intensity})`;
     for (const p of this.particles) {
       if (motion) { p.y -= p.s * (1 + this.glow * 3); p.x += Math.sin(now / 2000 + p.p) * 0.1; if (p.y < 0) { p.y = this.H; p.x = Math.random() * this.W; } }
       g.beginPath(); g.arc(p.x, p.y, p.r, 0, 6.283); g.fill();
@@ -234,16 +239,16 @@ export class Stage {
 
   _pitchGuide() {
     const g = this.g;
-    g.font = '600 11px Inter, system-ui, sans-serif';
+    g.font = '600 11px -apple-system, "SF Pro Text", Inter, system-ui, sans-serif';
     for (let m = 48; m <= MIDI_HI; m += 12) {
       const y = this.y(m);
-      g.strokeStyle = view.highContrast ? 'rgba(255,255,255,0.35)' : 'rgba(170,180,255,0.08)';
+      g.strokeStyle = view.highContrast ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.08)';
       g.lineWidth = 1;
       g.beginPath(); g.moveTo(0, y); g.lineTo(this.W, y); g.stroke();
-      if (view.labels) { g.fillStyle = view.highContrast ? '#fff' : 'rgba(190,200,255,0.45)'; g.fillText(midiToName(m), 10, y - 4); }
+      if (view.labels) { g.fillStyle = view.highContrast ? '#fff' : 'rgba(255,255,255,0.45)'; g.fillText(midiToName(m), 10, y - 4); }
     }
-    g.fillStyle = view.highContrast ? '#fff' : 'rgba(190,200,255,0.4)';
-    g.textAlign = 'right'; g.fillText('↑ higher pitch   ·   time flows ←', this.X0 - 8, this.top - 14); g.textAlign = 'left';
+    g.fillStyle = view.highContrast ? '#fff' : 'rgba(255,255,255,0.4)';
+    g.textAlign = 'right'; g.fillText('Higher notes sit higher  ·  time flows left', this.X0 - 8, this.top - 14); g.textAlign = 'left';
   }
 
   _beatLines(now) {
@@ -255,7 +260,7 @@ export class Stage {
       const t = transport.startAt + b * bm;
       const x = this.x(t, now);
       const down = ((b % 4) + 4) % 4 === 0;
-      g.strokeStyle = view.highContrast ? `rgba(255,255,255,${down ? 0.5 : 0.2})` : `rgba(160,170,255,${down ? 0.16 : 0.06})`;
+      g.strokeStyle = view.highContrast ? `rgba(255,255,255,${down ? 0.5 : 0.2})` : `rgba(255,255,255,${down ? 0.16 : 0.06})`;
       g.lineWidth = down ? 2 : 1;
       g.beginPath(); g.moveTo(x, this.top - 10); g.lineTo(x, this.bottom + 10); g.stroke();
     }
@@ -334,8 +339,8 @@ export class Stage {
     // player shape marker at the onset so identity never relies on colour
     this._shape(styleFor(m.key).shape, x1, y, 4 + peak * 6, this.color(m.key, 85, 0.9, m.midi), sharp);
     if (view.labels && (x2 - x1 > 18 || now - m.on < 1500)) {
-      g.font = '600 11px Inter, system-ui, sans-serif';
-      g.fillStyle = view.highContrast ? '#fff' : 'rgba(235,240,255,0.85)';
+      g.font = '600 11px -apple-system, "SF Pro Text", Inter, system-ui, sans-serif';
+      g.fillStyle = view.highContrast ? '#fff' : 'rgba(240,240,245,0.85)';
       g.fillText(midiToName(m.midi), x1 + 7, y - 9);
     }
   }
@@ -420,7 +425,7 @@ export class Stage {
         g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(q.x, q.y); g.stroke();
         if (view.labels) {
           const iv = INTERVAL_NAMES[(q.midi - p.midi) % 12] || '';
-          g.font = '500 10px Inter, system-ui, sans-serif'; g.fillStyle = 'rgba(220,225,255,0.7)';
+          g.font = '500 10px -apple-system, "SF Pro Text", Inter, system-ui, sans-serif'; g.fillStyle = 'rgba(240,240,245,0.7)';
           g.textAlign = 'right'; g.fillText(iv, Math.min(p.x, q.x) - 10, (p.y + q.y) / 2 + 3); g.textAlign = 'left';
         }
       }
@@ -434,15 +439,15 @@ export class Stage {
       for (const p of pts) {
         this._shape(styleFor(key).shape, p.x, p.y, 6 + p.a * 10, this.color(key, 85, 1, p.midi), true);
         if (view.labels) {
-          g.font = '700 13px Inter, system-ui, sans-serif'; g.fillStyle = view.highContrast ? '#fff' : '#eef';
+          g.font = '700 13px -apple-system, "SF Pro Text", Inter, system-ui, sans-serif'; g.fillStyle = view.highContrast ? '#fff' : '#eef';
           g.fillText(midiToName(p.midi), p.x + 14, p.y + 4);
         }
       }
       const topY = Math.min(...pts.map((p) => p.y)) - 34;
       g.textAlign = 'center';
-      g.font = '700 26px Inter, system-ui, sans-serif'; g.fillStyle = view.highContrast ? '#ff0' : this.color(key, 82, 1, 60);
+      g.font = '700 26px -apple-system, "SF Pro Text", Inter, system-ui, sans-serif'; g.fillStyle = view.highContrast ? '#ff0' : this.color(key, 82, 1, 60);
       g.fillText(c.name, cx, topY);
-      g.font = '500 12px Inter, system-ui, sans-serif'; g.fillStyle = view.highContrast ? '#fff' : 'rgba(220,225,255,0.75)';
+      g.font = '500 12px -apple-system, "SF Pro Text", Inter, system-ui, sans-serif'; g.fillStyle = view.highContrast ? '#fff' : 'rgba(240,240,245,0.75)';
       g.fillText(`${c.degree ? roman(c.degree) + ' · ' : ''}${chordQuality(c.name)} · ${c.notes.length} notes`, cx, topY + 17);
       g.textAlign = 'left';
     });
@@ -455,10 +460,10 @@ export class Stage {
     const x0 = this.W * 0.08, w = this.W * 0.84, y = this.ladderY, h = 26;
     for (let i = 0; i < n; i++) {
       const x = x0 + (w * i) / n, on = i === this.melodyIdx;
-      g.fillStyle = on ? 'rgba(255,255,255,0.85)' : view.highContrast ? 'rgba(255,255,255,0.15)' : 'rgba(180,190,255,0.08)';
+      g.fillStyle = on ? 'rgba(255,255,255,0.85)' : view.highContrast ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.08)';
       g.fillRect(x + 1, y, w / n - 2, h);
-      g.fillStyle = on ? '#111' : view.highContrast ? '#fff' : 'rgba(220,225,255,0.8)';
-      g.font = `${on ? 700 : 500} 11px Inter, system-ui, sans-serif`; g.textAlign = 'center';
+      g.fillStyle = on ? '#111' : view.highContrast ? '#fff' : 'rgba(240,240,245,0.8)';
+      g.font = `${on ? 700 : 500} 11px -apple-system, "SF Pro Text", Inter, system-ui, sans-serif`; g.textAlign = 'center';
       g.fillText(midiToName(lad[i]), x + w / n / 2, y + 17);
     }
     g.textAlign = 'left';
@@ -468,10 +473,10 @@ export class Stage {
     const g = this.g;
     const names = [['kick', 0, 0.36], ['snare', 0.36, 0.64], ['hat', 0.64, 1]];
     for (const [name, a, b] of names) {
-      g.fillStyle = view.highContrast ? 'rgba(255,255,255,0.06)' : 'rgba(150,160,255,0.035)';
+      g.fillStyle = view.highContrast ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.035)';
       g.fillRect(this.W * a + 2, this.top, this.W * (b - a) - 4, this.bottom - this.top);
-      g.font = '700 14px Inter, system-ui, sans-serif'; g.textAlign = 'center';
-      g.fillStyle = view.highContrast ? '#fff' : 'rgba(220,225,255,0.45)';
+      g.font = '700 14px -apple-system, "SF Pro Text", Inter, system-ui, sans-serif'; g.textAlign = 'center';
+      g.fillStyle = view.highContrast ? '#fff' : 'rgba(240,240,245,0.45)';
       g.fillText(`${name.toUpperCase()} — pinch here`, this.W * (a + b) / 2, this.top + 10);
     }
     g.textAlign = 'left';
@@ -485,26 +490,26 @@ export class Stage {
     const pos = transport.position(now);
     // metronome: four beat dots + BPM
     const beatIn = pos ? Math.floor(pos.step / 4) : -1;
-    g.font = '700 13px Inter, system-ui, sans-serif';
-    g.fillStyle = view.highContrast ? '#fff' : 'rgba(220,225,255,0.85)';
+    g.font = '700 13px -apple-system, "SF Pro Text", Inter, system-ui, sans-serif';
+    g.fillStyle = view.highContrast ? '#fff' : 'rgba(240,240,245,0.85)';
     g.fillText(`${transport.tempo} BPM`, 12, y0 + 12);
-    g.font = '500 11px Inter, system-ui, sans-serif';
+    g.font = '500 11px -apple-system, "SF Pro Text", Inter, system-ui, sans-serif';
     g.fillText(pos ? `beat ${beatIn + 1} / 4` : 'stopped', 12, y0 + 28);
     for (let b = 0; b < 4; b++) {
       const cx = 22 + b * 16, cy = y0 + 46, on = b === beatIn;
       g.beginPath(); g.arc(cx, cy, on ? 6 : 4, 0, 6.283);
-      g.fillStyle = on ? (b === 0 ? '#ffd27a' : '#fff') : 'rgba(255,255,255,0.18)'; g.fill();
+      g.fillStyle = on ? (b === 0 ? '#ffb340' : '#fff') : 'rgba(255,255,255,0.18)'; g.fill();
     }
     // 16-step grid (one bar), rows = drums
     for (let r = 0; r < 3; r++) {
       for (let s = 0; s < 16; s++) {
         const x = x0 + (w * s) / 16, y = y0 + r * 18;
         const filled = transport.pattern[rows[r]][s];
-        g.fillStyle = filled ? 'rgba(255,210,122,0.85)' : s % 4 === 0 ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.05)';
+        g.fillStyle = filled ? 'rgba(255,179,64,0.85)' : s % 4 === 0 ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.05)';
         if (view.highContrast && !filled) g.fillStyle = 'rgba(255,255,255,0.2)';
         g.fillRect(x + 1, y, w / 16 - 2, 14);
       }
-      g.fillStyle = 'rgba(220,225,255,0.6)'; g.font = '500 10px Inter, system-ui, sans-serif';
+      g.fillStyle = 'rgba(240,240,245,0.6)'; g.font = '500 10px -apple-system, "SF Pro Text", Inter, system-ui, sans-serif';
       g.textAlign = 'right'; g.fillText(rows[r], x0 - 8, y0 + r * 18 + 11); g.textAlign = 'left';
     }
     // live hits appear where they landed in the bar
@@ -523,20 +528,76 @@ export class Stage {
     }
   }
 
+  /** Visible haptics: rings for every pulse of a haptic pattern, at the hand (or note) that caused it. */
+  ripple(x, y, key, pattern, strong = false) {
+    const t = performance.now();
+    for (const p of pattern) this.ripples.push({ x, y, key, t0: t + p.d, amp: p.amp, ms: p.ms });
+    if (this.ripples.length > 90) this.ripples.splice(0, this.ripples.length - 90);
+    if (strong) this.thump = { t0: t, amp: pattern[0]?.amp ?? 1, key };
+  }
+
+  _shake(motion) {
+    if (!this.thump || !motion || view.simplified) return null;
+    const k = (performance.now() - this.thump.t0) / 140;
+    if (k >= 1) { this.thump = null; return null; }
+    const a = 2.5 * this.thump.amp * (1 - k) * (1 - k);
+    return { x: Math.sin(k * 31) * a, y: Math.cos(k * 23) * a * 0.6 };
+  }
+
+  _ripples(motion) {
+    const g = this.g, now = performance.now();
+    this.ripples = this.ripples.filter((r) => now - r.t0 < 900);
+    for (const r of this.ripples) {
+      const age = (now - r.t0) / 1000;
+      if (age < 0) continue;
+      const dur = 0.5 + r.amp * 0.35, k = Math.min(1, age / dur);
+      if (k >= 1) continue;
+      const ease = 1 - Math.pow(1 - k, 3);
+      const rad = motion ? 16 + ease * (34 + r.amp * 96) : 30;
+      const a = Math.pow(1 - k, 2) * (0.35 + 0.65 * r.amp) * view.intensity;
+      g.strokeStyle = view.highContrast ? `rgba(255,255,255,${a})` : this.color(r.key, 74, a);
+      g.lineWidth = 0.75 + r.amp * 4 * (1 - k);
+      g.beginPath(); g.arc(r.x, r.y, rad, 0, 6.283); g.stroke();
+      if (r.ms >= 20 && motion) { // long pulses read as heavier: a second, trailing ring
+        g.lineWidth = 0.75 + r.amp * 2 * (1 - k);
+        g.beginPath(); g.arc(r.x, r.y, rad * 0.62, 0, 6.283); g.stroke();
+      }
+    }
+    if (this.thump && !view.simplified) { // the screen edge takes the hit too
+      const k = (now - this.thump.t0) / 260;
+      if (k < 1) {
+        g.save();
+        g.strokeStyle = this.color(this.thump.key, 70, 0.28 * (1 - k) * this.thump.amp * view.intensity);
+        g.lineWidth = 3 + 7 * (1 - k);
+        g.strokeRect(0, 0, this.W, this.H);
+        g.restore();
+      }
+    }
+  }
+
   _cursors() {
     if (!this.hands) return;
     const g = this.g;
+    g.textAlign = 'center'; g.textBaseline = 'middle';
     for (const h of Object.values(this.hands)) {
       if (!h.present) continue;
       const x = h.x * this.W, y = h.y * this.H;
-      g.strokeStyle = h.pinch ? '#ffd27a' : 'rgba(255,255,255,0.7)'; g.lineWidth = h.pinch ? 3 : 1.5;
-      g.beginPath(); g.arc(x, y, h.pinch ? 14 : 20, 0, 6.283); g.stroke();
-      g.fillStyle = 'rgba(255,255,255,0.9)'; g.font = '700 12px Inter, system-ui, sans-serif'; g.textAlign = 'center';
-      g.fillText(`${h.side === 'left' ? 'L' : 'R'} · ${h.count < 0 ? '…' : h.count}${h.pinch ? ' · pinch' : ''}`, x, y + 36);
-      g.textAlign = 'left';
-      g.fillStyle = 'rgba(255,255,255,0.8)';
-      g.beginPath(); g.arc(h.tip.x * this.W, h.tip.y * this.H, 4, 0, 6.283); g.fill();
+      const r = h.pinch ? 17 : 24;
+      // frosted disc with a hairline ring; fills in when pinching
+      g.fillStyle = h.pinch ? 'rgba(255,179,64,0.92)' : 'rgba(255,255,255,0.10)';
+      g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fill();
+      g.strokeStyle = h.pinch ? 'rgba(255,179,64,1)' : 'rgba(255,255,255,0.55)'; g.lineWidth = 1.25;
+      g.beginPath(); g.arc(x, y, r + 0.5, 0, 6.283); g.stroke();
+      g.fillStyle = h.pinch ? '#111' : '#f5f5f7';
+      g.font = '600 15px -apple-system, "SF Pro Text", -apple-system, "SF Pro Text", Inter, system-ui, sans-serif';
+      g.fillText(h.count < 0 ? '' : String(h.count), x, y + 0.5);
+      g.font = '500 10px -apple-system, "SF Pro Text", -apple-system, "SF Pro Text", Inter, system-ui, sans-serif';
+      g.fillStyle = 'rgba(245,245,247,0.6)';
+      g.fillText(h.side === 'left' ? 'LEFT' : 'RIGHT', x, y + r + 12);
+      g.fillStyle = 'rgba(255,255,255,0.85)';
+      g.beginPath(); g.arc(h.tip.x * this.W, h.tip.y * this.H, 3, 0, 6.283); g.fill();
     }
+    g.textAlign = 'left'; g.textBaseline = 'alphabetic';
   }
 
   /** Composite PNG of the current artwork. */
