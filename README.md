@@ -18,7 +18,39 @@ Built solo by Ganesh Munagala at HackUMass XIV (Nov 13–15, 2026).
 | Folder | What | Author |
 |---|---|---|
 | `server/`, `web/`, `tests/` | TalkBridge call app (this README) | Ganesh Munagala, written at HackUMass XIV |
+| `server/jam.py`, `web/jam/`, `tests/jam/`, `tests/test_jam.py` | **JAM**: gesture music & art playground (below) | Ganesh Munagala, written at HackUMass XIV |
 | `fingertip/` | **Fingertip**: signing recognition, call controller with guards, Show it (Gemini video), Meet extension, desktop bridge, Gesture Synth. See [fingertip/README.md](fingertip/README.md) |
+
+## JAM: music you can see (`/jam`)
+
+A gesture-controlled instrument where every note is also drawn on screen, so a Deaf player can create and
+follow the music without hearing it, a hearing player needs no sign language, and nobody has to speak.
+
+- **Hands → music** (MediaPipe Hand Landmarker, runs in the browser; video never leaves the device).
+  Chords: left-hand fingers 1–5 = C, Dm, Em, F, G; right hand height = volume, tilt = tone, pinch = hold.
+  Melody: slide left/right along a scale, pinch to play. Rhythm: pinch in kick / snare / hi-hat zones.
+  Gestures must hold steady before they count, pinch has hysteresis, and a lost hand releases its notes. One-hand mode.
+- **Music → visuals**, from the same events that drive the synth: pitch = height (labelled), loudness =
+  ribbon width/glow (computed from the real ADSR envelope × channel volume; background glow is the measured output),
+  chords = connected labelled nodes with interval names, rhythm = scrolling beat lines + metronome + 16-step grid,
+  timbre = per-instrument marks. Three styles: Aurora, Constellation, Pulse Garden. Muting keeps all of it.
+- **Jam together**: invite link → shared room over WebSocket. Only small validated events travel (server
+  whitelists fields, enforces ranges and rate limits, stamps the sender); each browser synthesizes locally.
+  Shared clock (ping/pong), shared tempo/downbeat, 80 ms jitter buffer, reconnect, notes released when a player leaves.
+- **Record → replay → export** JSON, PNG artwork, WAV (rendered offline by the same synth).
+- **Without a camera**: keyboard (1–7 chords, A–L melody, Z/X/C drums) and touch/mouse pads.
+- Accessibility: labels, reduced motion, simplified and high-contrast modes, no strobing, large targets,
+  screen-reader announcements, point-and-hold mode switching. Beat haptics only where the device can vibrate.
+
+Credits: the finger-count → chord idea comes from [Gesture Synth](https://github.com/ericwei97-cloud/gesture-synth)
+by Eric Wei (non-commercial use with credit). JAM's code is new; none of Gesture Synth's source is copied.
+Hand tracking: Google MediaPipe Tasks Vision 0.10.14 (loaded from jsDelivr).
+
+```bash
+node --test tests/jam/logic.test.mjs        # theory, envelopes, gesture mapping (simulated hands)
+python -m pytest -q tests/test_jam.py        # room relay: two clients, validation, rate limit
+node tests/jam/smoke.mjs http://localhost:8000   # real Chrome via Playwright (fake camera, two browsers)
+```
 
 ## How it works
 

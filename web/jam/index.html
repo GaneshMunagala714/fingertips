@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Sign2Speak JAM</title>
+  <meta name="description" content="A gesture-controlled, accessibility-first music and art playground. Create music you can see.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2210%22 cy=%2222%22 r=%225%22 fill=%22%23ffd27a%22/%3E%3Ccircle cx=%2222%22 cy=%2212%22 r=%225%22 fill=%22%237ee3ff%22/%3E%3Cpath d=%22M10 22L22 12%22 stroke=%22%23fff%22 stroke-width=%222%22/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="/static/jam/jam.css">
+</head>
+<body>
+  <canvas id="stage" aria-label="Live music artwork: pitch is height, loudness is size and glow, chords are connected notes, time flows right to left" role="img"></canvas>
+
+  <!-- ============================================================ welcome -->
+  <section id="welcome" class="welcome" aria-labelledby="welcomeTitle">
+    <div class="welcome-inner">
+      <p class="eyebrow">Sign2Speak · JAM</p>
+      <h1 id="welcomeTitle">Feel the Music</h1>
+      <p class="sub">Create music you can see. Make art you can feel. Jam together.</p>
+      <p class="tagline">Your hands are your instrument. Your movement is your music.</p>
+      <div id="joinBanner" class="join-banner" hidden></div>
+      <div class="cta">
+        <button id="startSolo" class="btn primary big">Start Solo</button>
+        <button id="startJam" class="btn big">Jam Together</button>
+        <button id="startExplore" class="btn big ghost">Explore Music</button>
+      </div>
+      <div class="secondary">
+        <label class="check"><input type="checkbox" id="useCamera" checked> Use my camera for hand tracking</label>
+        <button id="welcomeSettings" class="link">Accessibility settings</button>
+        <button id="keyboardMode" class="link">Keyboard / touch mode (no camera)</button>
+        <button id="welcomeAudio" class="link" aria-pressed="true">Audio: on</button>
+      </div>
+      <p class="privacy">Your camera stays on your device. Hand tracking runs in your browser; no video is uploaded or recorded. In a jam, only small musical events (like “C major, loud”) are shared.</p>
+      <p class="credit">Gesture-to-chord idea inspired by <a href="https://github.com/ericwei97-cloud/gesture-synth" target="_blank" rel="noopener">Gesture Synth</a> by Eric Wei. Hand tracking by Google MediaPipe.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================ studio -->
+  <div id="studio" class="studio" hidden>
+    <header class="topbar glass">
+      <div class="brand">JAM</div>
+      <nav class="modes" aria-label="Play mode">
+        <button class="mode" data-mode="chord" data-dwell aria-pressed="true"><span class="k">Q</span> Chords</button>
+        <button class="mode" data-mode="melody" data-dwell aria-pressed="false"><span class="k">W</span> Melody</button>
+        <button class="mode" data-mode="rhythm" data-dwell aria-pressed="false"><span class="k">E</span> Rhythm</button>
+      </nav>
+      <div class="topright">
+        <span id="beatDot" class="beat-dot" aria-hidden="true"></span>
+        <span id="netPill" class="pill" role="status">Solo</span>
+        <span id="players" class="players" aria-label="Players in the room"></span>
+      </div>
+    </header>
+
+    <aside id="info" class="info glass" aria-label="What is playing">
+      <dl>
+        <div><dt>Mode</dt><dd id="iMode">Chords</dd></div>
+        <div><dt>Chord</dt><dd id="iChord" class="big">—</dd></div>
+        <div><dt>Notes</dt><dd id="iNotes">—</dd></div>
+        <div><dt>Pitch</dt><dd id="iPitch">—</dd></div>
+        <div><dt>Volume</dt><dd><span class="meter"><span id="iVolBar"></span></span> <span id="iVol">75%</span></dd></div>
+        <div><dt>Tone</dt><dd><span class="meter"><span id="iToneBar"></span></span> <span id="iTone">bright</span></dd></div>
+        <div><dt>Tempo</dt><dd id="iTempo">96 BPM · stopped</dd></div>
+        <div><dt>Instrument</dt><dd id="iInst">Synth pad</dd></div>
+      </dl>
+      <p id="handHint" class="hand-hint"></p>
+    </aside>
+    <div id="announce" class="sr-only" aria-live="polite"></div>
+
+    <div id="previewBox" class="preview glass">
+      <video id="video" playsinline muted></video>
+      <canvas id="previewCanvas" aria-hidden="true"></canvas>
+      <span id="camStatus" class="cam-status">Camera off</span>
+    </div>
+
+    <!-- touch / mouse instrument -->
+    <section id="pads" class="pads glass" aria-label="Touch and mouse controls" hidden>
+      <div class="pad-row" id="chordPads" role="group" aria-label="Chords"></div>
+      <div class="pad-row">
+        <div id="melodyStrip" class="melody-strip" role="slider" tabindex="0" aria-label="Melody strip: press and slide to play notes" aria-valuemin="0" aria-valuemax="14" aria-valuenow="0"></div>
+      </div>
+      <div class="pad-row" role="group" aria-label="Drums">
+        <button class="pad drum" data-drum="kick">Kick <span class="k">Z</span></button>
+        <button class="pad drum" data-drum="snare">Snare <span class="k">X</span></button>
+        <button class="pad drum" data-drum="hat">Hi-hat <span class="k">C</span></button>
+        <label class="slider">Volume <input id="padVol" type="range" min="0" max="1" step="0.01" value="0.75"></label>
+        <label class="slider">Tone <input id="padTone" type="range" min="0" max="1" step="0.01" value="0.7"></label>
+      </div>
+    </section>
+
+    <footer id="toolbar" class="toolbar glass" aria-label="Studio controls">
+      <button id="beatBtn" class="tb" aria-pressed="false" title="Start / stop the beat (Space)">▶ Beat</button>
+      <span class="tempo"><button id="tempoDown" class="tb sm" aria-label="Slower">−</button><span id="tempoVal">96</span><button id="tempoUp" class="tb sm" aria-label="Faster">+</button></span>
+      <button id="loopBtn" class="tb" aria-pressed="false" title="Record drum hits into the loop">Loop rec</button>
+      <button id="undoBtn" class="tb" title="Undo last loop change">Undo</button>
+      <button id="recBtn" class="tb rec" aria-pressed="false" title="Record your piece (R)">● Record</button>
+      <button id="playBtn" class="tb" disabled title="Replay recording">Replay</button>
+      <button id="saveBtn" class="tb" disabled title="Save or export">Save…</button>
+      <label class="tb select"><span class="sr-only">Instrument</span>
+        <select id="instSel" aria-label="Instrument">
+          <option value="pad">Synth pad</option><option value="piano">Piano</option><option value="strings">Strings</option><option value="bells">Bells</option>
+        </select></label>
+      <label class="tb select"><span class="sr-only">Visual style</span>
+        <select id="themeSel" aria-label="Visual style">
+          <option value="aurora">Aurora</option><option value="constellation">Constellation</option><option value="garden">Pulse Garden</option>
+        </select></label>
+      <button id="inviteBtn" class="tb accent">Invite friend</button>
+      <button id="padsBtn" class="tb" aria-pressed="false">Touch pads</button>
+      <button id="camBtn" class="tb" aria-pressed="true">Camera</button>
+      <button id="muteBtn" class="tb" aria-pressed="false" title="Mute (M)">Sound on</button>
+      <button id="helpBtn" class="tb">Gestures</button>
+      <button id="settingsBtn" class="tb">Settings</button>
+      <button id="exitBtn" class="tb">Exit</button>
+    </footer>
+
+    <div id="tutorial" class="tutorial glass" hidden role="dialog" aria-live="polite" aria-label="Guided tour">
+      <div class="tut-step" id="tutStep">Step 1 of 6</div>
+      <h2 id="tutTitle"></h2>
+      <p id="tutBody"></p>
+      <div class="tut-actions"><button id="tutBack" class="btn sm ghost">Back</button><button id="tutNext" class="btn sm">Next</button><button id="tutClose" class="btn sm ghost">Close tour</button></div>
+    </div>
+
+    <div id="stats" class="stats glass" hidden aria-label="Performance"></div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <!-- ============================================================ dialogs -->
+  <dialog id="settingsDlg" class="dlg" aria-labelledby="setTitle">
+    <form method="dialog">
+      <h2 id="setTitle">Settings</h2>
+      <div class="grid2">
+        <fieldset><legend>Seeing the music</legend>
+          <label class="check"><input type="checkbox" id="sLabels" checked> Note &amp; chord labels</label>
+          <label class="check"><input type="checkbox" id="sReduced"> Reduced motion</label>
+          <label class="check"><input type="checkbox" id="sSimple"> Simplified visuals</label>
+          <label class="check"><input type="checkbox" id="sContrast"> High contrast</label>
+          <label>Visual intensity <input type="range" id="sIntensity" min="0.2" max="1" step="0.05" value="0.8"></label>
+          <label class="check"><input type="checkbox" id="sCursors" checked> Show hand cursors</label>
+          <label class="check"><input type="checkbox" id="sStats"> Show performance stats</label>
+        </fieldset>
+        <fieldset><legend>Playing</legend>
+          <label class="check"><input type="checkbox" id="sOneHand"> One-hand mode</label>
+          <label>Key <select id="sKey"></select></label>
+          <label>Melody scale <select id="sScale"><option value="major">Major</option><option value="minor">Minor</option><option value="pentatonic">Pentatonic</option></select></label>
+          <label class="check"><input type="checkbox" id="sChromatic"> Chromatic melody (advanced)</label>
+          <label class="check"><input type="checkbox" id="sSevenths"> Seventh chords</label>
+          <label class="check"><input type="checkbox" id="sQuantize"> Snap to beat (quantize)</label>
+          <label class="check"><input type="checkbox" id="sClick"> Metronome click sound</label>
+        </fieldset>
+        <fieldset><legend>Gesture tuning</legend>
+          <label class="check"><input type="checkbox" id="sSwap"> Swap left / right hands</label>
+          <label>Pinch sensitivity <input type="range" id="sPinch" min="0.2" max="0.5" step="0.01" value="0.33"></label>
+          <label>Gesture hold time <input type="range" id="sStable" min="60" max="400" step="10" value="140"> <output id="sStableOut">140 ms</output></label>
+        </fieldset>
+        <fieldset><legend>Sound &amp; touch</legend>
+          <label>Master volume <input type="range" id="sMaster" min="0" max="1" step="0.01" value="1"></label>
+          <label class="check"><input type="checkbox" id="sHaptics"> Vibrate on the beat</label>
+          <p id="hapticNote" class="note"></p>
+        </fieldset>
+      </div>
+      <div class="dlg-actions"><button class="btn primary" value="close">Done</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="helpDlg" class="dlg" aria-labelledby="helpTitle">
+    <form method="dialog">
+      <h2 id="helpTitle">Gestures &amp; keys</h2>
+      <div class="grid3">
+        <section><h3>Chords mode</h3>
+          <ul>
+            <li><b>Left hand fingers</b> pick the chord: ☝ 1 = I (C) · ✌ 2 = ii (Dm) · 3 = iii (Em) · 4 = IV (F) · 🖐 5 = V (G)</li>
+            <li><b>Fist</b> stops the chord</li>
+            <li><b>Right hand height</b> = volume · <b>tilt</b> = tone</li>
+            <li><b>Right pinch</b> = sustain (hold the chord) · <b>move right</b> = inversions</li>
+            <li>Keys <kbd>1</kbd>–<kbd>7</kbd> chords, <kbd>0</kbd> stop</li>
+          </ul></section>
+        <section><h3>Melody mode</h3>
+          <ul>
+            <li><b>Move left / right</b> = lower / higher note (follow the note strip)</li>
+            <li><b>Pinch</b> = play the note, release = stop</li>
+            <li><b>Height</b> = dynamics · <b>tilt</b> = tone</li>
+            <li><b>Fist</b> held briefly = silence</li>
+            <li>Keys <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> <kbd>F</kbd> <kbd>G</kbd> <kbd>H</kbd> <kbd>J</kbd> <kbd>K</kbd> <kbd>L</kbd></li>
+          </ul></section>
+        <section><h3>Rhythm mode</h3>
+          <ul>
+            <li><b>Pinch</b> in the left / middle / right zone = kick / snare / hi-hat</li>
+            <li><b>Loop rec</b> + beat on = hits are written into the loop</li>
+            <li>Keys <kbd>Z</kbd> kick, <kbd>X</kbd> snare, <kbd>C</kbd> hi-hat</li>
+          </ul></section>
+      </div>
+      <p><b>Anywhere:</b> point your index finger at a mode button for a second to switch modes (one-handed). <kbd>Q</kbd>/<kbd>W</kbd>/<kbd>E</kbd> modes · <kbd>Space</kbd> beat · <kbd>↑</kbd><kbd>↓</kbd> volume · <kbd>←</kbd><kbd>→</kbd> tone · <kbd>M</kbd> mute · <kbd>R</kbd> record · <kbd>V</kbd> visual style · <kbd>Esc</kbd> all notes off.</p>
+      <div class="dlg-actions"><button class="btn primary" value="close">Got it</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="inviteDlg" class="dlg" aria-labelledby="invTitle">
+    <form method="dialog">
+      <h2 id="invTitle">Jam together</h2>
+      <p>Send this link. Whoever opens it joins your room. No account or app needed.</p>
+      <div class="invite-row"><input id="inviteLink" readonly aria-label="Invite link"><button type="button" id="copyLink" class="btn">Copy</button></div>
+      <p class="note">Player 1 plays harmony (chords), player 2 plays melody. Each of you can switch instrument and mode at any time. Only musical events are shared, never video.</p>
+      <div class="dlg-actions"><button type="button" id="leaveRoom" class="btn ghost">Leave room</button><button class="btn primary" value="close">Done</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="saveDlg" class="dlg" aria-labelledby="saveTitle">
+    <form method="dialog">
+      <h2 id="saveTitle">Your piece</h2>
+      <p id="saveInfo"></p>
+      <div class="save-grid">
+        <button type="button" id="savePng" class="btn">Save artwork (PNG)</button>
+        <button type="button" id="saveJson" class="btn">Export composition (JSON)</button>
+        <button type="button" id="saveWav" class="btn">Export audio (WAV)</button>
+        <button type="button" id="saveLocal" class="btn">Keep in this browser</button>
+        <label class="btn file">Open composition… <input type="file" id="loadJson" accept="application/json,.json" hidden></label>
+        <button type="button" id="clearRec" class="btn ghost">Clear recording</button>
+      </div>
+      <ul id="localList" class="local-list" aria-label="Pieces saved in this browser"></ul>
+      <div class="dlg-actions"><button class="btn primary" value="close">Done</button></div>
+    </form>
+  </dialog>
+
+  <script type="module" src="/static/jam/js/main.js"></script>
+</body>
+</html>

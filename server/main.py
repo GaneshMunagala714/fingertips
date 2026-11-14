@@ -23,7 +23,7 @@ from twilio.request_validator import RequestValidator
 from twilio.rest import Client
 from twilio.twiml.voice_response import Connect, VoiceResponse
 
-from . import ai, guards
+from . import ai, guards, jam
 
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
@@ -41,6 +41,7 @@ DIAL_COOLDOWN_S = 10
 E164 = re.compile(r"^\+[1-9]\d{7,14}$")
 
 app = FastAPI(title="TalkBridge")
+app.include_router(jam.router)
 
 
 # ---------------------------------------------------------------- state (single user)
@@ -309,3 +310,8 @@ app.mount("/static", StaticFiles(directory=WEB), name="static")
 @app.get("/")
 async def index() -> FileResponse:
     return FileResponse(WEB / "index.html")
+
+
+@app.get("/jam")
+async def jam_page() -> FileResponse:
+    return FileResponse(WEB / "jam" / "index.html")
