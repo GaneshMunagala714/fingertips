@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { post } from '../api'
-import { APP_NAME } from '../brand'
+import { APP_NAME, TAGLINE } from '../brand'
 import { ago, avatarTone, CAPTION_SIZES, DEFAULT_QUICK, initials, INTRO_STYLES, introFor, prettyNumber, VOICES, type IntroStyle } from '../data'
 import { Back, Gear, People, Play, Video as VideoIcon } from '../icons'
 import type { Contact, Recent } from '../types'
@@ -109,6 +109,7 @@ export function Home({ contacts, recents, online, onOpen, onDial, onInPerson, on
         <div className="title-row" style={tabs ? { marginTop: 12 } : undefined}>
           <div>
             <h1>Calls</h1>
+            <div className="fine">{TAGLINE}</div>
             {!online && <div className="fine" style={{ color: 'var(--amber)' }}>Connecting to the server...</div>}
           </div>
           <button className="gear" onClick={onSettings} aria-label="Settings"><Gear size={22} /></button>

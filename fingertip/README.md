@@ -3,7 +3,7 @@
 > **Credit:** originally built by Shruti ([Shrutibrahma/HackUMass-26](https://github.com/Shrutibrahma/HackUMass-26)).
 > This repository carries that full commit history unchanged; later commits are by Ganesh Munagala.
 
-**Every conversation, at your fingertips.** (Formerly Sign2Speak. The name is set in one place per
+**Your hands. Your voice. Your world.** (Formerly Sign2Speak. The name is set in one place per
 surface: `app/src/brand.ts`, `extension/content.js`, server `APP_NAME`.)
 
 > **Getting it running? Read [WHAT_I_NEED.md](WHAT_I_NEED.md) first.**
