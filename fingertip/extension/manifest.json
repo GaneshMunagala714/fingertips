@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Fingertip for Google Meet",
+  "version": "0.1.0",
+  "description": "Sign, type or tap in Google Meet: your approved sentence goes to the meeting chat and, if voice is set up, into your mic.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://meet.google.com/*", "https://*/*", "http://localhost/*"],
+  "content_scripts": [{
+    "matches": ["https://meet.google.com/*"],
+    "js": ["content.js"],
+    "run_at": "document_start"
+  }],
+  "web_accessible_resources": [{ "resources": ["inject.js"], "matches": ["https://meet.google.com/*"] }],
+  "options_page": "options.html",
+  "icons": { "128": "icon-128.png" }
+}
