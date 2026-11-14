@@ -23,7 +23,7 @@ from twilio.request_validator import RequestValidator
 from twilio.rest import Client
 from twilio.twiml.voice_response import Connect, VoiceResponse
 
-from . import ai, guards, jam
+from . import ai, guards, jam, popup
 
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
@@ -305,6 +305,7 @@ async def incoming(request: Request) -> Response:
     call.sid, call.to, call.direction, call.status = sid, frm, "inbound", "incoming"
     await push({"type": "status", "status": "incoming", "sid": sid, "to": frm, "direction": "inbound"})
     asyncio.create_task(ring_timeout(sid))
+    asyncio.create_task(popup.bring_to_front())
     r = VoiceResponse()
     r.play(f"{require_public_url()}/static/ringback.wav", loop=0)   # loops until /api/answer redirects the call
     return Response(str(r), media_type="application/xml")

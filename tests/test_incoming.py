@@ -32,6 +32,7 @@ def client(monkeypatch):
     m.call.reset()
     fake = FakeClient()
     monkeypatch.setattr(m, "twilio_client", lambda: fake)
+    monkeypatch.setattr(m.popup, "ENABLED", False)
     return TestClient(m.app), m, fake
 
 
