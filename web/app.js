@@ -440,8 +440,8 @@ function onSignState(st) {
   if (st.phase === 'off') { ring(0); return signTag('Signs off') }
   ring(st.progress)
   if (performance.now() < firedUntil) return
-  if (st.sign) signTag(signs.SIGNS[st.sign].label)
-  else signTag(st.hand ? 'Hold a sign' : 'Show your hand')
+  if (st.sign) signTag(st.fired ? `${signs.SIGNS[st.sign].label} · change sign to repeat` : signs.SIGNS[st.sign].label)
+  else signTag(st.hand ? (st.raw && !st.raw.startsWith('None') ? `Not sure (${st.raw.replace('_', ' ')})` : 'Hand seen, hold a sign') : 'Show your hand')
 }
 function onSign(name, sign) {
   if (state.status !== 'in-progress') return
