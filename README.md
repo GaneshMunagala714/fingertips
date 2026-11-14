@@ -11,7 +11,8 @@ browser. The other person uses an ordinary phone and installs nothing.
 - A retried tap is never spoken twice. If the caller talks over your reply, it's marked "cut off" with
   "Say it again".
 
-Built solo by Ganesh Munagala at HackUMass XIV (Nov 13–15, 2026).
+Built by Ganesh Munagala at HackUMass XIV (Nov 13–15, 2026). ASL sign recognition on calls uses the
+model and preprocessing from **Fingertip by Shruti** (used with permission; details below).
 
 ## What's in this repo
 
@@ -19,7 +20,23 @@ Built solo by Ganesh Munagala at HackUMass XIV (Nov 13–15, 2026).
 |---|---|---|
 | `server/`, `web/`, `tests/` | TalkBridge call app (this README) | Ganesh Munagala, written at HackUMass XIV |
 | `server/jam.py`, `web/jam/`, `tests/jam/`, `tests/test_jam.py` | **JAM**: gesture music & art playground (below) | Ganesh Munagala, written at HackUMass XIV |
-| `fingertip/` | **Fingertip**: signing recognition, call controller with guards, Show it (Gemini video), Meet extension, desktop bridge, Gesture Synth. See [fingertip/README.md](fingertip/README.md) |
+| `fingertip/` | **Fingertip**: signing recognition, call controller with guards, Show it (Gemini video), Meet extension, desktop bridge, Gesture Synth. See [fingertip/README.md](fingertip/README.md) | Shruti ([Shrutibrahma/HackUMass-26](https://github.com/Shrutibrahma/HackUMass-26)), used with permission |
+
+## Signing on a call
+
+When a call connects, the camera turns on. Two ways to answer by hand (Settings → Sign recognition):
+
+- **ASL words** (default). Sign one word at a time with a short pause; each recognized sign is added to
+  your reply. When you drop your hands, Gemini turns the words into sentence suggestions; one tap speaks
+  it. When the model isn't sure, it shows its top guesses to pick from. Choose all 2,730 ASL Citizen signs,
+  or the 59 everyday signs Fingertip measured on real signers (more accurate).
+  Browser: MediaPipe pose + hand landmarks (`web/asl.js`). Server: `server/asl.py` runs
+  **SignBart-ASL-2730** (ONNX) with the exact preprocessing from **Fingertip by Shruti**
+  (`fingertip/server/app/signs/models.py`, `fingertip/model/`), used with permission.
+- **7 quick hand signs** (thumb up = "Yes.", fist = say the top suggestion, …), using MediaPipe's
+  Gesture Recognizer (`web/signs.js`). Instant, but only 7 hand shapes.
+
+This recognizes isolated ASL signs, not continuous ASL sentences or other sign languages.
 
 ## JAM: music you can see (`/jam`)
 

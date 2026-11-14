@@ -3,5 +3,11 @@
 .env
 **/__pycache__
 .pytest_cache
-fingertip
+fingertip/**
+!fingertip/server/app/__init__.py
+!fingertip/server/app/signs/__init__.py
+!fingertip/server/app/signs/models.py
+!fingertip/model/vocab.json
+!fingertip/model/signbart/signbart.onnx
+!fingertip/model/signbart/labels.json
 tests

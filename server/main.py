@@ -23,7 +23,7 @@ from twilio.request_validator import RequestValidator
 from twilio.rest import Client
 from twilio.twiml.voice_response import Connect, VoiceResponse
 
-from . import ai, guards, jam, popup
+from . import ai, asl, guards, jam, popup
 
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
@@ -45,6 +45,7 @@ E164 = re.compile(r"^\+[1-9]\d{7,14}$")
 
 app = FastAPI(title="TalkBridge")
 app.include_router(jam.router)
+app.include_router(asl.router)
 
 
 # ---------------------------------------------------------------- state (single user)

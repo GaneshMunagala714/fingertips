@@ -102,6 +102,10 @@
         <span class="sug-label">Suggested <span id="aiSrc" class="fine"></span></span>
       </div>
       <div id="sugs" class="chips"><span class="fine">Suggestions appear after they speak.</span></div>
+      <div id="signedRow" class="signed-row" hidden>
+        <span class="sug-label">Did you sign</span>
+        <div id="signed" class="chips"></div>
+      </div>
       <div class="draft-row">
         <textarea id="draft" rows="1" placeholder="Type a reply" aria-label="Your reply"></textarea>
         <button id="expandBtn" class="pill-btn" title="Turn your words into a full sentence">Sentence</button>
@@ -178,7 +182,7 @@
 
   <dialog id="signsDlg" aria-labelledby="signsTitle">
     <h2 id="signsTitle">Signs you can use</h2>
-    <p class="fine">Hold a sign steady in front of the camera for about a second. The ring fills, then TalkBridge says the reply out loud on the call.</p>
+    <p class="fine" id="signsHelp"></p>
     <ul id="signList" class="sign-list"></ul>
     <div class="row"><span class="grow"></span><button id="signsClose" class="pill-btn primary">Got it</button></div>
   </dialog>
@@ -189,6 +193,13 @@
       <select id="size">
         <option value="18">Small</option><option value="22" selected>Medium</option>
         <option value="28">Large</option><option value="34">Extra large</option>
+      </select>
+    </label>
+    <label>Sign recognition
+      <select id="signMode">
+        <option value="asl-all">ASL, all 2,730 signs</option>
+        <option value="asl-everyday">ASL, 59 everyday signs (most accurate)</option>
+        <option value="quick">7 quick hand signs (instant replies)</option>
       </select>
     </label>
     <label class="check-row"><input type="checkbox" id="autoCam" checked> Turn on the sign camera when a call connects</label>

@@ -66,3 +66,13 @@ def test_twiml_uses_conversation_relay(client):
     c, _ = client
     x = c.post("/twilio/twiml", data={"CallSid": "CA1"}).text
     assert "<ConversationRelay" in x and 'url="wss://example.test/twilio/relay"' in x and 'partialPrompts="true"' in x
+
+
+def test_asl_classify(client):
+    c, m = client
+    info = c.get("/api/asl/info").json()
+    assert info["ready"] and info["signs"] == 2730 and "YES" in info["everyday"]
+    frame = {"pose": [[0.5, 0.5, 0.0]] * 33, "rh": [[0.45, 0.6, 0.0]] * 21, "lh": None}
+    r = c.post("/api/asl/classify", json={"frames": [frame] * 20, "vocab": "everyday"}).json()
+    assert r["ok"] and r["sign"] in info["everyday"] and len(r["choices"]) == 3
+    assert c.post("/api/asl/classify", json={"frames": [frame] * 2}).json()["ok"] is False

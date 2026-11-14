@@ -14,7 +14,6 @@ const PERSON = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="
 
 const state = { status: 'idle', started: null, relay: false, turns: [], to: '', error: '', direction: 'outbound' }
 let lastSuggestions = []
-let signs = null              // web/signs.js, loaded on first use
 let pendingConfirm = null
 let screen = 'home'           // 'home' | 'call'
 let endedAt = null
@@ -395,13 +394,13 @@ function flash(msg) {
   setTimeout(() => { if (state.error === msg) { state.error = keep; renderCall() } }, 3500)
 }
 
-async function refreshSuggestions(hint = '') {
+async function refreshSuggestions(hint = '', speakOnTap = !hint) {
   $('aiSrc').textContent = '…'
   try {
     const r = await api('/api/suggest', { hint })
     $('aiSrc').textContent = `· ${r.source}, ${r.ms} ms${r.dropped.length ? `, ${r.dropped.length} unsafe dropped` : ''}`
     if (!hint) lastSuggestions = r.replies
-    chips($('sugs'), r.replies, hint ? (t) => { $('draft').value = t; growDraft(); $('draft').focus() } : (t) => sayIt(t))
+    chips($('sugs'), r.replies, speakOnTap ? (t) => { sayIt(t); $('draft').value = ''; growDraft() } : (t) => { $('draft').value = t; growDraft(); $('draft').focus() })
     return r
   } catch (e) { $('aiSrc').textContent = '' }
 }
@@ -416,34 +415,53 @@ function setSize(v) {
 }
 
 // ------------------------------------------------------------- sign camera
+// Modes: 'asl-all' / 'asl-everyday' = ASL words (web/asl.js -> server model), 'quick' = 7 hand shapes (quick-signs module).
+const signMode = () => store.get('tb.signmode', 'asl-all')
+let cam = null, camMode = null, aslInfo = null, signedSincePhrase = 0, firedUntil = 0
+async function camModule() {
+  const mode = signMode()
+  if (cam && camMode !== mode) { cam.stop(); cam = null }
+  camMode = mode
+  cam ??= await import(mode === 'quick' ? '/static/signs.js' : '/static/asl.js')
+  return cam
+}
 async function startCam() {
   if (screen !== 'call') return
   $('camBtn').setAttribute('aria-pressed', 'true')
   $('selfview').classList.remove('off')
-  try { signs ??= await import('/static/signs.js') } catch { signTag('Sign model failed to load', 'err'); return }
-  if (signs.isOn()) return
-  signs.start($('cam'), { onState: onSignState, onSign })
+  let m
+  try { m = await camModule() } catch { signTag('Sign model failed to load', 'err'); return }
+  if (m.isOn()) return
+  if (camMode === 'quick') m.start($('cam'), { onState: onQuickState, onSign: onQuickSign })
+  else m.start($('cam'), { onState: onAslState, onSegment: onAslSegment, onPhraseEnd: onAslPhraseEnd })
 }
 function stopCam() {
   $('camBtn').setAttribute('aria-pressed', 'false')
   $('selfview').classList.add('off')
-  signs?.stop()
+  cam?.stop()
   ring(0)
+  showChoices([])
 }
 function signTag(text, cls = '') { const t = $('signTag'); t.textContent = text; t.className = `sign-tag ${cls}` }
 function ring(p) { $('ringArc').style.strokeDasharray = `${Math.round(p * 100)} 100` }
-let firedUntil = 0
-function onSignState(st) {
-  if (st.phase === 'starting') return signTag('Starting camera…')
-  if (st.phase === 'loading') return signTag('Loading signs…')
-  if (st.phase === 'error') { ring(0); return signTag(st.message, 'err') }
-  if (st.phase === 'off') { ring(0); return signTag('Signs off') }
+function camPhase(st) {
+  if (st.phase === 'starting') { signTag('Starting camera…'); return true }
+  if (st.phase === 'loading') { signTag('Loading signs…'); return true }
+  if (st.phase === 'error') { ring(0); signTag(st.message, 'err'); return true }
+  if (st.phase === 'off') { ring(0); signTag('Signs off'); return true }
+  return false
+}
+
+// quick hand shapes
+function onQuickState(st) {
+  if (camPhase(st)) return
   ring(st.progress)
   if (performance.now() < firedUntil) return
-  if (st.sign) signTag(st.fired ? `${signs.SIGNS[st.sign].label} · change sign to repeat` : signs.SIGNS[st.sign].label)
+  const S = cam.SIGNS
+  if (st.sign) signTag(st.fired ? `${S[st.sign].label} · change sign to repeat` : S[st.sign].label)
   else signTag(st.hand ? (st.raw && !st.raw.startsWith('None') ? `Not sure (${st.raw.replace('_', ' ')})` : 'Hand seen, hold a sign') : 'Show your hand')
 }
-function onSign(name, sign) {
+function onQuickSign(name, sign) {
   if (state.status !== 'in-progress') return
   const text = sign.say ?? lastSuggestions[0]
   if (!text) { signTag('No suggestion yet', 'err'); firedUntil = performance.now() + 1200; return }
@@ -451,14 +469,74 @@ function onSign(name, sign) {
   try { navigator.vibrate?.(30) } catch {}
   sayIt(text)
 }
+
+// ASL words
+function onAslState(st) {
+  if (camPhase(st)) return
+  ring(st.signing ? Math.min(1, st.ms / 1500) : 0)
+  if (performance.now() < firedUntil) return
+  if (st.signing) signTag('Reading your sign…', 'rec')
+  else signTag(st.visible ? 'Sign, then pause' : 'Raise your hands to sign')
+}
+async function onAslSegment(frames) {
+  if (state.status !== 'in-progress') return
+  signTag('Recognizing…'); firedUntil = performance.now() + 900
+  try {
+    const r = await api('/api/asl/classify', { frames, vocab: signMode() === 'asl-everyday' ? 'everyday' : 'all' })
+    if (!r.ok) { signTag(r.reason === 'too short' ? 'Too quick, sign again' : r.reason, 'err'); firedUntil = performance.now() + 1400; return }
+    if (r.unsure) {
+      showChoices(r.choices.map((c) => c.word))
+      signTag(`Not sure: ${r.choices.slice(0, 2).map((c) => c.word).join(' or ')}?`); firedUntil = performance.now() + 1800
+    } else {
+      addSignedWord(r.word)
+      signTag(`“${r.word}”`, 'fired'); firedUntil = performance.now() + 1400
+    }
+  } catch (e) { signTag('Sign server error', 'err'); firedUntil = performance.now() + 1400 }
+}
+function addSignedWord(w) {
+  const d = $('draft')
+  d.value = `${d.value.trim()} ${w}`.trim()
+  growDraft()
+  signedSincePhrase++
+  showChoices([])
+  try { navigator.vibrate?.(20) } catch {}
+}
+function showChoices(words) {
+  $('signedRow').hidden = !words.length
+  chips($('signed'), words, addSignedWord)
+  if (words.length) {
+    const x = document.createElement('button'); x.className = 'x'; x.textContent = 'None of these'
+    x.onclick = () => showChoices([]); $('signed').append(x)
+  }
+}
+function onAslPhraseEnd() {
+  if (!signedSincePhrase || !$('draft').value.trim()) return
+  signedSincePhrase = 0
+  signTag('Making a sentence…'); firedUntil = performance.now() + 1500
+  refreshSuggestions($('draft').value, true)
+}
+
 async function showSignList() {
-  try { signs ??= await import('/static/signs.js') } catch { return }
   const ul = $('signList'); ul.innerHTML = ''
-  for (const s of Object.values(signs.SIGNS)) {
-    const li = document.createElement('li')
-    const b = document.createElement('b'); b.textContent = s.label
-    const sp = document.createElement('span'); sp.textContent = s.say ? `“${s.say}”` : s.hint
-    li.append(b, sp); ul.append(li)
+  document.querySelector('#signsDlg .sign-cloud')?.remove()
+  if (signMode() === 'quick') {
+    $('signsHelp').textContent = 'Hold a sign steady for about a second. The ring fills, then TalkBridge says the reply out loud on the call.'
+    const m = await camModule().catch(() => null)
+    for (const s of Object.values(m?.SIGNS || {})) {
+      const li = document.createElement('li')
+      const b = document.createElement('b'); b.textContent = s.label
+      const sp = document.createElement('span'); sp.textContent = s.say ? `“${s.say}”` : s.hint
+      li.append(b, sp); ul.append(li)
+    }
+  } else {
+    aslInfo ??= await fetch('/api/asl/info').then((r) => r.json()).catch(() => null)
+    const all = signMode() === 'asl-all'
+    $('signsHelp').textContent = aslInfo?.ready
+      ? `Sign one word at a time in ASL, with a short pause between signs. Each sign is added to your reply. Drop your hands when you're done and TalkBridge turns the words into a sentence you can send with one tap. ${all ? `Listening for all ${aslInfo.signs.toLocaleString()} ASL signs; the ones below are the most reliable.` : 'Listening for these everyday signs only:'} Model: ${aslInfo.credit}.`
+      : `ASL model isn't available: ${aslInfo?.error || 'server unreachable'}`
+    const cloud = document.createElement('div'); cloud.className = 'sign-cloud'
+    for (const g of aslInfo?.everyday || []) { const sp = document.createElement('span'); sp.textContent = g.replace(/\./g, '').replace(/-/g, ' ').toLowerCase(); cloud.append(sp) }
+    ul.after(cloud)
   }
   $('signsDlg').showModal()
 }
@@ -527,7 +605,9 @@ $('acceptBtn').onclick = async () => {
   try { await api('/api/answer') } catch (e) { state.error = friendlyError(e.message); renderCall() }
 }
 $('declineBtn').onclick = () => { stopRinging(); api('/api/decline').catch(() => {}) }
-$('camBtn').onclick = () => (signs?.isOn() ? stopCam() : startCam())
+$('camBtn').onclick = () => (cam?.isOn() ? stopCam() : startCam())
+$('signMode').value = signMode()
+$('signMode').onchange = (e) => { store.set('tb.signmode', e.target.value); if (cam?.isOn()) { stopCam(); startCam() } }
 $('selfview').onclick = showSignList
 $('signsClose').onclick = () => $('signsDlg').close()
 $('autoCam').checked = store.get('tb.autocam', true)
