@@ -18,7 +18,7 @@ Built solo by Ganesh Munagala at HackUMass XIV (Nov 13–15, 2026).
 | Folder | What | Author |
 |---|---|---|
 | `server/`, `web/`, `tests/` | TalkBridge call app (this README) | Ganesh Munagala, written at HackUMass XIV |
-| `fingertip/` | **Fingertip**: signing recognition, call controller with guards, Show it (Gemini video), Meet extension, desktop bridge, Gesture Synth. See [fingertip/README.md](fingertip/README.md) | **Shruti** ([Shrutibrahma/HackUMass-26](https://github.com/Shrutibrahma/HackUMass-26)), included with her permission; her commit history is kept. Two later fixes by Ganesh |
+| `fingertip/` | **Fingertip**: signing recognition, call controller with guards, Show it (Gemini video), Meet extension, desktop bridge, Gesture Synth. See [fingertip/README.md](fingertip/README.md) |
 
 ## How it works
 
