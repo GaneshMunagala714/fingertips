@@ -2,65 +2,163 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
   <title>TalkBridge</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <header class="top">
-    <div class="brand">TalkBridge <span class="tag">Your hands. Your voice.</span></div>
-    <div class="right">
-      <span id="status" class="pill" role="status" aria-live="polite">Ready</span>
-      <span id="timer" class="timer" aria-label="Call duration"></span>
-      <label class="size">Caption size
-        <select id="size" aria-label="Caption size">
-          <option value="18">Small</option><option value="22" selected>Medium</option>
-          <option value="28">Large</option><option value="34">Extra large</option>
-        </select>
-      </label>
-    </div>
-  </header>
+  <!-- ============================================================ HOME (phone app) -->
+  <div id="home" class="screen home">
+    <header class="home-top">
+      <div class="brand">TalkBridge <span class="tag">Your hands. Your voice.</span></div>
+      <button id="settingsBtn" class="icon-btn" aria-label="Settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm7.4-2.5a7.6 7.6 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7.4 7.4 0 0 0-1.7-1L15 3.5h-4l-.4 2.5a7.4 7.4 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a7.4 7.4 0 0 0 1.7 1l.4 2.5h4l.4-2.5a7.4 7.4 0 0 0 1.7-1l2.4 1 2-3.4-2-1.6Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </button>
+    </header>
 
-  <main class="grid">
-    <section class="panel dial" aria-label="Dial">
-      <label for="to">Phone number</label>
-      <input id="to" type="tel" inputmode="tel" autocomplete="tel" placeholder="+1 413 555 0123">
-      <div class="row">
-        <button id="callBtn" class="primary">Call</button>
-        <button id="hangBtn" class="danger" disabled>Hang up</button>
+    <!-- Keypad -->
+    <section id="tab-keypad" class="tab" aria-label="Keypad">
+      <div class="dial-display">
+        <input id="to" type="tel" inputmode="tel" autocomplete="tel" aria-label="Phone number" placeholder="Enter a number">
+        <div id="toName" class="to-name" aria-live="polite"></div>
+        <button id="addFromKeypad" class="link-btn" hidden>Add to contacts</button>
       </div>
-      <p id="dialMsg" class="fine" role="alert"></p>
-      <div id="health" class="fine"></div>
+      <div class="keypad" id="keypad" role="group" aria-label="Number pad"></div>
+      <div class="keypad-actions">
+        <span></span>
+        <button id="callBtn" class="round call" aria-label="Call">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2Z" fill="currentColor"/></svg>
+        </button>
+        <button id="backspace" class="icon-btn" aria-label="Delete last digit" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Zm-4 4-5 6m0-6 5 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <p id="dialMsg" class="dial-msg" role="alert"></p>
     </section>
 
-    <section class="panel convo" aria-label="Conversation">
+    <!-- Contacts -->
+    <section id="tab-contacts" class="tab" aria-label="Contacts" hidden>
+      <div class="tab-head">
+        <h1>Contacts</h1>
+        <button id="newContactBtn" class="icon-btn" aria-label="New contact">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <input id="search" class="search" type="search" placeholder="Search" aria-label="Search contacts">
+      <ul id="contactList" class="list"></ul>
+    </section>
+
+    <!-- Recents -->
+    <section id="tab-recents" class="tab" aria-label="Recents" hidden>
+      <div class="tab-head">
+        <h1>Recents</h1>
+        <button id="clearRecents" class="link-btn">Clear</button>
+      </div>
+      <ul id="recentList" class="list"></ul>
+    </section>
+
+    <nav class="tabbar" aria-label="Sections">
+      <button data-tab="recents">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Recents</button>
+      <button data-tab="contacts">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8" fill="currentColor"/><path d="M4.5 20c.8-4 3.8-6 7.5-6s6.7 2 7.5 6" fill="currentColor"/></svg>
+        Contacts</button>
+      <button data-tab="keypad">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor"><circle cx="6" cy="5" r="1.9"/><circle cx="12" cy="5" r="1.9"/><circle cx="18" cy="5" r="1.9"/><circle cx="6" cy="11" r="1.9"/><circle cx="12" cy="11" r="1.9"/><circle cx="18" cy="11" r="1.9"/><circle cx="6" cy="17" r="1.9"/><circle cx="12" cy="17" r="1.9"/><circle cx="18" cy="17" r="1.9"/><circle cx="12" cy="22" r="1.6"/></g></svg>
+        Keypad</button>
+    </nav>
+  </div>
+
+  <!-- ============================================================ CALL SCREEN -->
+  <div id="callScreen" class="screen call-screen" hidden aria-label="Call">
+    <div class="caller" id="caller">
+      <div class="call-meta"><span class="dot" aria-hidden="true"></span> TalkBridge call · live captions</div>
+      <div id="avatar" class="avatar" aria-hidden="true"></div>
+      <h1 id="callName" class="call-name"></h1>
+      <div id="callSub" class="call-sub"></div>
+      <div id="status" class="call-status" role="status" aria-live="polite">calling…</div>
+    </div>
+
+    <section class="captions" aria-label="Conversation">
       <ol id="turns" class="turns" aria-live="polite"></ol>
       <div id="partial" class="partial" aria-live="off"></div>
     </section>
 
-    <section class="panel reply" aria-label="Your reply">
-      <div class="label">Quick replies</div>
-      <div id="quick" class="chips"></div>
-      <div class="label">Suggestions <span id="aiSrc" class="fine"></span></div>
-      <div id="sugs" class="chips"><span class="fine">Suggestions appear after the caller speaks.</span></div>
-      <label class="label" for="draft">Type a few words or a full reply</label>
-      <textarea id="draft" rows="3" placeholder="e.g. yes 8 works"></textarea>
-      <div class="row">
-        <button id="expandBtn">Make it a sentence</button>
-        <button id="sendBtn" class="primary">Say it ⏎</button>
+    <section class="composer" aria-label="Your reply">
+      <div id="quick" class="chips" aria-label="Quick replies"></div>
+      <div class="sug-row">
+        <span class="sug-label">Suggested <span id="aiSrc" class="fine"></span></span>
       </div>
-      <p class="fine">Nothing is spoken until you tap. Enter = Say it, Shift+Enter = new line.</p>
+      <div id="sugs" class="chips"><span class="fine">Suggestions appear after they speak.</span></div>
+      <div class="draft-row">
+        <textarea id="draft" rows="1" placeholder="Type a reply" aria-label="Your reply"></textarea>
+        <button id="expandBtn" class="pill-btn" title="Turn your words into a full sentence">Sentence</button>
+        <button id="sendBtn" class="send" aria-label="Say it">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m0 0-6 6m6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
     </section>
-  </main>
+
+    <div class="call-controls">
+      <button id="sizeBtn" class="ctl" aria-label="Caption size">
+        <span class="ctl-ico">Aa</span><span class="ctl-lbl" id="sizeLbl">Medium</span>
+      </button>
+      <button id="hangBtn" class="round end" aria-label="End call">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2Z" fill="currentColor" transform="rotate(135 12 12)"/></svg>
+      </button>
+      <button id="saveCallerBtn" class="ctl" aria-label="Save to contacts">
+        <span class="ctl-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="8.5" r="3.6" fill="currentColor"/><path d="M3 20c.8-4 3.6-6 7-6s6.2 2 7 6" fill="currentColor"/><path d="M19 7v6M16 10h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+        <span class="ctl-lbl">Save</span>
+      </button>
+    </div>
+
+    <div class="ended" id="ended" hidden>
+      <button id="callAgain" class="round call" aria-label="Call again">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2Z" fill="currentColor"/></svg>
+      </button>
+      <button id="closeCall" class="pill-btn">Done</button>
+    </div>
+  </div>
+
+  <!-- ============================================================ DIALOGS -->
+  <dialog id="contactDlg" aria-labelledby="contactTitle">
+    <form method="dialog" id="contactForm">
+      <h2 id="contactTitle">New contact</h2>
+      <label>Name<input id="cName" required autocomplete="name" placeholder="Mom"></label>
+      <label>Phone<input id="cNum" type="tel" required autocomplete="tel" placeholder="+1 413 555 0123"></label>
+      <p id="cErr" class="fine err" role="alert"></p>
+      <div class="row">
+        <button type="button" id="cDelete" class="pill-btn danger" hidden>Delete</button>
+        <span class="grow"></span>
+        <button type="button" id="cCancel" class="pill-btn">Cancel</button>
+        <button type="submit" id="cSave" class="pill-btn primary">Save</button>
+      </div>
+    </form>
+  </dialog>
 
   <dialog id="confirm" aria-labelledby="confirmTitle">
     <h2 id="confirmTitle">Say this?</h2>
     <p id="confirmText" class="big"></p>
     <p class="fine">It mentions money, an order or a booking.</p>
     <div class="row">
-      <button id="confirmYes" class="primary">Yes, say it</button>
-      <button id="confirmNo">Not yet</button>
+      <span class="grow"></span>
+      <button id="confirmNo" class="pill-btn">Not yet</button>
+      <button id="confirmYes" class="pill-btn primary">Yes, say it</button>
     </div>
+  </dialog>
+
+  <dialog id="settingsDlg" aria-labelledby="settingsTitle">
+    <h2 id="settingsTitle">Settings</h2>
+    <label>Caption size
+      <select id="size">
+        <option value="18">Small</option><option value="22" selected>Medium</option>
+        <option value="28">Large</option><option value="34">Extra large</option>
+      </select>
+    </label>
+    <div id="health" class="fine health"></div>
+    <div class="row"><span class="grow"></span><button id="settingsClose" class="pill-btn primary">Done</button></div>
   </dialog>
 
   <script src="/static/app.js"></script>
