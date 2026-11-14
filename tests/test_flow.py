@@ -76,3 +76,12 @@ def test_asl_classify(client):
     r = c.post("/api/asl/classify", json={"frames": [frame] * 20, "vocab": "everyday"}).json()
     assert r["ok"] and r["sign"] in info["everyday"] and len(r["choices"]) == 3
     assert c.post("/api/asl/classify", json={"frames": [frame] * 2}).json()["ok"] is False
+
+
+def test_asl_top200(client):
+    c, m = client
+    info = c.get("/api/asl/info").json()
+    assert len(info["top200"]) == 200 and "PHONE" in info["top200"] and "GOOD" not in info["top200"]
+    frame = {"pose": [[0.5, 0.5, 0.0]] * 33, "rh": [[0.45, 0.6, 0.0]] * 21, "lh": None}
+    r = c.post("/api/asl/classify", json={"frames": [frame] * 20, "vocab": "top200"}).json()
+    assert r["ok"] and r["sign"] in info["top200"]

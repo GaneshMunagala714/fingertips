@@ -1,0 +1,2638 @@
+{
+ "about": "Top 200 everyday ASL signs for phone calls. Chosen from ASL-LEX 2.0 subjective frequency (deaf raters), 6 published core-vocabulary lists, and phone-call vocabulary research; each measured on 8 ASL Citizen signers' clips with SignBart-ASL-2730 (model via Fingertip by Shruti). Clips may overlap the model's training data, so these are upper bounds, not accuracy on new signers. Built by eval_signs/.",
+ "measured": {
+  "clips": 1600,
+  "correct_within_200": 1422,
+  "accuracy_within_200": 0.889,
+  "accuracy_among_all_2730": 0.681,
+  "signs_8_of_8": 104,
+  "signs_6plus_of_8": 182
+ },
+ "signs": [
+  {
+   "rank": 1,
+   "gloss": "YOU",
+   "word": "you",
+   "aslex_freq": 6.889,
+   "core_lists": 4,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "WHO"
+   ]
+  },
+  {
+   "rank": 2,
+   "gloss": "W.H.A.T",
+   "word": "what",
+   "aslex_freq": 6.407,
+   "core_lists": 4,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 5,
+   "correct_among_all_2730": 4,
+   "often_confused_with": [
+    "CANCEL",
+    "DODO"
+   ]
+  },
+  {
+   "rank": 3,
+   "gloss": "WHY",
+   "word": "why",
+   "aslex_freq": 6.269,
+   "core_lists": 4,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 4,
+   "often_confused_with": [
+    "SICK",
+    "DOG"
+   ]
+  },
+  {
+   "rank": 4,
+   "gloss": "WHERE",
+   "word": "where",
+   "aslex_freq": 6.24,
+   "core_lists": 4,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 3,
+   "often_confused_with": [
+    "DEAF"
+   ]
+  },
+  {
+   "rank": 5,
+   "gloss": "HELP",
+   "word": "help",
+   "aslex_freq": 6.148,
+   "core_lists": 5,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 2,
+   "often_confused_with": []
+  },
+  {
+   "rank": 6,
+   "gloss": "FINISH",
+   "word": "finish",
+   "aslex_freq": 5.8,
+   "core_lists": 5,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 7,
+   "gloss": "ME",
+   "word": "me",
+   "aslex_freq": 6.76,
+   "core_lists": 3,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 4,
+   "correct_among_all_2730": 2,
+   "often_confused_with": [
+    "HEARING",
+    "HOSPITAL"
+   ]
+  },
+  {
+   "rank": 8,
+   "gloss": "THANK-YOU",
+   "word": "thank you",
+   "aslex_freq": 6.571,
+   "core_lists": 3,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 2,
+   "often_confused_with": [
+    "EAT",
+    "COOK"
+   ]
+  },
+  {
+   "rank": 9,
+   "gloss": "WHO",
+   "word": "who",
+   "aslex_freq": 6.233,
+   "core_lists": 3,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "MONTH",
+    "LATER"
+   ]
+  },
+  {
+   "rank": 10,
+   "gloss": "PLEASE",
+   "word": "please",
+   "aslex_freq": 6.16,
+   "core_lists": 3,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 4,
+   "often_confused_with": []
+  },
+  {
+   "rank": 11,
+   "gloss": "HOW",
+   "word": "how",
+   "aslex_freq": 5.815,
+   "core_lists": 3,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 6,
+   "often_confused_with": []
+  },
+  {
+   "rank": 12,
+   "gloss": "DEAF",
+   "word": "deaf",
+   "aslex_freq": 6.769,
+   "core_lists": 2,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 7,
+   "often_confused_with": []
+  },
+  {
+   "rank": 13,
+   "gloss": "NICE",
+   "word": "nice",
+   "aslex_freq": 5.692,
+   "core_lists": 3,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "COOK"
+   ]
+  },
+  {
+   "rank": 14,
+   "gloss": "SORRY",
+   "word": "sorry",
+   "aslex_freq": 5.633,
+   "core_lists": 3,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 3,
+   "often_confused_with": []
+  },
+  {
+   "rank": 15,
+   "gloss": "NOT",
+   "word": "not",
+   "aslex_freq": 5.6,
+   "core_lists": 3,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "THAT",
+    "FOLLOW"
+   ]
+  },
+  {
+   "rank": 16,
+   "gloss": "HELLO",
+   "word": "hello",
+   "aslex_freq": 6.519,
+   "core_lists": 2,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 5,
+   "often_confused_with": []
+  },
+  {
+   "rank": 17,
+   "gloss": "FINE",
+   "word": "fine",
+   "aslex_freq": 6.185,
+   "core_lists": 2,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "COOL"
+   ]
+  },
+  {
+   "rank": 18,
+   "gloss": "UNDERSTAND",
+   "word": "understand",
+   "aslex_freq": 6.1,
+   "core_lists": 2,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 19,
+   "gloss": "NIGHT",
+   "word": "night",
+   "aslex_freq": 6.556,
+   "core_lists": 3,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 4,
+   "often_confused_with": [
+    "CAN",
+    "HOSPITAL"
+   ]
+  },
+  {
+   "rank": 20,
+   "gloss": "NAME",
+   "word": "name",
+   "aslex_freq": 5.926,
+   "core_lists": 2,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 21,
+   "gloss": "SIGN",
+   "word": "sign",
+   "aslex_freq": 5.9,
+   "core_lists": 2,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "ABOUT"
+   ]
+  },
+  {
+   "rank": 22,
+   "gloss": "YES",
+   "word": "yes",
+   "aslex_freq": 6.885,
+   "core_lists": 1,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "THAT"
+   ]
+  },
+  {
+   "rank": 23,
+   "gloss": "KNOW",
+   "word": "know",
+   "aslex_freq": 5.767,
+   "core_lists": 2,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "WHY"
+   ]
+  },
+  {
+   "rank": 24,
+   "gloss": "OK",
+   "word": "okay",
+   "aslex_freq": 6.519,
+   "core_lists": 1,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 25,
+   "gloss": "NO",
+   "word": "no",
+   "aslex_freq": 6.433,
+   "core_lists": 1,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 4,
+   "often_confused_with": []
+  },
+  {
+   "rank": 26,
+   "gloss": "WRONG",
+   "word": "wrong",
+   "aslex_freq": 6.08,
+   "core_lists": 1,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 27,
+   "gloss": "RIGHT",
+   "word": "right",
+   "aslex_freq": 6.0,
+   "core_lists": 1,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 4,
+   "often_confused_with": [
+    "HOSPITAL"
+   ]
+  },
+  {
+   "rank": 28,
+   "gloss": "WAIT",
+   "word": "wait",
+   "aslex_freq": 5.88,
+   "core_lists": 1,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 2,
+   "often_confused_with": []
+  },
+  {
+   "rank": 29,
+   "gloss": "TODAY",
+   "word": "today",
+   "aslex_freq": 6.406,
+   "core_lists": 2,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "PLAY"
+   ]
+  },
+  {
+   "rank": 30,
+   "gloss": "WHICH",
+   "word": "which",
+   "aslex_freq": 5.8,
+   "core_lists": 1,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 5,
+   "often_confused_with": []
+  },
+  {
+   "rank": 31,
+   "gloss": "TOMORROW",
+   "word": "tomorrow",
+   "aslex_freq": 6.346,
+   "core_lists": 2,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 8,
+   "often_confused_with": [
+    "OTHER"
+   ]
+  },
+  {
+   "rank": 32,
+   "gloss": "WANT",
+   "word": "want",
+   "aslex_freq": 6.771,
+   "core_lists": 3,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 4,
+   "often_confused_with": [
+    "DODO"
+   ]
+  },
+  {
+   "rank": 33,
+   "gloss": "MORNING",
+   "word": "morning",
+   "aslex_freq": 6.1,
+   "core_lists": 2,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 4,
+   "correct_among_all_2730": 4,
+   "often_confused_with": [
+    "BREAKFAST",
+    "HOSPITAL"
+   ]
+  },
+  {
+   "rank": 34,
+   "gloss": "MONTH",
+   "word": "month",
+   "aslex_freq": 6.097,
+   "core_lists": 2,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 4,
+   "correct_among_all_2730": 3,
+   "often_confused_with": [
+    "ABOUT",
+    "FOLLOW"
+   ]
+  },
+  {
+   "rank": 35,
+   "gloss": "WEEK",
+   "word": "week",
+   "aslex_freq": 6.04,
+   "core_lists": 2,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 8,
+   "often_confused_with": [
+    "CANCEL"
+   ]
+  },
+  {
+   "rank": 36,
+   "gloss": "GOAHEAD",
+   "word": "go ahead",
+   "aslex_freq": 6.067,
+   "core_lists": 0,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 7,
+   "often_confused_with": [
+    "DOG"
+   ]
+  },
+  {
+   "rank": 37,
+   "gloss": "BYE",
+   "word": "bye",
+   "aslex_freq": 6.057,
+   "core_lists": 0,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 3,
+   "often_confused_with": [
+    "BOY"
+   ]
+  },
+  {
+   "rank": 38,
+   "gloss": "MAYBE",
+   "word": "maybe",
+   "aslex_freq": 6.04,
+   "core_lists": 0,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "WHAT"
+   ]
+  },
+  {
+   "rank": 39,
+   "gloss": "GO",
+   "word": "go",
+   "aslex_freq": 6.033,
+   "core_lists": 3,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 2,
+   "often_confused_with": [
+    "ABOUT"
+   ]
+  },
+  {
+   "rank": 40,
+   "gloss": "CAN",
+   "word": "can",
+   "aslex_freq": 6.0,
+   "core_lists": 3,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 5,
+   "often_confused_with": []
+  },
+  {
+   "rank": 41,
+   "gloss": "TIME",
+   "word": "time",
+   "aslex_freq": 6.375,
+   "core_lists": 1,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 7,
+   "often_confused_with": []
+  },
+  {
+   "rank": 42,
+   "gloss": "NUMBERS",
+   "word": "number",
+   "aslex_freq": 5.7,
+   "core_lists": 0,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 7,
+   "often_confused_with": [
+    "EXPLANATION"
+   ]
+  },
+  {
+   "rank": 43,
+   "gloss": "MORE",
+   "word": "more",
+   "aslex_freq": 6.458,
+   "core_lists": 4,
+   "phone_priority": 0.4,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 6,
+   "often_confused_with": []
+  },
+  {
+   "rank": 44,
+   "gloss": "WORK",
+   "word": "work",
+   "aslex_freq": 6.739,
+   "core_lists": 2,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 45,
+   "gloss": "PHONE",
+   "word": "phone",
+   "aslex_freq": 5.481,
+   "core_lists": 0,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 46,
+   "gloss": "HOME",
+   "word": "home",
+   "aslex_freq": 6.48,
+   "core_lists": 2,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "EAT"
+   ]
+  },
+  {
+   "rank": 47,
+   "gloss": "SHOP",
+   "word": "shop",
+   "aslex_freq": 6.231,
+   "core_lists": 2,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 4,
+   "correct_among_all_2730": 4,
+   "often_confused_with": [
+    "BUY",
+    "HOSPITAL"
+   ]
+  },
+  {
+   "rank": 48,
+   "gloss": "HAVE",
+   "word": "have",
+   "aslex_freq": 6.125,
+   "core_lists": 2,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 5,
+   "often_confused_with": []
+  },
+  {
+   "rank": 49,
+   "gloss": "SOON",
+   "word": "soon",
+   "aslex_freq": 6.259,
+   "core_lists": 0,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "EAT"
+   ]
+  },
+  {
+   "rank": 50,
+   "gloss": "GET",
+   "word": "get",
+   "aslex_freq": 5.76,
+   "core_lists": 2,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 2,
+   "often_confused_with": [
+    "HOSPITAL"
+   ]
+  },
+  {
+   "rank": 51,
+   "gloss": "ONE",
+   "word": "one",
+   "aslex_freq": 6.148,
+   "core_lists": 0,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 0,
+   "often_confused_with": []
+  },
+  {
+   "rank": 52,
+   "gloss": "SEE",
+   "word": "see",
+   "aslex_freq": 6.333,
+   "core_lists": 3,
+   "phone_priority": 0.4,
+   "clips": 8,
+   "correct_within_200": 5,
+   "correct_among_all_2730": 4,
+   "often_confused_with": [
+    "UNDERSTAND",
+    "LETMESEE"
+   ]
+  },
+  {
+   "rank": 53,
+   "gloss": "THREE",
+   "word": "three",
+   "aslex_freq": 6.08,
+   "core_lists": 0,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 3,
+   "often_confused_with": []
+  },
+  {
+   "rank": 54,
+   "gloss": "YESTERDAY",
+   "word": "yesterday",
+   "aslex_freq": 5.889,
+   "core_lists": 0,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "THAT"
+   ]
+  },
+  {
+   "rank": 55,
+   "gloss": "ELEVEN",
+   "word": "eleven",
+   "aslex_freq": 5.857,
+   "core_lists": 0,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 2,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "UNDERSTAND"
+   ]
+  },
+  {
+   "rank": 56,
+   "gloss": "AFTERNOON",
+   "word": "afternoon",
+   "aslex_freq": 5.8,
+   "core_lists": 0,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "YOUR"
+   ]
+  },
+  {
+   "rank": 57,
+   "gloss": "CHANGE",
+   "word": "change",
+   "aslex_freq": 6.371,
+   "core_lists": 1,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 58,
+   "gloss": "BETTER",
+   "word": "better",
+   "aslex_freq": 6.37,
+   "core_lists": 1,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 6,
+   "often_confused_with": []
+  },
+  {
+   "rank": 59,
+   "gloss": "READY",
+   "word": "ready",
+   "aslex_freq": 6.37,
+   "core_lists": 1,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 60,
+   "gloss": "STOP",
+   "word": "stop",
+   "aslex_freq": 5.704,
+   "core_lists": 3,
+   "phone_priority": 0.4,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "COOK",
+    "BREAKFAST"
+   ]
+  },
+  {
+   "rank": 61,
+   "gloss": "YEAR",
+   "word": "year",
+   "aslex_freq": 5.44,
+   "core_lists": 0,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 62,
+   "gloss": "FAMILY",
+   "word": "family",
+   "aslex_freq": 5.967,
+   "core_lists": 1,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 63,
+   "gloss": "TIRED",
+   "word": "tired",
+   "aslex_freq": 6.538,
+   "core_lists": 2,
+   "phone_priority": 0.4,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 7,
+   "often_confused_with": []
+  },
+  {
+   "rank": 64,
+   "gloss": "TELL",
+   "word": "tell",
+   "aslex_freq": 5.933,
+   "core_lists": 1,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 65,
+   "gloss": "GIVE",
+   "word": "give",
+   "aslex_freq": 5.667,
+   "core_lists": 1,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 6,
+   "often_confused_with": []
+  },
+  {
+   "rank": 66,
+   "gloss": "NEED",
+   "word": "need",
+   "aslex_freq": 5.4,
+   "core_lists": 1,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 5,
+   "often_confused_with": []
+  },
+  {
+   "rank": 67,
+   "gloss": "THINK",
+   "word": "think",
+   "aslex_freq": 5.867,
+   "core_lists": 2,
+   "phone_priority": 0.4,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 0,
+   "often_confused_with": [
+    "HEARING"
+   ]
+  },
+  {
+   "rank": 68,
+   "gloss": "HAPPY",
+   "word": "happy",
+   "aslex_freq": 5.7,
+   "core_lists": 2,
+   "phone_priority": 0.4,
+   "clips": 8,
+   "correct_within_200": 4,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "WOMAN",
+    "DOG"
+   ]
+  },
+  {
+   "rank": 69,
+   "gloss": "RESTAURANT",
+   "word": "restaurant",
+   "aslex_freq": 5.889,
+   "core_lists": 0,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 5,
+   "often_confused_with": []
+  },
+  {
+   "rank": 70,
+   "gloss": "POLICEMAN",
+   "word": "police",
+   "aslex_freq": 5.88,
+   "core_lists": 0,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 71,
+   "gloss": "SLOW",
+   "word": "slow",
+   "aslex_freq": null,
+   "core_lists": 1,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 7,
+   "often_confused_with": []
+  },
+  {
+   "rank": 72,
+   "gloss": "WATER",
+   "word": "water",
+   "aslex_freq": 6.963,
+   "core_lists": 3,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "FINE"
+   ]
+  },
+  {
+   "rank": 73,
+   "gloss": "REMEMBER",
+   "word": "remember",
+   "aslex_freq": 5.7,
+   "core_lists": 1,
+   "phone_priority": 0.4,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "THAT",
+    "HEARING"
+   ]
+  },
+  {
+   "rank": 74,
+   "gloss": "MOTHER",
+   "word": "mother",
+   "aslex_freq": 6.6,
+   "core_lists": 3,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 7,
+   "often_confused_with": []
+  },
+  {
+   "rank": 75,
+   "gloss": "SLEEP",
+   "word": "sleep",
+   "aslex_freq": 6.6,
+   "core_lists": 3,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "DOG"
+   ]
+  },
+  {
+   "rank": 76,
+   "gloss": "LATER",
+   "word": "later",
+   "aslex_freq": null,
+   "core_lists": 2,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 7,
+   "often_confused_with": []
+  },
+  {
+   "rank": 77,
+   "gloss": "DAY",
+   "word": "day",
+   "aslex_freq": null,
+   "core_lists": 2,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 78,
+   "gloss": "FATHER",
+   "word": "father",
+   "aslex_freq": 6.36,
+   "core_lists": 3,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 4,
+   "often_confused_with": []
+  },
+  {
+   "rank": 79,
+   "gloss": "DRINK",
+   "word": "drink",
+   "aslex_freq": 6.348,
+   "core_lists": 3,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 8,
+   "often_confused_with": [
+    "THAT"
+   ]
+  },
+  {
+   "rank": 80,
+   "gloss": "MY",
+   "word": "my",
+   "aslex_freq": 6.31,
+   "core_lists": 3,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 4,
+   "correct_among_all_2730": 2,
+   "often_confused_with": [
+    "WOMAN",
+    "PLEASE"
+   ]
+  },
+  {
+   "rank": 81,
+   "gloss": "HOT",
+   "word": "hot",
+   "aslex_freq": 6.296,
+   "core_lists": 3,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 5,
+   "often_confused_with": []
+  },
+  {
+   "rank": 82,
+   "gloss": "LIKE",
+   "word": "like",
+   "aslex_freq": 6.222,
+   "core_lists": 3,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "THAT",
+    "WOMAN"
+   ]
+  },
+  {
+   "rank": 83,
+   "gloss": "CALL",
+   "word": "call",
+   "aslex_freq": null,
+   "core_lists": 0,
+   "phone_priority": 1.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 7,
+   "often_confused_with": [
+    "OTHER"
+   ]
+  },
+  {
+   "rank": 84,
+   "gloss": "EAT",
+   "word": "eat",
+   "aslex_freq": 6.84,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 7,
+   "often_confused_with": []
+  },
+  {
+   "rank": 85,
+   "gloss": "HURT",
+   "word": "hurt",
+   "aslex_freq": null,
+   "core_lists": 3,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 4,
+   "often_confused_with": [
+    "ABOUT"
+   ]
+  },
+  {
+   "rank": 86,
+   "gloss": "BATHROOM",
+   "word": "bathroom",
+   "aslex_freq": 6.556,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 1,
+   "often_confused_with": []
+  },
+  {
+   "rank": 87,
+   "gloss": "CAR",
+   "word": "car",
+   "aslex_freq": 6.556,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 5,
+   "often_confused_with": []
+  },
+  {
+   "rank": 88,
+   "gloss": "LOVE",
+   "word": "love",
+   "aslex_freq": 6.556,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 5,
+   "correct_among_all_2730": 3,
+   "often_confused_with": [
+    "HUG"
+   ]
+  },
+  {
+   "rank": 89,
+   "gloss": "BAD",
+   "word": "bad",
+   "aslex_freq": 5.5,
+   "core_lists": 3,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "WOMAN"
+   ]
+  },
+  {
+   "rank": 90,
+   "gloss": "HE",
+   "word": "he",
+   "aslex_freq": 6.407,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 5,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "THERE",
+    "POINTINDEX"
+   ]
+  },
+  {
+   "rank": 91,
+   "gloss": "SCHOOL",
+   "word": "school",
+   "aslex_freq": 6.4,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 5,
+   "correct_among_all_2730": 2,
+   "often_confused_with": [
+    "NICE",
+    "FINE"
+   ]
+  },
+  {
+   "rank": 92,
+   "gloss": "EARLY",
+   "word": "early",
+   "aslex_freq": null,
+   "core_lists": 1,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 1,
+   "often_confused_with": []
+  },
+  {
+   "rank": 93,
+   "gloss": "LAST",
+   "word": "last",
+   "aslex_freq": null,
+   "core_lists": 1,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 7,
+   "often_confused_with": []
+  },
+  {
+   "rank": 94,
+   "gloss": "LATE",
+   "word": "late",
+   "aslex_freq": null,
+   "core_lists": 1,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 2,
+   "often_confused_with": []
+  },
+  {
+   "rank": 95,
+   "gloss": "NEXT",
+   "word": "next",
+   "aslex_freq": null,
+   "core_lists": 1,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 4,
+   "often_confused_with": [
+    "DOG"
+   ]
+  },
+  {
+   "rank": 96,
+   "gloss": "DOG",
+   "word": "dog",
+   "aslex_freq": 6.258,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "MILK"
+   ]
+  },
+  {
+   "rank": 97,
+   "gloss": "MILK",
+   "word": "milk",
+   "aslex_freq": 6.233,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "WHICH"
+   ]
+  },
+  {
+   "rank": 98,
+   "gloss": "YOUR",
+   "word": "your",
+   "aslex_freq": 6.222,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 5,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "MOTHER",
+    "POLICEMAN"
+   ]
+  },
+  {
+   "rank": 99,
+   "gloss": "WILL",
+   "word": "will",
+   "aslex_freq": 6.185,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 1,
+   "often_confused_with": [
+    "MOTHER"
+   ]
+  },
+  {
+   "rank": 100,
+   "gloss": "BOY",
+   "word": "boy",
+   "aslex_freq": 6.16,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 101,
+   "gloss": "HEARING",
+   "word": "hearing",
+   "aslex_freq": 5.857,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 102,
+   "gloss": "DRIVE",
+   "word": "drive",
+   "aslex_freq": 5.813,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 4,
+   "correct_among_all_2730": 4,
+   "often_confused_with": [
+    "CAR",
+    "PLAY"
+   ]
+  },
+  {
+   "rank": 103,
+   "gloss": "WASH",
+   "word": "wash",
+   "aslex_freq": 5.8,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 3,
+   "often_confused_with": []
+  },
+  {
+   "rank": 104,
+   "gloss": "COME",
+   "word": "come",
+   "aslex_freq": null,
+   "core_lists": 2,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "OTHER"
+   ]
+  },
+  {
+   "rank": 105,
+   "gloss": "HERE",
+   "word": "here",
+   "aslex_freq": 5.704,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 7,
+   "often_confused_with": []
+  },
+  {
+   "rank": 106,
+   "gloss": "SOME",
+   "word": "some",
+   "aslex_freq": 5.625,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "BREAKFAST"
+   ]
+  },
+  {
+   "rank": 107,
+   "gloss": "MAKE",
+   "word": "make",
+   "aslex_freq": 5.567,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 2,
+   "often_confused_with": []
+  },
+  {
+   "rank": 108,
+   "gloss": "DIFFERENT",
+   "word": "different",
+   "aslex_freq": 5.517,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 7,
+   "often_confused_with": []
+  },
+  {
+   "rank": 109,
+   "gloss": "THAT",
+   "word": "that",
+   "aslex_freq": 5.5,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 110,
+   "gloss": "BROTHER",
+   "word": "brother",
+   "aslex_freq": 5.48,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 6,
+   "often_confused_with": []
+  },
+  {
+   "rank": 111,
+   "gloss": "MEET",
+   "word": "meet",
+   "aslex_freq": 5.423,
+   "core_lists": 2,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "FOLLOW",
+    "DEAF"
+   ]
+  },
+  {
+   "rank": 112,
+   "gloss": "ZERO",
+   "word": "zero",
+   "aslex_freq": null,
+   "core_lists": 0,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 3,
+   "often_confused_with": [
+    "BOY"
+   ]
+  },
+  {
+   "rank": 113,
+   "gloss": "SIX",
+   "word": "six",
+   "aslex_freq": null,
+   "core_lists": 0,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "MOTHER"
+   ]
+  },
+  {
+   "rank": 114,
+   "gloss": "SEVEN",
+   "word": "seven",
+   "aslex_freq": null,
+   "core_lists": 0,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 115,
+   "gloss": "EIGHT",
+   "word": "eight",
+   "aslex_freq": null,
+   "core_lists": 0,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 116,
+   "gloss": "NINE",
+   "word": "nine",
+   "aslex_freq": null,
+   "core_lists": 0,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 4,
+   "often_confused_with": []
+  },
+  {
+   "rank": 117,
+   "gloss": "HUNDRED",
+   "word": "hundred",
+   "aslex_freq": null,
+   "core_lists": 0,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 118,
+   "gloss": "DATE",
+   "word": "date",
+   "aslex_freq": null,
+   "core_lists": 0,
+   "phone_priority": 0.8,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 119,
+   "gloss": "READ",
+   "word": "read",
+   "aslex_freq": 6.387,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 6,
+   "often_confused_with": []
+  },
+  {
+   "rank": 120,
+   "gloss": "NOTHING",
+   "word": "nothing",
+   "aslex_freq": 6.32,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 4,
+   "often_confused_with": [
+    "EXPLANATION"
+   ]
+  },
+  {
+   "rank": 121,
+   "gloss": "LEARN",
+   "word": "learn",
+   "aslex_freq": 6.2,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "HOSPITAL"
+   ]
+  },
+  {
+   "rank": 122,
+   "gloss": "EXCUSE",
+   "word": "excuse me",
+   "aslex_freq": null,
+   "core_lists": 3,
+   "phone_priority": 0.4,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 123,
+   "gloss": "BRING",
+   "word": "bring",
+   "aslex_freq": 6.185,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 4,
+   "often_confused_with": []
+  },
+  {
+   "rank": 124,
+   "gloss": "AGAIN",
+   "word": "again",
+   "aslex_freq": 6.067,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 125,
+   "gloss": "PEOPLE",
+   "word": "people",
+   "aslex_freq": 6.0,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "GO"
+   ]
+  },
+  {
+   "rank": 126,
+   "gloss": "PLAY",
+   "word": "play",
+   "aslex_freq": 5.967,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 5,
+   "often_confused_with": []
+  },
+  {
+   "rank": 127,
+   "gloss": "ILOVEYOU",
+   "word": "I love you",
+   "aslex_freq": 6.889,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 4,
+   "often_confused_with": []
+  },
+  {
+   "rank": 128,
+   "gloss": "STAY",
+   "word": "stay",
+   "aslex_freq": 5.815,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "THAT"
+   ]
+  },
+  {
+   "rank": 129,
+   "gloss": "EMAIL",
+   "word": "email",
+   "aslex_freq": null,
+   "core_lists": 1,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 130,
+   "gloss": "HARD",
+   "word": "hard",
+   "aslex_freq": 5.793,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 4,
+   "often_confused_with": []
+  },
+  {
+   "rank": 131,
+   "gloss": "MAN",
+   "word": "man",
+   "aslex_freq": 5.75,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 8,
+   "often_confused_with": [
+    "WOMAN"
+   ]
+  },
+  {
+   "rank": 132,
+   "gloss": "BOOK",
+   "word": "book",
+   "aslex_freq": 6.677,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 3,
+   "often_confused_with": [
+    "CLOSE"
+   ]
+  },
+  {
+   "rank": 133,
+   "gloss": "MOST",
+   "word": "most",
+   "aslex_freq": 5.657,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "W.H.A.T",
+    "WHICH"
+   ]
+  },
+  {
+   "rank": 134,
+   "gloss": "PLAN",
+   "word": "plan",
+   "aslex_freq": 5.633,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 4,
+   "often_confused_with": [
+    "SLEEP"
+   ]
+  },
+  {
+   "rank": 135,
+   "gloss": "SIT",
+   "word": "sit",
+   "aslex_freq": 5.615,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 3,
+   "often_confused_with": [
+    "FUN"
+   ]
+  },
+  {
+   "rank": 136,
+   "gloss": "TEACH",
+   "word": "teach",
+   "aslex_freq": 6.6,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "EXPLANATION",
+    "DOG"
+   ]
+  },
+  {
+   "rank": 137,
+   "gloss": "WRITE",
+   "word": "write",
+   "aslex_freq": 5.593,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 5,
+   "often_confused_with": []
+  },
+  {
+   "rank": 138,
+   "gloss": "BUY",
+   "word": "buy",
+   "aslex_freq": 5.577,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 6,
+   "often_confused_with": []
+  },
+  {
+   "rank": 139,
+   "gloss": "CLOSE",
+   "word": "close",
+   "aslex_freq": 5.577,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 140,
+   "gloss": "COLOR",
+   "word": "color",
+   "aslex_freq": 5.533,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 0,
+   "often_confused_with": []
+  },
+  {
+   "rank": 141,
+   "gloss": "LOOKFOR",
+   "word": "look for",
+   "aslex_freq": 5.52,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 142,
+   "gloss": "OTHER",
+   "word": "other",
+   "aslex_freq": 5.5,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 7,
+   "often_confused_with": [
+    "HOSPITAL"
+   ]
+  },
+  {
+   "rank": 143,
+   "gloss": "LETMESEE",
+   "word": "let me see",
+   "aslex_freq": 6.486,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 5,
+   "often_confused_with": []
+  },
+  {
+   "rank": 144,
+   "gloss": "FOLLOW",
+   "word": "follow",
+   "aslex_freq": 5.481,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 6,
+   "often_confused_with": []
+  },
+  {
+   "rank": 145,
+   "gloss": "ABOUT",
+   "word": "about",
+   "aslex_freq": 5.48,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 7,
+   "often_confused_with": [
+    "EXPLANATION",
+    "POLICEMAN"
+   ]
+  },
+  {
+   "rank": 146,
+   "gloss": "MANY",
+   "word": "many",
+   "aslex_freq": 5.423,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 7,
+   "often_confused_with": []
+  },
+  {
+   "rank": 147,
+   "gloss": "DODO",
+   "word": "do what",
+   "aslex_freq": 6.4,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 148,
+   "gloss": "REST",
+   "word": "rest",
+   "aslex_freq": 5.375,
+   "core_lists": 1,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 0,
+   "often_confused_with": []
+  },
+  {
+   "rank": 149,
+   "gloss": "DOOR",
+   "word": "door",
+   "aslex_freq": 6.32,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 150,
+   "gloss": "FRIDAY",
+   "word": "friday",
+   "aslex_freq": 6.32,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 5,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "MOTHER",
+    "EAT"
+   ]
+  },
+  {
+   "rank": 151,
+   "gloss": "BED",
+   "word": "bed",
+   "aslex_freq": 6.28,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 7,
+   "often_confused_with": [
+    "BREAKFAST",
+    "CLOSE"
+   ]
+  },
+  {
+   "rank": 152,
+   "gloss": "TECHNOLOGY",
+   "word": "technology",
+   "aslex_freq": 6.2,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "STOP",
+    "FINE"
+   ]
+  },
+  {
+   "rank": 153,
+   "gloss": "INTERNET",
+   "word": "internet",
+   "aslex_freq": 6.167,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "EXPLANATION"
+   ]
+  },
+  {
+   "rank": 154,
+   "gloss": "PET",
+   "word": "pet",
+   "aslex_freq": 6.167,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 4,
+   "often_confused_with": [
+    "NIGHT",
+    "DEAF"
+   ]
+  },
+  {
+   "rank": 155,
+   "gloss": "INTERPRETER",
+   "word": "interpreter",
+   "aslex_freq": 6.148,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 4,
+   "often_confused_with": [
+    "EXPLANATION"
+   ]
+  },
+  {
+   "rank": 156,
+   "gloss": "HUG",
+   "word": "hug",
+   "aslex_freq": 6.148,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 4,
+   "often_confused_with": [
+    "LOVE",
+    "MORE"
+   ]
+  },
+  {
+   "rank": 157,
+   "gloss": "THINKPONDER",
+   "word": "think about",
+   "aslex_freq": 6.148,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 7,
+   "often_confused_with": [
+    "EAT"
+   ]
+  },
+  {
+   "rank": 158,
+   "gloss": "DONTKNOW",
+   "word": "don't know",
+   "aslex_freq": 6.133,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 159,
+   "gloss": "WALK",
+   "word": "walk",
+   "aslex_freq": 6.111,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 6,
+   "often_confused_with": []
+  },
+  {
+   "rank": 160,
+   "gloss": "DONTLIKE",
+   "word": "don't like",
+   "aslex_freq": 6.111,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "POLICEMAN"
+   ]
+  },
+  {
+   "rank": 161,
+   "gloss": "WOMAN",
+   "word": "woman",
+   "aslex_freq": 6.111,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "CLOSE",
+    "NIGHT"
+   ]
+  },
+  {
+   "rank": 162,
+   "gloss": "CITY",
+   "word": "city",
+   "aslex_freq": 6.083,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 7,
+   "often_confused_with": []
+  },
+  {
+   "rank": 163,
+   "gloss": "POINTINDEX",
+   "word": "that",
+   "aslex_freq": 6.083,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 7,
+   "often_confused_with": []
+  },
+  {
+   "rank": 164,
+   "gloss": "GAS",
+   "word": "gas",
+   "aslex_freq": 6.08,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 7,
+   "often_confused_with": []
+  },
+  {
+   "rank": 165,
+   "gloss": "COOK",
+   "word": "cook",
+   "aslex_freq": 6.077,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 6,
+   "often_confused_with": []
+  },
+  {
+   "rank": 166,
+   "gloss": "TEACHER",
+   "word": "teacher",
+   "aslex_freq": 6.074,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 167,
+   "gloss": "DOESNTMATTER",
+   "word": "doesn't matter",
+   "aslex_freq": 6.074,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 3,
+   "often_confused_with": [
+    "SHOP"
+   ]
+  },
+  {
+   "rank": 168,
+   "gloss": "TV",
+   "word": "TV",
+   "aslex_freq": 6.067,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 169,
+   "gloss": "YAY",
+   "word": "yay",
+   "aslex_freq": 6.067,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 7,
+   "often_confused_with": []
+  },
+  {
+   "rank": 170,
+   "gloss": "COOL",
+   "word": "cool",
+   "aslex_freq": 6.037,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "FINE"
+   ]
+  },
+  {
+   "rank": 171,
+   "gloss": "BREAKFAST",
+   "word": "breakfast",
+   "aslex_freq": 6.037,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 3,
+   "correct_among_all_2730": 2,
+   "often_confused_with": [
+    "EAT",
+    "FINE"
+   ]
+  },
+  {
+   "rank": 172,
+   "gloss": "WE",
+   "word": "we",
+   "aslex_freq": 6.037,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "HEARING"
+   ]
+  },
+  {
+   "rank": 173,
+   "gloss": "EXCITED",
+   "word": "excited",
+   "aslex_freq": 6.036,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 174,
+   "gloss": "DONTWANT",
+   "word": "don't want",
+   "aslex_freq": 6.031,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 6,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "FINISH"
+   ]
+  },
+  {
+   "rank": 175,
+   "gloss": "TABLE",
+   "word": "table",
+   "aslex_freq": 6.0,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "HOSPITAL"
+   ]
+  },
+  {
+   "rank": 176,
+   "gloss": "FUN",
+   "word": "fun",
+   "aslex_freq": 5.969,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 3,
+   "often_confused_with": [
+    "HOSPITAL"
+   ]
+  },
+  {
+   "rank": 177,
+   "gloss": "EXPLANATION",
+   "word": "explanation",
+   "aslex_freq": 5.967,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 4,
+   "often_confused_with": []
+  },
+  {
+   "rank": 178,
+   "gloss": "THERE",
+   "word": "there",
+   "aslex_freq": 5.963,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 179,
+   "gloss": "SUPPORT",
+   "word": "support",
+   "aslex_freq": 5.963,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 5,
+   "often_confused_with": []
+  },
+  {
+   "rank": 180,
+   "gloss": "LONG",
+   "word": "long",
+   "aslex_freq": 5.963,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 181,
+   "gloss": "TOOTHBRUSH-CA",
+   "word": "toothbrush ca",
+   "aslex_freq": 5.96,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "HEARING"
+   ]
+  },
+  {
+   "rank": 182,
+   "gloss": "EVERYDAY",
+   "word": "everyday",
+   "aslex_freq": 5.943,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 6,
+   "often_confused_with": []
+  },
+  {
+   "rank": 183,
+   "gloss": "CHEAP",
+   "word": "cheap",
+   "aslex_freq": 5.926,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 6,
+   "often_confused_with": []
+  },
+  {
+   "rank": 184,
+   "gloss": "BELIEVE",
+   "word": "believe",
+   "aslex_freq": 5.926,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 3,
+   "often_confused_with": []
+  },
+  {
+   "rank": 185,
+   "gloss": "IF",
+   "word": "if",
+   "aslex_freq": 5.926,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 1,
+   "often_confused_with": []
+  },
+  {
+   "rank": 186,
+   "gloss": "CALENDAR",
+   "word": "calendar",
+   "aslex_freq": 5.92,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  },
+  {
+   "rank": 187,
+   "gloss": "LISTEN",
+   "word": "listen",
+   "aslex_freq": 5.889,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 5,
+   "often_confused_with": []
+  },
+  {
+   "rank": 188,
+   "gloss": "MONDAY",
+   "word": "monday",
+   "aslex_freq": 5.69,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 5,
+   "correct_among_all_2730": 5,
+   "often_confused_with": [
+    "EAT",
+    "WEDNESDAY"
+   ]
+  },
+  {
+   "rank": 189,
+   "gloss": "TUESDAY",
+   "word": "tuesday",
+   "aslex_freq": 5.552,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 7,
+   "often_confused_with": []
+  },
+  {
+   "rank": 190,
+   "gloss": "WEDNESDAY",
+   "word": "wednesday",
+   "aslex_freq": 5.56,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "SIX"
+   ]
+  },
+  {
+   "rank": 191,
+   "gloss": "THURSDAY",
+   "word": "thursday",
+   "aslex_freq": null,
+   "core_lists": 0,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 5,
+   "often_confused_with": []
+  },
+  {
+   "rank": 192,
+   "gloss": "SATURDAY",
+   "word": "saturday",
+   "aslex_freq": 5.889,
+   "core_lists": 0,
+   "phone_priority": 0.0,
+   "clips": 8,
+   "correct_within_200": 3,
+   "correct_among_all_2730": 4,
+   "often_confused_with": [
+    "EAT",
+    "TUESDAY"
+   ]
+  },
+  {
+   "rank": 193,
+   "gloss": "SUNDAY",
+   "word": "sunday",
+   "aslex_freq": null,
+   "core_lists": 0,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 6,
+   "often_confused_with": []
+  },
+  {
+   "rank": 194,
+   "gloss": "DOCTOR",
+   "word": "doctor",
+   "aslex_freq": null,
+   "core_lists": 0,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 6,
+   "often_confused_with": [
+    "NIGHT"
+   ]
+  },
+  {
+   "rank": 195,
+   "gloss": "APPOINTMENT",
+   "word": "appointment",
+   "aslex_freq": null,
+   "core_lists": 0,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 7,
+   "often_confused_with": [
+    "SLOW"
+   ]
+  },
+  {
+   "rank": 196,
+   "gloss": "CANCEL",
+   "word": "cancel",
+   "aslex_freq": null,
+   "core_lists": 0,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 6,
+   "often_confused_with": []
+  },
+  {
+   "rank": 197,
+   "gloss": "PAY",
+   "word": "pay",
+   "aslex_freq": null,
+   "core_lists": 0,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 6,
+   "often_confused_with": []
+  },
+  {
+   "rank": 198,
+   "gloss": "HOSPITAL",
+   "word": "hospital",
+   "aslex_freq": null,
+   "core_lists": 0,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 7,
+   "often_confused_with": []
+  },
+  {
+   "rank": 199,
+   "gloss": "MEDICINE",
+   "word": "medicine",
+   "aslex_freq": null,
+   "core_lists": 0,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 7,
+   "correct_among_all_2730": 2,
+   "often_confused_with": [
+    "INTERNET"
+   ]
+  },
+  {
+   "rank": 200,
+   "gloss": "SICK",
+   "word": "sick",
+   "aslex_freq": null,
+   "core_lists": 0,
+   "phone_priority": 0.6,
+   "clips": 8,
+   "correct_within_200": 8,
+   "correct_among_all_2730": 8,
+   "often_confused_with": []
+  }
+ ]
+}

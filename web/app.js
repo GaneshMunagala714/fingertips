@@ -416,7 +416,7 @@ function setSize(v) {
 
 // ------------------------------------------------------------- sign camera
 // Modes: 'asl-all' / 'asl-everyday' = ASL words (web/asl.js -> server model), 'quick' = 7 hand shapes (quick-signs module).
-const signMode = () => store.get('tb.signmode', 'asl-all')
+const signMode = () => store.get('tb.signmode', 'asl-top200')
 let cam = null, camMode = null, aslInfo = null, signedSincePhrase = 0, firedUntil = 0
 async function camModule() {
   const mode = signMode()
@@ -482,7 +482,7 @@ async function onAslSegment(frames) {
   if (state.status !== 'in-progress') return
   signTag('Recognizing…'); firedUntil = performance.now() + 900
   try {
-    const r = await api('/api/asl/classify', { frames, vocab: signMode() === 'asl-everyday' ? 'everyday' : 'all' })
+    const r = await api('/api/asl/classify', { frames, vocab: { 'asl-everyday': 'everyday', 'asl-top200': 'top200' }[signMode()] || 'all' })
     if (!r.ok) { signTag(r.reason === 'too short' ? 'Too quick, sign again' : r.reason, 'err'); firedUntil = performance.now() + 1400; return }
     if (r.unsure) {
       showChoices(r.choices.map((c) => c.word))
@@ -532,10 +532,10 @@ async function showSignList() {
     aslInfo ??= await fetch('/api/asl/info').then((r) => r.json()).catch(() => null)
     const all = signMode() === 'asl-all'
     $('signsHelp').textContent = aslInfo?.ready
-      ? `Sign one word at a time in ASL, with a short pause between signs. Each sign is added to your reply. Drop your hands when you're done and TalkBridge turns the words into a sentence you can send with one tap. ${all ? `Listening for all ${aslInfo.signs.toLocaleString()} ASL signs; the ones below are the most reliable.` : 'Listening for these everyday signs only:'} Model: ${aslInfo.credit}.`
+      ? `Sign one word at a time in ASL, with a short pause between signs. Each sign is added to your reply. Drop your hands when you're done and TalkBridge turns the words into a sentence you can send with one tap. ${all ? `Listening for all ${aslInfo.signs.toLocaleString()} ASL signs; the ones below are the most reliable.` : signMode() === 'asl-top200' ? `Listening for the ${aslInfo.top200.length} most-used everyday signs below, chosen from ASL frequency research and tested on real signers:` : 'Listening for these everyday signs only:'} Model: ${aslInfo.credit}.`
       : `ASL model isn't available: ${aslInfo?.error || 'server unreachable'}`
     const cloud = document.createElement('div'); cloud.className = 'sign-cloud'
-    for (const g of aslInfo?.everyday || []) { const sp = document.createElement('span'); sp.textContent = g.replace(/\./g, '').replace(/-/g, ' ').toLowerCase(); cloud.append(sp) }
+    for (const g of (signMode() === 'asl-top200' && aslInfo?.top200?.length ? aslInfo.top200 : aslInfo?.everyday) || []) { const sp = document.createElement('span'); sp.textContent = g.replace(/\./g, '').replace(/-/g, ' ').toLowerCase(); cloud.append(sp) }
     ul.after(cloud)
   }
   $('signsDlg').showModal()

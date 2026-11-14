@@ -26,24 +26,28 @@ sys.path.insert(0, str(ROOT / "fingertip" / "server"))
 log = logging.getLogger("talkbridge.asl")
 router = APIRouter()
 
-UNSURE_P = {"everyday": 0.45, "all": 0.30}
+UNSURE_P = {"everyday": 0.45, "top200": 0.40, "all": 0.30}
+TOP200_FILE = ROOT / "server" / "data" / "asl_top200.json"   # eval_signs/: research + measured on ASL Citizen clips
 UNSURE_MARGIN = 0.12
 MAX_FRAMES = 240
 
 _model = None
 _everyday: set[str] = set()
+_top200: list[dict] = []
 _error = ""
 _lock = threading.Lock()
 
 
 def load() -> None:
-    global _model, _everyday, _error
+    global _model, _everyday, _top200, _error
     if _model or _error:
         return
     try:
         from app.signs.models import MODEL_DIR, SignBartModel  # Fingertip (Shruti)
         _model = SignBartModel()
         _everyday = set(json.load(open(Path(MODEL_DIR) / "vocab.json"))["active"])
+        if TOP200_FILE.exists():
+            _top200 = json.load(open(TOP200_FILE))["signs"]
         log.info("ASL model ready: %s, %d signs (%d everyday)", _model.name, len(_model.labels), len(_everyday))
     except Exception as e:  # calls still work by typing and quick replies
         _error = f"ASL model not loaded: {e}"
@@ -51,7 +55,10 @@ def load() -> None:
 
 
 def word(gloss: str) -> str:
-    """'THANK-YOU' -> 'thank you', 'W.H.A.T' -> 'what'."""
+    """'THANK-YOU' -> 'thank you', 'W.H.A.T' -> 'what', 'DONTKNOW' -> "don't know" (top-200 list spells phrases out)."""
+    for s in _top200:
+        if s["gloss"] == gloss:
+            return s["word"]
     return gloss.replace(".", "").replace("-", " ").lower()
 
 
@@ -61,7 +68,7 @@ def classify(frames: list[dict], vocab: str = "all") -> dict:
         return {"ok": False, "reason": _error or "ASL model unavailable"}
     if len(frames) < 6:
         return {"ok": False, "reason": "too short"}
-    allowed = _everyday if vocab == "everyday" else None
+    allowed = _everyday if vocab == "everyday" else {s["gloss"] for s in _top200} if vocab == "top200" and _top200 else None
     t0 = time.perf_counter()
     swapped = [{**f, "lh": f.get("rh"), "rh": f.get("lh")} for f in frames]
     with _lock:   # signer's dominant hand unknown: try both hand orders, keep the more confident
@@ -82,8 +89,8 @@ class ClassifyIn(BaseModel):
 
 @router.post("/api/asl/classify")
 async def asl_classify(body: ClassifyIn) -> dict:
-    if body.vocab not in ("all", "everyday"):
-        raise HTTPException(400, "vocab must be 'all' or 'everyday'")
+    if body.vocab not in ("all", "everyday", "top200"):
+        raise HTTPException(400, "vocab must be 'all', 'top200' or 'everyday'")
     return await asyncio.to_thread(classify, body.frames[:MAX_FRAMES], body.vocab)
 
 
@@ -91,5 +98,5 @@ async def asl_classify(body: ClassifyIn) -> dict:
 async def asl_info() -> dict:
     await asyncio.to_thread(load)
     return {"ready": _model is not None, "error": _error, "model": getattr(_model, "name", None),
-            "signs": len(_model.labels) if _model else 0, "everyday": sorted(_everyday),
+            "signs": len(_model.labels) if _model else 0, "everyday": sorted(_everyday), "top200": [s["gloss"] for s in _top200],
             "credit": "SignBart-ASL-2730 (ASL Citizen) via Fingertip by Shruti"}
