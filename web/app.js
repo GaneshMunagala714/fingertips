@@ -2,16 +2,19 @@
 // No secrets here; all keys stay on the server. Contacts and recents live only in this browser.
 const $ = (id) => document.getElementById(id)
 const QUICK = ['Yes.', 'No.', 'One moment, please.', 'Could you repeat that, please?', 'Thank you!', 'Thank you, goodbye!']
-const LIVE = new Set(['queued', 'initiated', 'ringing', 'in-progress'])
-const OVER = new Set(['completed', 'busy', 'no-answer', 'failed', 'canceled'])
+const LIVE = new Set(['queued', 'initiated', 'ringing', 'in-progress', 'incoming'])
+const OVER = new Set(['completed', 'busy', 'no-answer', 'failed', 'canceled', 'missed', 'declined'])
 const STATUS_TEXT = { queued: 'calling…', initiated: 'calling…', ringing: 'ringing…', completed: 'Call ended',
-  busy: 'Busy', 'no-answer': 'No answer', failed: 'Call failed', canceled: 'Call canceled' }
+  busy: 'Busy', 'no-answer': 'No answer', failed: 'Call failed', canceled: 'Call canceled',
+  incoming: 'mobile', missed: 'Missed call', declined: 'Declined' }
 const SIZES = [['18', 'Small'], ['22', 'Medium'], ['28', 'Large'], ['34', 'Extra large']]
 const KEYS = [['1', ''], ['2', 'ABC'], ['3', 'DEF'], ['4', 'GHI'], ['5', 'JKL'], ['6', 'MNO'],
   ['7', 'PQRS'], ['8', 'TUV'], ['9', 'WXYZ'], ['*', ''], ['0', '+'], ['#', '']]
 const PERSON = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.6" r="4.2" fill="currentColor"/><path d="M3.8 21c.9-4.6 4.2-7 8.2-7s7.3 2.4 8.2 7" fill="currentColor"/></svg>'
 
-const state = { status: 'idle', started: null, relay: false, turns: [], to: '', error: '' }
+const state = { status: 'idle', started: null, relay: false, turns: [], to: '', error: '', direction: 'outbound' }
+let lastSuggestions = []
+let signs = null              // web/signs.js, loaded on first use
 let pendingConfirm = null
 let screen = 'home'           // 'home' | 'call'
 let endedAt = null
@@ -75,11 +78,14 @@ function onEvent(m) {
     case 'snapshot':
       Object.assign(state, { status: m.status, started: m.started, relay: m.relay, turns: m.turns })
       if (m.to) state.to = m.to
+      state.direction = m.direction || 'outbound'
       $('partial').textContent = m.partial || ''
       if (LIVE.has(state.status)) { logged = false; openCall() }
+      if (state.status === 'incoming') startRinging()
       renderTurns(); renderCall(); break
     case 'status':
       if (m.to) state.to = m.to
+      if (m.direction) state.direction = m.direction
       if (m.error) state.error = friendlyError(m.error)
       setStatus(m.status, m.started); break
     case 'relay':
@@ -103,8 +109,16 @@ function onEvent(m) {
 
 function setStatus(st, started) {
   const wasLive = LIVE.has(state.status)
+  if (st === 'incoming' && state.status !== 'incoming') {
+    Object.assign(state, { direction: 'inbound', turns: [], started: null, relay: false, error: '' })
+    endedAt = null; logged = false; $('partial').textContent = ''
+    renderTurns()
+  }
   state.status = st
   if (started) state.started = started
+  if (st === 'incoming') startRinging(); else stopRinging()
+  if (st === 'in-progress' && store.get('tb.autocam', true)) startCam()
+  if (OVER.has(st)) stopCam()
   if (LIVE.has(st) && screen !== 'call') openCall()
   if (OVER.has(st) && (wasLive || screen === 'call')) {
     endedAt = Date.now() / 1000
@@ -205,7 +219,7 @@ function logRecent() {
   if (logged || !state.to) return
   logged = true
   const dur = state.started && endedAt ? Math.max(0, Math.round(endedAt - state.started)) : 0
-  recents.unshift({ num: state.to, at: Date.now(), status: state.status, dur })
+  recents.unshift({ num: state.to, at: Date.now(), status: state.status, dur, dir: state.direction })
   recents = recents.slice(0, 50)
   store.set('tb.recents', recents)
 }
@@ -234,7 +248,8 @@ function renderRecents() {
     const nm = txt.querySelector('.nm'); nm.textContent = c ? c.name : pretty(r.num)
     const ok = r.status === 'completed' && r.dur > 0
     if (!ok) nm.classList.add('missed')
-    txt.querySelector('.sub').textContent = ok ? `Outgoing · ${mmss(r.dur)}` : (STATUS_TEXT[r.status] || 'Not connected')
+    const dir = r.dir === 'inbound' ? 'Incoming' : 'Outgoing'
+    txt.querySelector('.sub').textContent = ok ? `${dir} · ${mmss(r.dur)}` : (STATUS_TEXT[r.status] || 'Not connected')
     who.append(av, txt); who.onclick = () => dial(r.num)
     const w = document.createElement('span'); w.className = 'when'; w.textContent = when(r.at)
     li.append(who, w)
@@ -256,6 +271,7 @@ function openCall() {
   renderCall()
 }
 function closeCall() {
+  stopCam(); stopRinging()
   screen = 'home'
   state.turns = []; state.error = ''; state.started = null; endedAt = null
   $('partial').textContent = ''
@@ -272,7 +288,9 @@ function renderCall() {
   const c = findContact(state.to)
   avatarFor($('avatar'), c)
   $('callName').textContent = c ? c.name : (state.to ? pretty(state.to) : 'Calling')
-  $('callSub').textContent = c ? `mobile  ${pretty(state.to)}` : 'Unknown'
+  const inbound = state.direction === 'inbound'
+  $('callSub').textContent = c ? `mobile  ${pretty(state.to)}` : (inbound ? 'Unknown caller' : 'Unknown')
+  $('callMeta').textContent = s === 'incoming' ? 'Incoming call · TalkBridge' : `${inbound ? 'Incoming' : 'TalkBridge'} call · live captions`
   $('saveCallerBtn').hidden = !!c || !state.to
 
   const live = LIVE.has(s), over = OVER.has(s) || s === 'idle'
@@ -281,15 +299,19 @@ function renderCall() {
   cs.classList.toggle('connected', connected)
   cs.classList.toggle('over', over && !live)
   cs.classList.toggle('had-talk', state.turns.length > 0)
+  cs.classList.toggle('incoming', s === 'incoming')
+  $('incomingActions').hidden = s !== 'incoming'
+  $('selfview').hidden = !connected
   $('ended').hidden = !(over && !live)
   $('hangBtn').disabled = !live
 
   const st = $('status')
   st.classList.toggle('pulse', s === 'queued' || s === 'initiated' || s === 'ringing')
-  st.classList.toggle('bad', !!state.error || ['failed', 'busy', 'no-answer'].includes(s))
+  st.classList.toggle('bad', !!state.error || ['failed', 'busy', 'no-answer', 'missed'].includes(s))
   if (state.error) st.textContent = state.error
   else if (connected) st.textContent = `${clock()}${state.relay ? '' : ' · connecting captions…'}`
   else if (over && state.started && endedAt) st.textContent = `Call ended · ${mmss(endedAt - state.started)}`
+  else if (s === 'incoming') st.textContent = c ? 'calling you…' : 'is calling you…'
   else st.textContent = STATUS_TEXT[s] || (s === 'idle' ? 'Call ended' : s)
 }
 const clock = () => state.started ? mmss(Math.max(0, Date.now() / 1000 - state.started)) : '0:00'
@@ -342,7 +364,7 @@ async function dial(number) {
   const to = e164(number ?? $('to').value)
   if (!to) { showDialMsg('Add the country code, like +1 413 555 0123.'); return }
   showDialMsg('')
-  Object.assign(state, { to, status: 'queued', turns: [], started: null, relay: false, error: '' })
+  Object.assign(state, { to, status: 'queued', turns: [], started: null, relay: false, error: '', direction: 'outbound' })
   endedAt = null; logged = false
   openCall()
   try { await api('/api/call', { to }) } catch (e) {
@@ -378,6 +400,7 @@ async function refreshSuggestions(hint = '') {
   try {
     const r = await api('/api/suggest', { hint })
     $('aiSrc').textContent = `· ${r.source}, ${r.ms} ms${r.dropped.length ? `, ${r.dropped.length} unsafe dropped` : ''}`
+    if (!hint) lastSuggestions = r.replies
     chips($('sugs'), r.replies, hint ? (t) => { $('draft').value = t; growDraft(); $('draft').focus() } : (t) => sayIt(t))
     return r
   } catch (e) { $('aiSrc').textContent = '' }
@@ -392,7 +415,123 @@ function setSize(v) {
   store.set('tb.cap', v)
 }
 
+// ------------------------------------------------------------- sign camera
+async function startCam() {
+  if (screen !== 'call') return
+  $('camBtn').setAttribute('aria-pressed', 'true')
+  $('selfview').classList.remove('off')
+  try { signs ??= await import('/static/signs.js') } catch { signTag('Sign model failed to load', 'err'); return }
+  if (signs.isOn()) return
+  signs.start($('cam'), { onState: onSignState, onSign })
+}
+function stopCam() {
+  $('camBtn').setAttribute('aria-pressed', 'false')
+  $('selfview').classList.add('off')
+  signs?.stop()
+  ring(0)
+}
+function signTag(text, cls = '') { const t = $('signTag'); t.textContent = text; t.className = `sign-tag ${cls}` }
+function ring(p) { $('ringArc').style.strokeDasharray = `${Math.round(p * 100)} 100` }
+let firedUntil = 0
+function onSignState(st) {
+  if (st.phase === 'starting') return signTag('Starting camera…')
+  if (st.phase === 'loading') return signTag('Loading signs…')
+  if (st.phase === 'error') { ring(0); return signTag(st.message, 'err') }
+  if (st.phase === 'off') { ring(0); return signTag('Signs off') }
+  ring(st.progress)
+  if (performance.now() < firedUntil) return
+  if (st.sign) signTag(signs.SIGNS[st.sign].label)
+  else signTag(st.hand ? 'Hold a sign' : 'Show your hand')
+}
+function onSign(name, sign) {
+  if (state.status !== 'in-progress') return
+  const text = sign.say ?? lastSuggestions[0]
+  if (!text) { signTag('No suggestion yet', 'err'); firedUntil = performance.now() + 1200; return }
+  signTag(`Saying: ${text}`, 'fired'); firedUntil = performance.now() + 1600
+  try { navigator.vibrate?.(30) } catch {}
+  sayIt(text)
+}
+async function showSignList() {
+  try { signs ??= await import('/static/signs.js') } catch { return }
+  const ul = $('signList'); ul.innerHTML = ''
+  for (const s of Object.values(signs.SIGNS)) {
+    const li = document.createElement('li')
+    const b = document.createElement('b'); b.textContent = s.label
+    const sp = document.createElement('span'); sp.textContent = s.say ? `“${s.say}”` : s.hint
+    li.append(b, sp); ul.append(li)
+  }
+  $('signsDlg').showModal()
+}
+
+// ------------------------------------------------------------- incoming call alerts
+let audio = null, ringTimer = null, note = null, titleTimer = null
+function unlockAudio() {
+  try { audio ??= new (window.AudioContext || window.webkitAudioContext)(); if (audio.state === 'suspended') audio.resume() } catch {}
+}
+function trill() {
+  if (!audio || audio.state !== 'running') return
+  const t0 = audio.currentTime
+  for (let i = 0; i < 2; i++) {
+    const start = t0 + i * 0.45
+    const g = audio.createGain(); g.connect(audio.destination)
+    g.gain.setValueAtTime(0, start); g.gain.linearRampToValueAtTime(0.18, start + 0.02)
+    g.gain.setValueAtTime(0.18, start + 0.35); g.gain.linearRampToValueAtTime(0, start + 0.4)
+    for (const f of [1046, 1318]) {
+      const o = audio.createOscillator(); o.type = 'sine'; o.frequency.value = f
+      const am = audio.createOscillator(); am.frequency.value = 20; const amg = audio.createGain(); amg.gain.value = 0.5
+      am.connect(amg); amg.connect(g.gain)
+      o.connect(g); o.start(start); o.stop(start + 0.4); am.start(start); am.stop(start + 0.4)
+    }
+  }
+}
+function startRinging() {
+  if (ringTimer) return
+  unlockAudio(); trill()
+  ringTimer = setInterval(() => { trill(); try { navigator.vibrate?.([400, 200, 400]) } catch {} }, 2500)
+  const c = findContact(state.to), who = c ? c.name : pretty(state.to)
+  const base = 'TalkBridge'; let flip = false
+  titleTimer = setInterval(() => { document.title = (flip = !flip) ? `Incoming call: ${who}` : base }, 900)
+  try {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      note = new Notification('Incoming call', { body: `${who} is calling you on TalkBridge`, tag: 'tb-call', requireInteraction: true })
+      note.onclick = () => { window.focus(); note?.close() }
+    }
+  } catch {}
+}
+function stopRinging() {
+  clearInterval(ringTimer); ringTimer = null
+  clearInterval(titleTimer); titleTimer = null; document.title = 'TalkBridge'
+  try { note?.close() } catch {} note = null
+  try { navigator.vibrate?.(0) } catch {}
+}
+async function enableAlerts() {
+  unlockAudio()
+  if ('Notification' in window && Notification.permission === 'default') { try { await Notification.requestPermission() } catch {} }
+  store.set('tb.alerts', true)
+  renderAlerts()
+}
+function renderAlerts() {
+  const perm = 'Notification' in window ? Notification.permission : 'unsupported'
+  const on = store.get('tb.alerts', false) && perm !== 'default'
+  $('alertsBanner').hidden = on
+  $('alertsBtn2').textContent = perm === 'granted' ? 'Call alerts are on' : perm === 'denied' ? 'Notifications blocked in browser settings' : 'Turn on call alerts'
+  $('alertsBtn2').disabled = perm === 'granted' || perm === 'denied'
+}
+
 // ------------------------------------------------------------- wiring
+document.addEventListener('pointerdown', unlockAudio, { capture: true })
+$('alertsBtn').onclick = enableAlerts
+$('alertsBtn2').onclick = enableAlerts
+$('acceptBtn').onclick = async () => {
+  stopRinging()
+  try { await api('/api/answer') } catch (e) { state.error = friendlyError(e.message); renderCall() }
+}
+$('declineBtn').onclick = () => { stopRinging(); api('/api/decline').catch(() => {}) }
+$('camBtn').onclick = () => (signs?.isOn() ? stopCam() : startCam())
+$('selfview').onclick = showSignList
+$('signsClose').onclick = () => $('signsDlg').close()
+$('autoCam').checked = store.get('tb.autocam', true)
+$('autoCam').onchange = (e) => store.set('tb.autocam', e.target.checked)
 buildKeypad()
 chips($('quick'), QUICK, (t) => sayIt(t))
 for (const b of document.querySelectorAll('.tabbar button')) b.onclick = () => showTab(b.dataset.tab)
@@ -444,4 +583,5 @@ fetch('/api/health').then((r) => r.json()).then((h) => {
 
 showTab(store.get('tb.tab', 'keypad'))
 onNumberInput()
+renderAlerts()
 connect()

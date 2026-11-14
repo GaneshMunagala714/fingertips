@@ -38,6 +38,9 @@ VALIDATE = os.getenv("VALIDATE_TWILIO_SIGNATURE", "true").lower() != "false"
 GREETING = os.getenv("GREETING", "Hi! I'm Deaf, so an app is reading your words to me and speaking my typed "
                                  "replies. Please give me a moment to answer.")
 DIAL_COOLDOWN_S = 10
+RING_TIMEOUT_S = int(os.getenv("RING_TIMEOUT_S", "30"))
+DECLINE_SAY = "Sorry, I can't take your call right now. Please try again later."
+BUSY_SAY = "Sorry, I'm on another call right now. Please try again later."
 E164 = re.compile(r"^\+[1-9]\d{7,14}$")
 
 app = FastAPI(title="TalkBridge")
@@ -53,7 +56,8 @@ class CallState:
 
     def reset(self) -> None:
         self.sid: str | None = None
-        self.to: str = ""
+        self.to: str = ""                  # the other person's number (callee, or caller when inbound)
+        self.direction: str = "outbound"   # outbound | inbound
         self.status: str = "idle"          # idle | queued | ringing | in-progress | completed | failed ...
         self.started: float | None = None
         self.relay: WebSocket | None = None
@@ -72,7 +76,7 @@ class CallState:
         return ""
 
     def snapshot(self) -> dict:
-        return {"type": "snapshot", "sid": self.sid, "to": self.to, "status": self.status,
+        return {"type": "snapshot", "sid": self.sid, "to": self.to, "direction": self.direction, "status": self.status,
                 "started": self.started, "turns": self.turns, "partial": self.partial,
                 "relay": self.relay is not None}
 
@@ -146,7 +150,7 @@ async def dial(body: DialIn) -> dict:
     to = re.sub(r"[\s().-]", "", body.to)
     if not E164.match(to):
         raise HTTPException(400, "Use the full number with country code, like +14135550123")
-    if call.status in ("queued", "initiated", "ringing", "in-progress"):
+    if call.status in ("queued", "initiated", "ringing", "in-progress", "incoming"):
         raise HTTPException(409, "A call is already active")
     if time.time() - call.last_dial < DIAL_COOLDOWN_S:
         raise HTTPException(429, "Please wait a few seconds before dialing again")
@@ -167,8 +171,46 @@ async def dial(body: DialIn) -> dict:
         raise HTTPException(502, f"Twilio refused the call: {str(e)[:200]}")
     call.sid = c.sid
     call.status = "queued"
-    await push({"type": "status", "status": "queued", "sid": c.sid, "to": to})
+    await push({"type": "status", "status": "queued", "sid": c.sid, "to": to, "direction": "outbound"})
     return {"sid": c.sid}
+
+
+def say_and_hang_up(text: str) -> str:
+    r = VoiceResponse()
+    r.say(text)
+    r.hangup()
+    return str(r)
+
+
+@app.post("/api/answer")
+async def answer() -> dict:
+    """Pick up the ringing incoming call: hand it to ConversationRelay (captions + spoken replies)."""
+    if call.status != "incoming" or not call.sid:
+        raise HTTPException(409, "There's no call ringing")
+    base = require_public_url()
+    try:
+        await asyncio.to_thread(twilio_client().calls(call.sid).update, url=f"{base}/twilio/twiml", method="POST")
+    except Exception as e:
+        call.status = "completed"
+        await push({"type": "status", "status": "completed", "error": f"The caller hung up ({str(e)[:120]})"})
+        raise HTTPException(410, "The caller already hung up")
+    call.status = "in-progress"
+    call.started = time.time()
+    await push({"type": "status", "status": "in-progress", "started": call.started})
+    return {"ok": True}
+
+
+@app.post("/api/decline")
+async def decline() -> dict:
+    if call.status != "incoming" or not call.sid:
+        return {"ok": True}
+    call.status = "declined"
+    await push({"type": "status", "status": "declined"})
+    try:
+        await asyncio.to_thread(twilio_client().calls(call.sid).update, twiml=say_and_hang_up(DECLINE_SAY))
+    except Exception as e:
+        log.warning("decline: %s", e)
+    return {"ok": True}
 
 
 @app.post("/api/hangup")
@@ -241,12 +283,46 @@ async def twiml(request: Request) -> Response:
     return Response(str(r), media_type="application/xml")
 
 
+async def ring_timeout(sid: str) -> None:
+    await asyncio.sleep(RING_TIMEOUT_S)
+    if call.sid == sid and call.status == "incoming":
+        call.status = "missed"
+        await push({"type": "status", "status": "missed"})
+        try:
+            await asyncio.to_thread(twilio_client().calls(sid).update, twiml=say_and_hang_up(DECLINE_SAY))
+        except Exception as e:
+            log.warning("ring timeout: %s", e)
+
+
+@app.post("/twilio/incoming")
+async def incoming(request: Request) -> Response:
+    """Someone called the Twilio number. Play ringback to them and ring the browser until it answers."""
+    form = await check_twilio_signature(request)
+    sid, frm = str(form.get("CallSid", "")), str(form.get("From", ""))
+    if call.status in ("queued", "initiated", "ringing", "in-progress", "incoming") and call.sid != sid:
+        return Response(say_and_hang_up(BUSY_SAY), media_type="application/xml")
+    call.reset()
+    call.sid, call.to, call.direction, call.status = sid, frm, "inbound", "incoming"
+    await push({"type": "status", "status": "incoming", "sid": sid, "to": frm, "direction": "inbound"})
+    asyncio.create_task(ring_timeout(sid))
+    r = VoiceResponse()
+    r.play(f"{require_public_url()}/static/ringback.wav", loop=0)   # loops until /api/answer redirects the call
+    return Response(str(r), media_type="application/xml")
+
+
 @app.post("/twilio/status")
 async def status(request: Request) -> dict:
     form = await check_twilio_signature(request)
     if form.get("CallSid") != call.sid:
         return {"ok": True}
     st = str(form.get("CallStatus", ""))
+    if call.direction == "inbound":
+        if st != "completed" and st not in ("busy", "failed", "no-answer", "canceled"):
+            return {"ok": True}          # inbound progress is driven by /api/answer, not Twilio's "in-progress"
+        if call.status in ("incoming", "missed", "declined"):
+            st = "missed" if call.status == "incoming" else call.status
+        elif call.status == "completed":
+            return {"ok": True}
     call.status = st
     if st == "in-progress" and not call.started:
         call.started = time.time()

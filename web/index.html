@@ -17,6 +17,11 @@
       </button>
     </header>
 
+    <div id="alertsBanner" class="alerts-banner" hidden>
+      <span>Get a pop-up and ringtone when someone calls you.</span>
+      <button id="alertsBtn" class="pill-btn primary">Turn on call alerts</button>
+    </div>
+
     <!-- Keypad -->
     <section id="tab-keypad" class="tab" aria-label="Keypad">
       <div class="dial-display">
@@ -74,11 +79,16 @@
   <!-- ============================================================ CALL SCREEN -->
   <div id="callScreen" class="screen call-screen" hidden aria-label="Call">
     <div class="caller" id="caller">
-      <div class="call-meta"><span class="dot" aria-hidden="true"></span> TalkBridge call · live captions</div>
+      <div class="call-meta"><span class="dot" aria-hidden="true"></span> <span id="callMeta">TalkBridge call · live captions</span></div>
       <div id="avatar" class="avatar" aria-hidden="true"></div>
       <h1 id="callName" class="call-name"></h1>
       <div id="callSub" class="call-sub"></div>
       <div id="status" class="call-status" role="status" aria-live="polite">calling…</div>
+      <button id="selfview" class="selfview" hidden aria-label="Your camera. Tap to see the signs.">
+        <video id="cam" playsinline muted autoplay></video>
+        <svg class="ring" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15.5" pathLength="100" id="ringArc"/></svg>
+        <span id="signTag" class="sign-tag">Starting camera…</span>
+      </button>
     </div>
 
     <section class="captions" aria-label="Conversation">
@@ -101,9 +111,26 @@
       </div>
     </section>
 
+    <div class="incoming-actions" id="incomingActions" hidden>
+      <div class="ia">
+        <button id="declineBtn" class="round end" aria-label="Decline">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2Z" fill="currentColor" transform="rotate(135 12 12)"/></svg>
+        </button><span>Decline</span>
+      </div>
+      <div class="ia">
+        <button id="acceptBtn" class="round call ringing" aria-label="Accept">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2Z" fill="currentColor"/></svg>
+        </button><span>Accept</span>
+      </div>
+    </div>
+
     <div class="call-controls">
       <button id="sizeBtn" class="ctl" aria-label="Caption size">
         <span class="ctl-ico">Aa</span><span class="ctl-lbl" id="sizeLbl">Medium</span>
+      </button>
+      <button id="camBtn" class="ctl" aria-label="Sign camera" aria-pressed="true">
+        <span class="ctl-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12m0-1V4.5a1.5 1.5 0 0 1 3 0V12m0-6.5a1.5 1.5 0 0 1 3 0V13m0-4.5a1.5 1.5 0 0 1 3 0V15a7 7 0 0 1-7 7h-1.2a6 6 0 0 1-4.6-2.1L3.5 15.6a1.5 1.5 0 0 1 2.3-2l2.2 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="ctl-lbl">Signs</span>
       </button>
       <button id="hangBtn" class="round end" aria-label="End call">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2Z" fill="currentColor" transform="rotate(135 12 12)"/></svg>
@@ -149,6 +176,13 @@
     </div>
   </dialog>
 
+  <dialog id="signsDlg" aria-labelledby="signsTitle">
+    <h2 id="signsTitle">Signs you can use</h2>
+    <p class="fine">Hold a sign steady in front of the camera for about a second. The ring fills, then TalkBridge says the reply out loud on the call.</p>
+    <ul id="signList" class="sign-list"></ul>
+    <div class="row"><span class="grow"></span><button id="signsClose" class="pill-btn primary">Got it</button></div>
+  </dialog>
+
   <dialog id="settingsDlg" aria-labelledby="settingsTitle">
     <h2 id="settingsTitle">Settings</h2>
     <label>Caption size
@@ -157,6 +191,8 @@
         <option value="28">Large</option><option value="34">Extra large</option>
       </select>
     </label>
+    <label class="check-row"><input type="checkbox" id="autoCam" checked> Turn on the sign camera when a call connects</label>
+    <button id="alertsBtn2" class="pill-btn" type="button">Turn on call alerts</button>
     <div id="health" class="fine health"></div>
     <div class="row"><span class="grow"></span><button id="settingsClose" class="pill-btn primary">Done</button></div>
   </dialog>
