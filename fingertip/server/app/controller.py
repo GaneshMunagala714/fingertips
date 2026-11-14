@@ -385,6 +385,9 @@ class Controller:
         if self._speak_task:
             self._speak_task.cancel()
             self._speak_task = None
+        # A reply the signer approved may be waiting behind another line (a filler, the greeting).
+        # Interrupting must not lose it: it comes back as the draft below.
+        queued_reply = next((q for q in self._queue if q[2] == "reply"), None)
         self._queue.clear()
         if self._speaking:
             sp = self._speaking
@@ -405,6 +408,16 @@ class Controller:
                 self.dup._recent.pop(guards.normalize_line(self.draft.text), None)
                 self.dup._recent.pop(guards.normalize_line(sp.text), None)
                 await self.emit({"type": "draft", "draft": asdict(self.draft)})
+        if queued_reply and not (self._speaking_draft or (self._speaking and self._speaking.kind == "reply")):
+            text_q, _lvl, _kind, _byp, draft_q, tone_q, _spoken = queued_reply
+            self.draft = Draft(id=_nid("d"), text=text_q, source="rest", level=QUICK)
+            if draft_q:
+                self.draft.tone = draft_q.tone
+            else:
+                self.draft.tone = tone_q
+            self._seal(self.draft)
+            self.dup._recent.pop(guards.normalize_line(text_q), None)
+            await self.emit({"type": "draft", "draft": asdict(self.draft)})
         self._speaking = None
         self._speaking_draft = None
         self._cancel_fillers()
