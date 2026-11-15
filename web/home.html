@@ -4,82 +4,289 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fingertips</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#0d0f12; --card:#16191e; --line:#262a31; --ink:#eceef1; --muted:#9097a3; --accent:#7fe0b5; }
-  * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif; line-height:1.5; }
-  main { max-width:1040px; margin:0 auto; padding:56px 20px 64px; }
-  h1 { font-size:56px; line-height:1.05; margin:0 0 12px; letter-spacing:-.02em; }
-  h1 span { color:var(--accent); }
-  .lead { font-size:20px; color:var(--muted); margin:0 0 28px; max-width:720px; }
-  .top { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:40px; }
-  .btn { display:inline-block; padding:12px 18px; border-radius:999px; background:var(--accent); color:#0d0f12; font-weight:700; text-decoration:none; }
-  .btn.ghost { background:transparent; color:var(--ink); border:1px solid var(--line); }
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:24px; display:flex; flex-direction:column; gap:10px; }
-  .tag { font-size:12px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); }
-  .card h2 { margin:0; font-size:26px; }
-  .card p { margin:0; color:var(--muted); }
-  .card .links { display:flex; flex-wrap:wrap; gap:10px; margin-top:auto; padding-top:10px; }
-  .card a.btn { padding:10px 16px; font-size:15px; }
-  .fine { font-size:14px; color:var(--muted); }
-  footer { margin-top:40px; font-size:14px; color:var(--muted); }
-  footer a { color:var(--ink); }
-  @media (max-width:600px) { h1 { font-size:40px; } }
+  :root {
+    --bg:#05070d; --ink:#f2f4fa; --muted:#8c96ab; --line:rgba(255,255,255,.09);
+    --call:#ff7a7a; --meet:#8ab4ff; --learn:#7fe0b5; --play:#f07cf4;
+    --display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+  }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--display); overflow-x:hidden; }
+  a { color:inherit; }
+
+  /* living background: drifting colour blobs + hand-trail particles */
+  .aurora { position:fixed; inset:-20vmax; z-index:0; filter:blur(80px) saturate(140%); opacity:.55; pointer-events:none; }
+  .aurora i { position:absolute; width:50vmax; height:50vmax; border-radius:50%; mix-blend-mode:screen; animation:drift 22s ease-in-out infinite alternate; }
+  .aurora i:nth-child(1) { background:var(--call); left:5%; top:10%; }
+  .aurora i:nth-child(2) { background:var(--meet); right:0; top:0; animation-duration:26s; animation-delay:-6s; }
+  .aurora i:nth-child(3) { background:var(--learn); left:20%; bottom:0; animation-duration:30s; animation-delay:-12s; opacity:.6; }
+  .aurora i:nth-child(4) { background:var(--play); right:10%; bottom:5%; animation-duration:24s; animation-delay:-3s; }
+  @keyframes drift { 0% { transform:translate(0,0) scale(1); } 50% { transform:translate(12vmax,-8vmax) scale(1.2); } 100% { transform:translate(-10vmax,10vmax) scale(.9); } }
+  #trail { position:fixed; inset:0; z-index:1; pointer-events:none; }
+  .grain { position:fixed; inset:0; z-index:2; pointer-events:none; opacity:.06; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .wrap { position:relative; z-index:3; }
+
+  /* nav */
+  nav { position:sticky; top:0; z-index:10; display:flex; align-items:center; justify-content:space-between; padding:18px clamp(16px,4vw,48px); backdrop-filter:blur(14px); background:rgba(5,7,13,.45); border-bottom:1px solid var(--line); }
+  .logo { font-weight:800; font-size:22px; letter-spacing:-.02em; text-decoration:none; }
+  .logo span, .grad { background:linear-gradient(90deg,var(--call),var(--meet) 50%,var(--play)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  nav .links { display:flex; gap:clamp(10px,2vw,28px); font-size:15px; color:var(--muted); }
+  nav .links a { text-decoration:none; transition:color .2s; }
+  nav .links a:hover { color:var(--ink); }
+
+  /* hero */
+  .hero { min-height:92vh; display:flex; flex-direction:column; justify-content:center; padding:40px clamp(16px,6vw,96px) 80px; }
+  .kicker { font-family:var(--mono); font-size:13px; letter-spacing:.18em; color:var(--muted); text-transform:uppercase; margin-bottom:22px; display:flex; align-items:center; gap:10px; }
+  .kicker b { width:8px; height:8px; border-radius:50%; background:var(--learn); box-shadow:0 0 0 0 var(--learn); animation:pulse 2s infinite; }
+  @keyframes pulse { 0% { box-shadow:0 0 0 0 rgba(127,224,181,.7); } 100% { box-shadow:0 0 0 14px rgba(127,224,181,0); } }
+  h1 { font-size:clamp(56px,11vw,168px); line-height:.9; letter-spacing:-.045em; margin:0; font-weight:800; }
+  h1 .w { display:inline-block; overflow:hidden; vertical-align:bottom; }
+  h1 .w > span { display:inline-block; transform:translateY(110%) rotate(6deg); animation:rise .9s cubic-bezier(.2,.8,.2,1) forwards; }
+  @keyframes rise { to { transform:none; } }
+  .swap { display:inline-block; min-width:4ch; }
+  .swap span { display:inline-block; }
+  .sub { font-size:clamp(18px,2vw,24px); color:var(--muted); max-width:760px; margin:28px 0 36px; line-height:1.45; opacity:0; animation:fadeup .9s .9s forwards; }
+  @keyframes fadeup { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
+  .cta { display:flex; flex-wrap:wrap; gap:14px; opacity:0; animation:fadeup .9s 1.1s forwards; }
+  .btn { position:relative; display:inline-flex; align-items:center; gap:10px; padding:16px 26px; border-radius:999px; font-weight:700; font-size:17px; text-decoration:none; color:#05070d; background:var(--ink); overflow:hidden; transition:transform .25s cubic-bezier(.3,1.6,.5,1); will-change:transform; }
+  .btn::before { content:""; position:absolute; inset:0; background:linear-gradient(90deg,var(--call),var(--meet),var(--play),var(--call)); background-size:300% 100%; opacity:0; transition:opacity .3s; animation:slide 4s linear infinite; }
+  .btn:hover::before { opacity:1; }
+  .btn > * , .btn { z-index:1; }
+  .btn span { position:relative; }
+  @keyframes slide { to { background-position:300% 0; } }
+  .btn.ghost { background:transparent; color:var(--ink); border:1px solid rgba(255,255,255,.25); }
+  .btn.ghost::before { opacity:0 !important; }
+  .btn.ghost:hover { border-color:var(--ink); }
+  .arrow { transition:transform .25s; }
+  .btn:hover .arrow { transform:translateX(4px); }
+
+  /* marquee */
+  .marquee { border-top:1px solid var(--line); border-bottom:1px solid var(--line); overflow:hidden; white-space:nowrap; padding:22px 0; background:rgba(5,7,13,.35); }
+  .marquee div { display:inline-block; animation:scroll 38s linear infinite; font-size:clamp(22px,3vw,34px); font-weight:600; }
+  .marquee em { font-style:normal; color:var(--muted); margin:0 28px; }
+  @keyframes scroll { to { transform:translateX(-50%); } }
+
+  /* cards */
+  section.apps { padding:110px clamp(16px,6vw,96px); }
+  .h2 { font-size:clamp(40px,6vw,84px); line-height:.95; letter-spacing:-.035em; margin:0 0 56px; font-weight:800; max-width:900px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr)); gap:22px; }
+  .card { --c:var(--call); position:relative; border-radius:28px; padding:34px; min-height:380px; display:flex; flex-direction:column; gap:14px; background:rgba(15,18,26,.72); border:1px solid var(--line); overflow:hidden; transform-style:preserve-3d; transition:transform .2s ease-out, border-color .3s; will-change:transform; }
+  .card::before { content:""; position:absolute; inset:0; background:radial-gradient(520px circle at var(--mx,50%) var(--my,0%), color-mix(in srgb, var(--c) 32%, transparent), transparent 60%); opacity:0; transition:opacity .35s; pointer-events:none; }
+  .card:hover::before { opacity:1; }
+  .card:hover { border-color:color-mix(in srgb, var(--c) 55%, transparent); }
+  .card .num { font-family:var(--mono); font-size:13px; color:var(--c); letter-spacing:.16em; }
+  .card h3 { font-size:clamp(34px,4vw,52px); margin:0; letter-spacing:-.03em; line-height:1; }
+  .card p { color:var(--muted); font-size:18px; line-height:1.5; margin:0; max-width:520px; }
+  .card .row { margin-top:auto; display:flex; flex-wrap:wrap; gap:12px; padding-top:18px; position:relative; z-index:1; }
+  .card .btn { padding:13px 20px; font-size:15px; background:var(--c); }
+  .card .btn.ghost { background:transparent; }
+  .card .fine { font-family:var(--mono); font-size:12px; color:var(--muted); position:relative; z-index:1; }
+  .viz { position:absolute; right:-30px; top:-30px; width:240px; height:240px; opacity:.9; pointer-events:none; }
+  .ring { position:absolute; inset:0; border-radius:50%; border:2px solid var(--c); opacity:0; animation:ring 3.2s ease-out infinite; }
+  .ring:nth-child(2) { animation-delay:1.06s; } .ring:nth-child(3) { animation-delay:2.12s; }
+  @keyframes ring { 0% { transform:scale(.2); opacity:.9; } 100% { transform:scale(1); opacity:0; } }
+  .bars { position:absolute; right:34px; top:34px; display:flex; gap:6px; align-items:flex-end; height:70px; }
+  .bars i { width:8px; border-radius:4px; background:var(--c); animation:eq 1s ease-in-out infinite alternate; }
+  .bars i:nth-child(2){animation-delay:-.2s} .bars i:nth-child(3){animation-delay:-.5s} .bars i:nth-child(4){animation-delay:-.1s} .bars i:nth-child(5){animation-delay:-.7s} .bars i:nth-child(6){animation-delay:-.35s}
+  @keyframes eq { from { height:12%; } to { height:100%; } }
+  .steps { position:absolute; right:30px; top:34px; display:flex; flex-direction:column; gap:8px; }
+  .steps i { display:block; height:10px; border-radius:5px; background:var(--c); opacity:.25; animation:step 3s infinite; }
+  .steps i:nth-child(1){width:120px} .steps i:nth-child(2){width:90px;animation-delay:.6s} .steps i:nth-child(3){width:140px;animation-delay:1.2s} .steps i:nth-child(4){width:70px;animation-delay:1.8s}
+  @keyframes step { 0%,100% { opacity:.2; transform:translateX(0); } 20% { opacity:1; transform:translateX(-8px); } }
+  .caption { position:relative; z-index:1; align-self:flex-start; min-height:38px; font-family:var(--mono); font-size:14px; padding:8px 12px; border-radius:10px; background:rgba(0,0,0,.55); border:1px solid color-mix(in srgb, var(--c) 50%, transparent); color:var(--ink); }
+  .caption::after { content:"▌"; color:var(--c); animation:blink 1s steps(1) infinite; margin-left:2px; }
+  @keyframes blink { 50% { opacity:0; } }
+
+  .reveal { opacity:0; transform:translateY(40px); transition:opacity .9s cubic-bezier(.2,.8,.2,1), transform .9s cubic-bezier(.2,.8,.2,1); }
+  .reveal.in { opacity:1; transform:none; }
+
+  /* stats */
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:22px; padding:0 clamp(16px,6vw,96px) 110px; }
+  .stat .n { font-size:clamp(56px,7vw,96px); font-weight:800; letter-spacing:-.04em; line-height:1; }
+  .stat p { color:var(--muted); margin:10px 0 0; font-size:17px; }
+  .src { font-family:var(--mono); font-size:12px; color:var(--muted); padding:0 clamp(16px,6vw,96px); margin-top:-80px; margin-bottom:90px; }
+
+  footer { border-top:1px solid var(--line); padding:44px clamp(16px,6vw,96px); display:flex; flex-wrap:wrap; justify-content:space-between; gap:20px; color:var(--muted); font-size:15px; }
+  footer .big { font-size:clamp(40px,6vw,80px); font-weight:800; letter-spacing:-.04em; color:var(--ink); line-height:1; }
+
+  @media (max-width:700px) { nav .links a:not(.keep) { display:none; } .viz,.bars,.steps { display:none; } }
+  @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01s !important; animation-iteration-count:1 !important; transition:none !important; } .reveal { opacity:1; transform:none; } }
 </style>
 </head>
 <body>
-<main>
-  <h1>Finger<span>tips</span></h1>
-  <p class="lead">Your hands. Your voice. One place for Deaf, hard-of-hearing and nonspeaking people to call, meet, learn and play. Built at HackUMass XIV.</p>
-  <div class="top">
-    <a class="btn" href="https://youtu.be/y6x7Rp9-KN8" target="_blank" rel="noopener">Watch the demo video</a>
-    <a class="btn ghost" href="https://github.com/GaneshMunagala714/fingertips" target="_blank" rel="noopener">Code on GitHub</a>
+<div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<canvas id="trail" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="wrap">
+  <nav>
+    <a class="logo" href="/">Finger<span>tips</span></a>
+    <div class="links">
+      <a href="#apps">Apps</a>
+      <a href="https://youtu.be/y6x7Rp9-KN8" target="_blank" rel="noopener">Demo</a>
+      <a class="keep" href="https://github.com/GaneshMunagala714/fingertips" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="kicker"><b></b>Live · Built at HackUMass XIV</div>
+    <h1>
+      <span class="w"><span style="animation-delay:.05s">Your</span></span>
+      <span class="w"><span style="animation-delay:.15s">hands.</span></span><br>
+      <span class="w"><span style="animation-delay:.3s">Your</span></span>
+      <span class="w"><span class="swap grad" id="swap" style="animation-delay:.42s">voice.</span></span>
+    </h1>
+    <p class="sub">One ecosystem for Deaf, hard-of-hearing and nonspeaking people. Sign on a real phone call, get captioned in a meeting, learn a task from a video, and make music with your hands.</p>
+    <div class="cta">
+      <a class="btn magnet" href="#apps"><span>Try it now</span><span class="arrow">→</span></a>
+      <a class="btn ghost magnet" href="https://youtu.be/y6x7Rp9-KN8" target="_blank" rel="noopener"><span>Watch the 3-min demo</span></a>
+    </div>
+  </header>
+
+  <div class="marquee" aria-hidden="true"><div>
+    <span>Ordering dinner.</span><em>/</em><span class="grad">Booking a doctor.</span><em>/</em><span>Joining a meeting.</span><em>/</em><span class="grad">Learning a new job.</span><em>/</em><span>Making music.</span><em>/</em>
+    <span>Ordering dinner.</span><em>/</em><span class="grad">Booking a doctor.</span><em>/</em><span>Joining a meeting.</span><em>/</em><span class="grad">Learning a new job.</span><em>/</em><span>Making music.</span><em>/</em>
+  </div></div>
+
+  <section class="apps" id="apps">
+    <h2 class="h2 reveal">Four ways to be <span class="grad">heard.</span></h2>
+    <div class="grid">
+      <article class="card reveal" style="--c:var(--call)">
+        <div class="viz"><span class="ring"></span><span class="ring"></span><span class="ring"></span></div>
+        <div class="num">01 · CALL</div>
+        <h3>Phone calls</h3>
+        <p>Call any number from your browser. Their words become live captions. You sign, tap or type, and they hear your voice. Or call us: +1 (878) 877-6285.</p>
+        <div class="row"><a class="btn magnet" href="/call"><span>Open phone calls</span><span class="arrow">→</span></a></div>
+      </article>
+
+      <article class="card reveal" style="--c:var(--meet)">
+        <div class="num">02 · MEET</div>
+        <h3>Video calls &amp; Google Meet</h3>
+        <p>Start a video call and share the link. Your signed sentence is spoken into the call with a Gemini voice and captioned on your camera. The Chrome extension does it inside Google Meet.</p>
+        <div class="caption" id="cc"></div>
+        <div class="row">
+          <a class="btn magnet" id="video" href="/v/demo"><span>Start a video call</span><span class="arrow">→</span></a>
+          <a class="btn ghost magnet" href="/talkbridge-meet.zip" download><span>Meet extension</span></a>
+        </div>
+        <div class="fine">Unzip → chrome://extensions → Developer mode → Load unpacked</div>
+      </article>
+
+      <article class="card reveal" style="--c:var(--learn)">
+        <div class="steps"><i></i><i></i><i></i><i></i></div>
+        <div class="num">03 · LEARN</div>
+        <h3>Learn any task</h3>
+        <p>Gemini watches a phone video of a hands-on task and turns it into a lesson: every step, which hand does what, and where it happens.</p>
+        <div class="row">
+          <a class="btn magnet" href="https://youtu.be/y6x7Rp9-KN8?t=123" target="_blank" rel="noopener"><span>See it in action</span><span class="arrow">→</span></a>
+          <a class="btn ghost magnet" href="https://github.com/GaneshMunagala714/fingertips/tree/main/fingertip/learn" target="_blank" rel="noopener"><span>Code</span></a>
+        </div>
+      </article>
+
+      <article class="card reveal" style="--c:var(--play)">
+        <div class="bars"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="num">04 · PLAY</div>
+        <h3>Sign2Speak JAM</h3>
+        <p>Your hands are the instrument. Fingers pick the chord, movement plays it, and every note glows on screen and buzzes in your hand. Invite friends to the same room.</p>
+        <div class="row"><a class="btn magnet" href="/jam"><span>Open JAM</span><span class="arrow">→</span></a></div>
+      </article>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="stat reveal"><div class="n grad" data-count="1.5" data-dec="1" data-suf="B">0</div><p>people live with hearing loss</p></div>
+    <div class="stat reveal"><div class="n grad" data-count="430" data-suf="M">0</div><p>need hearing rehabilitation</p></div>
+    <div class="stat reveal"><div class="n grad" data-count="70" data-suf="%">0</div><p>of deaf people ask family to make phone calls for them</p></div>
   </div>
+  <div class="src">Sources: WHO fact sheet (2026); BT &amp; UK Council on Deafness survey.</div>
 
-  <div class="grid">
-    <section class="card">
-      <div class="tag">Call</div>
-      <h2>Phone calls</h2>
-      <p>Call any phone number from the browser. Their words appear as live captions. You answer in ASL, by tapping or by typing, and Fingertips speaks your reply. Phone number: +1 (878) 877-6285.</p>
-      <div class="links"><a class="btn" href="/call">Open phone calls</a></div>
-    </section>
+  <footer>
+    <div class="big">Finger<span class="grad">tips</span></div>
+    <div>Works best in Chrome on a laptop with a camera.<br>
+      <a href="https://github.com/GaneshMunagala714/fingertips/blob/main/print/asl-top200-cards.pdf" target="_blank" rel="noopener">Printable ASL sign cards</a> ·
+      <a href="https://github.com/GaneshMunagala714/fingertips" target="_blank" rel="noopener">GitHub</a> ·
+      <a href="https://youtu.be/y6x7Rp9-KN8" target="_blank" rel="noopener">Demo video</a></div>
+  </footer>
+</div>
 
-    <section class="card">
-      <div class="tag">Meet</div>
-      <h2>Video calls and Google Meet</h2>
-      <p>Start a video call, send the link to anyone, and sign. Your sentence is spoken into the call with a Gemini voice and shown as a caption. The Chrome extension does the same inside Google Meet.</p>
-      <div class="links">
-        <a class="btn" id="video" href="/v/demo">Start a video call</a>
-        <a class="btn ghost" href="/talkbridge-meet.zip" download>Meet extension</a>
-      </div>
-      <p class="fine">Extension: unzip, open chrome://extensions, turn on Developer mode, choose Load unpacked.</p>
-    </section>
-
-    <section class="card">
-      <div class="tag">Learn</div>
-      <h2>Learn any hands-on task</h2>
-      <p>Gemini watches a phone video of a task and turns it into a step-by-step lesson: every step, which hand does what, and where it happens.</p>
-      <div class="links">
-        <a class="btn" href="https://youtu.be/y6x7Rp9-KN8?t=123" target="_blank" rel="noopener">See it in the demo</a>
-        <a class="btn ghost" href="https://github.com/GaneshMunagala714/fingertips/tree/main/fingertip/learn" target="_blank" rel="noopener">Learn code</a>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="tag">Play</div>
-      <h2>Sign2Speak JAM</h2>
-      <p>Make music with your hands. Fingers pick the chord, movement plays it, and every note is shown as light and felt as a vibration. Invite friends into the same room.</p>
-      <div class="links"><a class="btn" href="/jam">Open JAM</a></div>
-    </section>
-  </div>
-
-  <footer>Works best in Chrome on a laptop with a camera. Printable ASL sign cards: <a href="https://github.com/GaneshMunagala714/fingertips/blob/main/print/asl-top200-cards.pdf" target="_blank" rel="noopener">top 200 signs (PDF)</a>.</footer>
-</main>
 <script>
-  // give each visitor their own video call room
-  const r = Math.random().toString(36).slice(2, 8);
-  document.getElementById('video').href = '/v/' + r;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// fresh video call room per visitor
+document.getElementById('video').href = '/v/' + Math.random().toString(36).slice(2, 8);
+
+// headline word swap
+const words = ['voice.', 'call.', 'meeting.', 'lesson.', 'music.'];
+const swap = document.getElementById('swap'); let wi = 0;
+if (!reduce) setInterval(() => {
+  wi = (wi + 1) % words.length;
+  swap.animate([{ opacity: 1, transform: 'none', filter: 'blur(0)' }, { opacity: 0, transform: 'translateY(-30%)', filter: 'blur(8px)' }], { duration: 260, fill: 'forwards', easing: 'ease-in' })
+    .onfinish = () => { swap.textContent = words[wi]; swap.animate([{ opacity: 0, transform: 'translateY(30%)', filter: 'blur(8px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], { duration: 420, fill: 'forwards', easing: 'cubic-bezier(.2,.8,.2,1)' }); };
+}, 2400);
+
+// typing caption in the Meet card
+const lines = ['Could we take a five-minute break?', 'Hi, this is Ganesh. How are you?', 'Yes, I can pick it up at 8.'];
+const cc = document.getElementById('cc'); let li = 0;
+function typeLine() { const t = lines[li]; let n = 0; cc.textContent = '';
+  const step = () => { cc.textContent = t.slice(0, ++n); if (n < t.length) setTimeout(step, 45); else setTimeout(() => { li = (li + 1) % lines.length; typeLine(); }, 2200); };
+  step(); }
+reduce ? (cc.textContent = lines[0]) : typeLine();
+
+// scroll reveal + count-up
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  e.target.classList.add('in'); io.unobserve(e.target);
+  e.target.querySelectorAll('[data-count]').forEach(n => {
+    const to = +n.dataset.count, dec = +(n.dataset.dec || 0), suf = n.dataset.suf || '', t0 = performance.now();
+    const tick = now => { const k = Math.min(1, (now - t0) / 1400), v = to * (1 - Math.pow(1 - k, 3)); n.textContent = v.toFixed(dec) + suf; if (k < 1) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  });
+}), { threshold: .15 });
+document.querySelectorAll('.reveal').forEach((el, i) => { el.style.transitionDelay = (i % 4) * 90 + 'ms'; io.observe(el); });
+
+// 3D tilt + spotlight on cards
+document.querySelectorAll('.card').forEach(c => {
+  c.addEventListener('pointermove', e => {
+    const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    c.style.setProperty('--mx', x * 100 + '%'); c.style.setProperty('--my', y * 100 + '%');
+    if (!reduce) c.style.transform = `perspective(900px) rotateX(${(.5 - y) * 7}deg) rotateY(${(x - .5) * 9}deg) translateY(-4px)`;
+  });
+  c.addEventListener('pointerleave', () => { c.style.transform = ''; });
+});
+
+// magnetic buttons
+if (!reduce) document.querySelectorAll('.magnet').forEach(b => {
+  b.addEventListener('pointermove', e => { const r = b.getBoundingClientRect(); b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .18}px, ${(e.clientY - r.top - r.height / 2) * .3}px)`; });
+  b.addEventListener('pointerleave', () => { b.style.transform = ''; });
+});
+
+// fingertip trail: glowing particles follow the pointer
+const cv = document.getElementById('trail'), ctx = cv.getContext('2d'); let W, H, dpr = Math.min(2, devicePixelRatio || 1);
+const resize = () => { W = cv.width = innerWidth * dpr; H = cv.height = innerHeight * dpr; cv.style.width = innerWidth + 'px'; cv.style.height = innerHeight + 'px'; };
+addEventListener('resize', resize); resize();
+const cols = ['#ff7a7a', '#8ab4ff', '#7fe0b5', '#f07cf4']; const P = [];
+let px = innerWidth / 2, py = innerHeight / 2, idle = 0;
+addEventListener('pointermove', e => { px = e.clientX; py = e.clientY; idle = 0;
+  for (let i = 0; i < 3; i++) P.push({ x: px * dpr, y: py * dpr, vx: (Math.random() - .5) * 2.4 * dpr, vy: (Math.random() - .5) * 2.4 * dpr - .6 * dpr, life: 1, r: (2 + Math.random() * 4) * dpr, c: cols[(Math.random() * 4) | 0] }); });
+function frame(t) {
+  ctx.clearRect(0, 0, W, H);
+  if (++idle > 90 && Math.random() < .35) { // when idle, a few sparks orbit lazily
+    const a = t / 900, x = (innerWidth / 2 + Math.cos(a) * innerWidth * .32) * dpr, y = (innerHeight * .45 + Math.sin(a * 1.3) * innerHeight * .2) * dpr;
+    P.push({ x, y, vx: 0, vy: -.4 * dpr, life: 1, r: 3 * dpr, c: cols[(t / 500 | 0) % 4] });
+  }
+  ctx.globalCompositeOperation = 'lighter';
+  for (let i = P.length - 1; i >= 0; i--) { const p = P[i];
+    p.x += p.vx; p.y += p.vy; p.vx *= .97; p.vy *= .97; p.life -= .018;
+    if (p.life <= 0) { P.splice(i, 1); continue; }
+    ctx.globalAlpha = p.life * .9; ctx.fillStyle = p.c; ctx.shadowColor = p.c; ctx.shadowBlur = 16 * dpr;
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.r * p.life, 0, 6.283); ctx.fill(); }
+  ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+  requestAnimationFrame(frame);
+}
+if (!reduce) requestAnimationFrame(frame);
 </script>
 </body>
 </html>
