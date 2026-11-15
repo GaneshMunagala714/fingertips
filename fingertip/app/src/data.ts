@@ -11,7 +11,7 @@ export const DEFAULT_CONTACTS: Contact[] = [
 ]
 
 // Display names follow the screen designs. Each maps to an ElevenLabs voice ID;
-// verify the IDs in the ElevenLabs voice library before the demo (DECISIONS.md D-006).
+// verify the IDs in the ElevenLabs voice library before the demo (docs/team/DECISIONS.md D-006).
 export type Voice = { id: string; name: string; feel: string; age: string; accent: string; gender: 'f' | 'm'; foreign: boolean }
 export const VOICES: Voice[] = [
   { id: 'XrExE9yKIg1WjnnlVkGX', name: 'Maya', feel: 'Warm and friendly', age: '20s', accent: 'American', gender: 'f', foreign: false },
@@ -71,3 +71,5 @@ export function mmss(sec: number): string {
   const s = Math.max(0, Math.floor(sec))
   return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
 }
+
+

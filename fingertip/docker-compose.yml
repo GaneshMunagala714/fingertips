@@ -6,6 +6,12 @@ services:
     volumes:
       - ./logs:/srv/logs
       - ./model/data:/srv/model/data   # team sign recordings (landmarks only)
+  learn:
+    build: ./learn
+    env_file: .env                     # GEMINI_API_KEY and the WORKSTUDY_* settings
+    restart: unless-stopped
+    volumes:
+      - ./learn/data:/data             # saved lessons (includes the demo lesson) and templates
   caddy:
     image: caddy:2
     restart: unless-stopped
@@ -15,6 +21,8 @@ services:
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
-    depends_on: [app]
+    depends_on: [app, learn]
 volumes:
   caddy_data:
+
+

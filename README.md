@@ -1,324 +1,312 @@
-# Fingertips
+# FingerTips
 
-**Your hands. Your voice.**
+**Ordering dinner. Booking a doctor. Joining a meeting. Learning a new job.**
+**They all assume you can hear.**
 
-Fingertips lets Deaf, hard-of-hearing and nonspeaking people make real phone calls and video calls in their own
-language. The other person's words appear as live captions. You answer in ASL, by tapping or by typing, and
-Fingertips speaks your reply. The person on the other end uses an ordinary phone or browser and installs nothing.
+FingerTips is one ecosystem that makes those everyday moments work for Deaf, hard-of-hearing
+and non-speaking people. You sign, and the person on the other end of a real phone call hears a
+natural voice. You join a meeting, and your hands get captions, not just everyone else's voice.
+You watch a training video, and every step is shown, looped and written out, with nothing left
+to sound.
+
+Built in 36 hours at HackUMass XIV.
+
+## Live now
 
 | | |
 |---|---|
-| Live app | https://66-135-26-183.sslip.io (Chrome on a laptop) |
+| Live calling app | https://66-135-26-183.sslip.io (Chrome on a laptop) |
 | Phone number | +1 (878) 877-6285 |
 | Google Meet extension | [talkbridge-meet.zip](https://66-135-26-183.sslip.io/talkbridge-meet.zip) |
 | ASL sign cards | [print/asl-top200-cards.pdf](print/asl-top200-cards.pdf) |
 | JAM | https://66-135-26-183.sslip.io/jam |
 
-Built by Ganesh Munagala at HackUMass XIV (November 13–15, 2026). Sign recognition uses the model and
-preprocessing from [Fingertip by Shruti](https://github.com/Shrutibrahma/HackUMass-26) (used with permission),
-SignBart-ASL-2730 trained on ASL Citizen, and Google MediaPipe. JAM's finger-count → chord idea is from
+## Where everything lives
+
+| Folder | What it is |
+|---|---|
+| repo root (`server/`, `web/`, `extension/`, `deploy/`) | The deployed calling app: phone and video calls, Meet voice, JAM. Full guide: [LIVE_APP.md](LIVE_APP.md) |
+| [`fingertip/`](fingertip/README.md) | The FingerTips phone app (Call, Meet captions, Play), the call server with Gemini and Grok Voice, and the sign model |
+| [`fingertip/learn/`](fingertip/learn/README.md) | Learn: turns any hands-on video into an accessible lesson |
+| [`fingertip/docs/`](fingertip/docs/) | Architecture diagrams (draw.io), Devpost write-up, team notes |
+
+---
+
+## The problem
+
+| | |
+|---|---|
+| **1.5 billion** | people live with hearing loss. **430 million** need rehabilitation, and that grows to **700 million+ by 2050**. (WHO, March 2026) |
+| **1 in 20** | Deaf or hard-of-hearing people can complete tasks over the phone. **70%** ask family to make calls for them. (BT and UK Council on Deafness) |
+| **57.7%** | of Deaf adults are employed, more than 15 points below hearing adults. (National Deaf Center) |
+| | NSF-funded research on machining training found Deaf learners hit obstacles in the foundational stages, where most of the teaching is spoken. |
+
+Phones, meetings and training were all designed around sound. Most tools fix one of them. We
+wanted to fix the whole day.
+
+## Not one app. An ecosystem.
+
+| | Tool | Life stage | What it does |
+|---|---|---|---|
+| **Connect** | **Call** | Everyday | Sign during a real phone call. They hear a human-sounding voice. You read their words as captions. |
+| **Participate** | **Meet** | School and work | A Chrome extension for Google Meet and Zoom that captions your hands, drawn right into your camera. |
+| **Grow** | **Learn** | Learning | Any hands-on video becomes a step-by-step lesson you can follow with your eyes. Lives in [`learn/`](fingertip/learn/README.md). |
+| **Express** | **Play** | Expression | Your gestures play music you can see. Pitch and rhythm become shapes and colour. |
+
+The editable architecture diagrams are in [`fingertip/docs/architecture.drawio`](fingertip/docs/architecture.drawio). Open the
+file in [diagrams.net](https://app.diagrams.net) or the VS Code Draw.io extension. It has
+four pages: Overview, Call, Meet and Learn.
+
+---
+
+## Call
+
+### What already exists
+
+| | Sign in a real call | They install nothing | No interpreter in the middle | AI helps you phrase it, you approve it |
+|---|:-:|:-:|:-:|:-:|
+| Video Relay Service | Yes | Yes | No | No |
+| Rylo, Rogervoice | No | Yes | Yes | No |
+| Apple Live Speech | No | Yes | Yes | No |
+| Google SL2T | Yes | No | Yes | No |
+| **FingerTips** | **Yes** | **Yes** | **Yes** | **Yes** |
+
+### What's new
+
+- **You sign during a real call.** Other apps make you type, or put a human interpreter
+  between you and the person you're talking to.
+- **The voice sounds human.** Not a robotic text-to-speech line: a natural voice with real
+  pauses that can be interrupted, like a person on the phone.
+- **Every answer is yours.** The AI suggests a sentence and you approve it. It never agrees to a
+  payment, a booking or a time that you didn't sign.
+
+### How it works
+
+```mermaid
+flowchart LR
+    A[You sign] --> B[Signs to words<br/>on-device tracking,<br/>~50 ms per sign]
+    B --> C[Gemini<br/>writes one natural sentence]
+    C --> D[You approve]
+    D --> E[Grok Voice<br/>speaks it verbatim]
+    E --> F[Twilio<br/>real phone call]
+    F -. their speech as captions .-> A
+```
+
+1. **Signs to words.** MediaPipe tracks your hands and body in the browser. Only x/y points
+   leave the phone, never video. The server names each sign with SignBart (exported to ONNX,
+   about 30 ms per sign). There are 50 everyday signs (hello, yes, no, help, tomorrow, bathroom,
+   and more). If the model isn't sure, it shows you two options and waits.
+2. **Gemini** turns your signs, plus what the caller just asked, into one natural sentence.
+3. **You approve.** Guards check that every number, time, price and name in that sentence came
+   from you, your note or the caller. A signed NO always becomes a no. Money and bookings
+   need an extra tap.
+4. **Grok Voice** speaks the approved words exactly as written, in native phone audio.
+5. **Twilio** carries the real call. The other person just answers their phone.
+
+All of this is orchestrated by one FastAPI service on **Vultr**.
+
+### Why Grok
+
+- **Native phone audio.** It speaks μ-law at 8 kHz, the format phone lines use, so there's no
+  transcoding step adding delay.
+- **Natural interruptions.** If the caller talks over the voice, it stops like a person would.
+- **Approved words, verbatim.** Sentences with facts in them are sent with xAI's
+  `force_message`, so the model can't reword them.
+
+The real settings are `VOICE_ENGINE=grok`, `XAI_API_KEY` and `GROK_VOICE_MODEL`. Without them the
+call runs on Twilio ConversationRelay with an ElevenLabs voice.
+
+---
+
+## Meet
+
+**Meetings caption voices. Not hands.**
+
+Google Meet and Zoom already show captions for people who speak. The extension adds the other
+half: you sign or type, approve the sentence, and it's drawn into your own camera tile so
+everyone in the meeting can read it. Optionally, a voice says it into the meeting too, using
+Gemini text-to-speech or ElevenLabs. Nobody else installs anything.
+
+```mermaid
+flowchart LR
+    A[Extension in Meet / Zoom] --> B[Signs or typing<br/>to an approved sentence]
+    B --> C[Caption drawn<br/>into your camera]
+    B --> D[Optional voice<br/>into the mic]
+    C --> E[Everyone in the meeting]
+    D --> E
+```
+
+---
+
+## Learn
+
+**The gap.** Hands-on jobs are taught by someone standing next to you and talking: "now grab
+the screw, not that one, the short one." Training videos help, but the important moment lasts
+half a second, and the explanation is spoken, not shown.
+
+**Built from scratch.** Film the job once on a phone. Gemini watches and listens, and turns it
+into a lesson in under 40 seconds.
+
+```mermaid
+flowchart LR
+    A[Phone video] --> B[Gemini watches<br/>and listens]
+    B --> C[Steps as<br/>structured data]
+    C --> D[Accessible lesson]
+```
+
+A real step from the demo lesson (trimmed):
+
+```json
+{ "title": "Connect ground wire to rail", "start": 137.0, "end": 141.6, "hand": "R",
+  "materials": ["black jumper wire", "breadboard", "Arduino Uno"],
+  "key_points": ["Ensure wire is seated firmly in the negative rail pinhole"],
+  "transcript": [
+    { "t": 137.0, "text": "Right hand positions the pin of the black wire over the top blue rail near column 60" },
+    { "t": 138.5, "text": "Right hand presses the black wire pin into the top blue rail hole at column 60" },
+    { "t": 140.5, "text": "Right hand releases the black wire" } ] }
+```
+
+Each step plays on a loop at the speed you choose, with captions saying what the hands do. A
+numbered map shows where each step happens, and you can type a question about the task. Saved
+lessons open instantly and never call the model again. Details: [learn/README.md](fingertip/learn/README.md).
+
+### Why Gemini
+
+- **Video plus audio** in one model, so the lesson knows both what was done and what was said.
+- **Grounded in time.** Every step has MM:SS start and end times.
+- **Grounded in space.** Every location is a box in 0 to 1000 coordinates, which becomes the
+  workspace map.
+- **Structured data.** The output is validated JSON, not prose we have to parse.
+- **Agentic video** (Google-reported): 88% fewer tokens, 66% lower cost, 7% better accuracy.
+
+The same engine also powers **Show it** inside a call: film a problem (a leak, a warning light)
+and the other person gets the facts, each linked to the exact frame.
+
+---
+
+## Play
+
+Sound becomes something you can see and steer. Move your hand left and right to choose a note,
+raise it to make the sound brighter, and pinch to play. An open palm plays a soft chord. Every
+note sits on a pentatonic scale, so nothing sounds wrong, and the music draws itself on screen as
+you play. It runs entirely in the browser, with haptics where the device supports them.
+
+---
+
+## Try it in two minutes
+
+You need Python 3.11+ and Node 20+. No API keys are needed to try it: without keys, the server
+uses a rules-based brain and a simulated phone line, so every screen works.
+
+```bash
+cd fingertip/app
+npm ci
+npm run build
+```
+
+```bash
+cd fingertip/server
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --port 8000
+```
+
+Learn runs as its own small server. In a second terminal:
+
+```bash
+cd fingertip/learn
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+python run.py
+```
+
+On Mac or Linux, activate with `source .venv/bin/activate` instead.
+
+Then open:
+
+| Link | What you see |
+|---|---|
+| http://127.0.0.1:8000/#demo | **Start here.** Skips setup and rings a rehearsal call from "Mom" right away |
+| http://127.0.0.1:8001/ | **Learn.** Opens straight into the demo lesson, already playing |
+| http://127.0.0.1:8000/ | The phone app |
+| http://127.0.0.1:8000/#signs-lab | Sign recognition lab: camera, framing, hand setting |
+| http://127.0.0.1:8000/#gallery | Every screen at once |
+
+Use `127.0.0.1`, not `localhost`. On Windows, `localhost` tries IPv6 first and adds about
+200 ms to every request.
+
+**Meet extension:** in Chrome, open `chrome://extensions`, turn on Developer mode, click
+**Load unpacked** and choose `fingertip/extension/`.
+
+**Real calls:** copy `.env.example` to `.env` and fill in Twilio, Gemini and (optionally) xAI
+keys. Deployment to Vultr is one command (`docker compose up -d --build`). It starts the call
+server, Learn (at `learn.` plus your domain) and Caddy, which handles HTTPS.
+Full steps are in [docs/team/HANDOFF.md](fingertip/docs/team/HANDOFF.md).
+
+### Tests
+
+```bash
+cd fingertip/server && python -m pytest -q tests
+```
+
+```bash
+cd fingertip/app && npx vitest run
+```
+
+```bash
+python fingertip/eval/bench.py
+```
+
+Today that's 74 server tests and 13 app tests passing, plus 40 conversation cases in the bench.
+
+---
+
+## What we measured
+
+| Check | Result |
+|---|---|
+| 313 real ASL Citizen clips, our signs, hand setting matched | 96% top-1 within our vocabulary |
+| Real signer phrases through the app's own pipeline | 22 of 24 signs right |
+| Frame rate tolerance | 98% at 15 fps, 95% at 10 fps, 93% at 6 fps |
+| Sign classification on the server | about 30 ms per sign on CPU, about 50 ms round trip |
+
+These numbers come from public signers. A held-out teammate check is in `eval/sign_eval.py`.
+
+---
+
+## Repository (inside `fingertip/`)
+
+```
+app/         Signer app: React + TypeScript PWA (Call, Meet panel, Play, Signs lab)
+server/      FastAPI: Twilio webhooks, call controller, guards, Gemini, Grok Voice, sign classifier
+model/       SignBart ONNX model and the 2,730-sign label set (50 active)
+extension/   Chrome extension for Google Meet and Zoom Web
+learn/       Learn: video to accessible lesson (FastAPI + Gemini, its own server, demo lesson included)
+eval/        Conversation bench and sign recognition checks
+docs/        Architecture (draw.io), event contract, team notes, Devpost write-up
+```
+
+## Privacy
+
+Raw video never leaves your phone during calls: only hand and body points do. Calls are not
+recorded. Transcripts live in memory and are saved only to your own phone, and only if you tap
+**Save transcript**. Strangers and businesses always hear a short, honest heads-up that an app
+is voicing for you.
+
+## Powered by
+
+Google Gemini · xAI Grok Voice · Twilio · Vultr · MediaPipe · ElevenLabs · React · FastAPI
+
+Built at HackUMass XIV by Shruti Brahma and Ganesh Munagala. JAM's finger-count to chord idea is from
 [Gesture Synth](https://github.com/ericwei97-cloud/gesture-synth) by Eric Wei.
 
----
-
-## Contents
-
-1. [Features](#1-features)
-2. [Getting started](#2-getting-started)
-3. [Architecture](#3-architecture)
-4. [Project structure](#4-project-structure)
-5. [Local setup](#5-local-setup)
-6. [Deployment](#6-deployment)
-7. [Testing](#7-testing)
-8. [Sign recognition accuracy](#8-sign-recognition-accuracy)
-9. [Limitations](#9-limitations)
-
----
-
-## 1. Features
-
-### Phone calls
-
-- A familiar phone app in the browser: Keypad, Contacts and Recents.
-- Call any US number, or receive calls on the Fingertips number. Incoming calls ring in the browser with
-  Accept and Decline.
-- Everything the caller says appears as live captions, first as a draft and then final. Caption size is adjustable.
-- Answer by signing, with one-tap quick replies, with AI reply suggestions, or by typing a few words
-  ("yes 8 works") that become a full sentence.
-- The caller first hears *"Hi, this is Ganesh's interpreter. How are you?"* (set with `USER_NAME` or `GREETING`).
-
-### Signing in ASL
-
-```mermaid
-flowchart LR
-    A["You sign<br/>one word at a time"] --> B["MediaPipe<br/>in your browser"]
-    B -- "landmarks only" --> C["SignBart model<br/>on the server"]
-    C --> D["Words<br/><i>hello · thank you</i>"]
-    D -- "hands down" --> E["Gemini<br/>makes a sentence"]
-    E --> F["3-second<br/>countdown"]
-    F --> G["They hear it"]
-```
-
-| Step | What happens |
-|---|---|
-| Sign | A sign starts when your hand comes up and moves, and ends when your hands drop or hold still. Each recognized word is added to your reply. |
-| Check | If the model isn't sure, it shows its top guesses so you can pick the right one. |
-| Send | Keep your hands down for about 1.5 seconds. Gemini turns the words into a sentence and counts down 3 seconds before speaking it. Cancel, sign again or type to stop it. Auto-send can be turned off in Settings. |
-
-Sign sets (Settings → Sign recognition):
-
-| Set | Size | Notes |
-|---|---|---|
-| Top 200 (default) | 200 signs | Everyday and phone-call signs. Most accurate. |
-| All signs | 2,730 signs | Full ASL Citizen vocabulary. More words, more mistakes. |
-| Everyday | 59 signs | Measured by Fingertip on real signers. |
-| Quick signs | 7 hand shapes | Thumb up = "Yes.", flat palm = "One moment", fist = say the top suggestion. Instant, no model. |
-
-Video never leaves your device: only hand and body landmark coordinates are sent, one sign at a time.
-The model takes about 12 ms per sign on the server's CPU.
-
-### Video calls
-
-A one-to-one video call where the guest needs no app or account.
-
-1. On the Keypad, tap the video button. A call page opens with an invite link.
-2. Send the link. The other person opens it in Chrome and taps Join call.
-3. Sign or type on the right. They hear your sentence in a voice and see it as a caption over your video.
-4. What they say is captioned for you, using speech recognition in their browser.
-
-### Google Meet extension
-
-Sign in a Google Meet call. Your sentence is spoken into your Meet microphone and drawn as a caption on your
-camera, so everyone in the meeting hears and sees it. Nobody else installs anything.
-
-1. Download [talkbridge-meet.zip](https://66-135-26-183.sslip.io/talkbridge-meet.zip) and unzip it.
-2. In Chrome, open `chrome://extensions`, turn on Developer mode, click Load unpacked and choose the `talkbridge-meet` folder.
-3. Join Google Meet after installing (or turn your mic and camera off and on once).
-4. Click Fingertips at the bottom left, then Open signing window. Sign, then drop your hands.
-
-| Option | Default | What it does |
-|---|---|---|
-| Voice only | On | Keeps your real microphone silent, so you can leave Meet's mic on and people hear only your signed sentences. |
-| Show what I sign | On | A box at the top of your screen shows each sign and its meaning, the words so far, the countdown and what was spoken. Only you see it. |
-| Caption on my camera | On | Draws your sentence into your outgoing video. |
-
-If Meet's mic is muted when a sentence is ready, Fingertips unmutes it, speaks, and mutes it again.
-
-### Safety guards
-
-An AI that changes what you meant is worse than no AI on a live call. Every reply passes through
-`server/guards.py`:
-
-| Guard | What it prevents |
-|---|---|
-| Fact check | Suggestions that invent numbers, times, dates or days nobody said. |
-| Polarity lock | A "no" becoming a "yes", or the other way round. |
-| Confirm sheet | Agreeing to money, payments, orders or bookings without an extra tap. |
-| Retry-safe send | A double tap or network retry being spoken twice. |
-| Barge-in | A reply cut off by the caller is marked, with a "Say it again" button. |
-| Signature check | Fake requests pretending to be Twilio. |
-
-### Sign cards
-
-A printable PDF of the 200 supported signs ([print/asl-top200-cards.pdf](print/asl-top200-cards.pdf)). Each card
-has numbered steps in plain English, pictures traced from a real Deaf signer, and a QR code to a video of the sign.
-
-### JAM
-
-A gesture-controlled instrument at `/jam` where every note is also drawn on screen, so a Deaf player can make and
-follow music without hearing it.
-
-| Part | What it does |
-|---|---|
-| Hands → music | Left-hand fingers 1–5 pick chords (C, Dm, Em, F, G). Right hand height sets volume, tilt sets tone, pinch holds. Melody and drum modes. |
-| Music → visuals | Pitch = height, loudness = width and glow, chords = connected labelled nodes, rhythm = beat lines and a 16-step grid. |
-| Play together | Invite link to a shared room with a shared clock and tempo. |
-| Export | Record, replay, and export JSON, PNG artwork and WAV. |
-
----
-
-## 2. Getting started
-
-1. Open https://66-135-26-183.sslip.io in Chrome on a laptop and allow the camera and microphone.
-2. Receive a call by calling **+1 (878) 877-6285** from any phone, then click Accept. Or type a number on the
-   Keypad and press Call.
-3. Read the caller's words as captions.
-4. Reply by signing a few words from the [sign cards](print/asl-top200-cards.pdf) (try HELLO, YES, THANK-YOU,
-   HELP, LATER), then drop your hands. You can also tap a suggestion or type.
-
----
-
-## 3. Architecture
-
-### Phone call
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant Y as You (browser)
-    participant S as Fingertips server
-    participant T as Twilio
-    participant C as Caller (any phone)
-
-    C->>T: speaks
-    T->>S: speech → text
-    S->>Y: live captions
-    Note over Y: you sign one word at a time<br/>(MediaPipe, video stays on your device)
-    Y->>S: hand + pose landmarks
-    Note over S: SignBart → words<br/>Gemini → sentence<br/>guards → safety checks
-    S->>Y: sentence + 3-second countdown
-    S->>T: text to speak
-    T->>C: hears your sentence
-```
-
-### Video call and Google Meet
-
-There is no Twilio here. The server turns the sentence into a voice, and the browser mixes it into the
-microphone the call is sending.
-
-```mermaid
-flowchart LR
-    A["You sign"] --> B["Fingertips server<br/>word → sentence → voice"]
-    B --> C["Your call microphone<br/><i>video call page or Meet extension</i>"]
-    C --> D["They hear it<br/>and see a caption"]
-```
-
-### Components
-
-| Component | Technology | Role |
-|---|---|---|
-| Web app | HTML, CSS, JavaScript (no build step) | Phone UI, captions, replies, signing panel |
-| Hand tracking | Google MediaPipe Tasks Vision | Hand and pose landmarks, in the browser |
-| Sign model | SignBart-ASL-2730 (ONNX Runtime) | Landmarks → ASL word, about 12 ms on CPU |
-| Sentences | Google Gemini | Words → natural sentence and reply suggestions (rules fallback without a key) |
-| Voice for video and Meet | Gemini speech generation | Sentence → spoken audio |
-| Phone calls | Twilio Voice + ConversationRelay | Speech → text for captions, text → speech for replies |
-| Server | Python, FastAPI | API, WebSockets, guards, video call signaling |
-| Video calls | WebRTC | Peer-to-peer video and audio between two browsers |
-| Meet extension | Chrome Manifest V3 | Mixes the voice into the mic and draws captions on the camera |
-| Hosting | Docker Compose, Caddy, Vultr | HTTPS with automatic certificates |
-
----
-
-## 4. Project structure
-
-```
-fingertips/
-├── server/                     FastAPI backend
-│   ├── main.py                 calls, incoming calls, Twilio relay, web routes
-│   ├── asl.py                  sign recognition API (SignBart, top-200 filter)
-│   ├── ai.py                   Gemini sentences and reply suggestions
-│   ├── guards.py               safety checks on every reply
-│   ├── meet.py                 video call rooms, sentence and voice APIs
-│   ├── jam.py                  JAM multiplayer rooms
-│   ├── setup_inbound.py        points the Twilio number at this server
-│   ├── popup.py                Mac only: brings the tab forward on an incoming call
-│   └── data/asl_top200.json    the 200 signs and their measured accuracy
-├── web/                        browser app
-│   ├── index.html, app.js      phone UI, call screen, settings
-│   ├── asl.js                  camera → MediaPipe → one sign at a time
-│   ├── signpad.js              signing panel for video calls and Meet
-│   ├── signs.js                7 quick hand signs
-│   ├── video/                  video call page
-│   ├── sign/                   signing window opened by the Meet extension
-│   └── jam/                    JAM instrument
-├── extension/                  Google Meet extension
-├── eval_signs/                 choosing and measuring the 200 signs, building the sign cards
-├── print/                      sign cards PDF
-├── tests/                      Python and browser tests
-├── deploy/                     Docker Compose and Caddy configuration
-├── Dockerfile
-└── fingertip/                  Fingertip by Shruti (sign model and preprocessing)
-```
-
----
-
-## 5. Local setup
-
-**Requirements:** Python 3.12+, a Twilio account with a phone number, a public HTTPS address (a free
-`cloudflared` tunnel works), and a Gemini API key (optional for calls, needed for the video and Meet voice).
-
-```bash
-git clone https://github.com/GaneshMunagala714/fingertips && cd fingertips
-python3 -m venv .venv && . .venv/bin/activate
-pip install -r server/requirements.txt
-cp .env.example .env                               # fill in the values below
-cloudflared tunnel --url http://localhost:8000     # copy the https URL into PUBLIC_URL
-uvicorn server.main:app --port 8000
-python -m server.setup_inbound                     # route calls to your number to this server
-```
-
-Then open http://localhost:8000.
-
-| Variable | Description |
-|---|---|
-| `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_NUMBER` | Twilio credentials and phone number |
-| `PUBLIC_URL` | Public HTTPS address of this server |
-| `GEMINI_API_KEY`, `GEMINI_MODEL` | Sentences, suggestions and the video/Meet voice |
-| `USER_NAME`, `GREETING` | What the caller hears first |
-| `VALIDATE_TWILIO_SIGNATURE` | Keep `true` |
-
-In the Twilio console, accept the Voice "Predictive and Generative AI/ML Features Addendum", which
-ConversationRelay requires. Trial accounts can only call verified numbers.
-
----
-
-## 6. Deployment
-
-Fingertips runs on a small shared-CPU server (2 vCPU, 4 GB, Ubuntu 24.04). No GPU is needed: hand tracking runs
-in the browser and the sign model runs on the CPU.
-
-```bash
-# on the server, with the repository and .env in /srv/talkbridge
-curl -fsSL https://get.docker.com | sh
-ufw allow 80/tcp && ufw allow 443/tcp
-cd /srv/talkbridge/deploy
-echo DOMAIN=<your-ip-with-dashes>.sslip.io > .env
-docker compose up -d --build
-
-# then, on your machine
-PUBLIC_URL=https://<your-ip-with-dashes>.sslip.io python -m server.setup_inbound
-```
-
-Caddy obtains the HTTPS certificate automatically, and `sslip.io` provides a hostname for any IP address, so no
-domain is needed.
-
----
-
-## 7. Testing
-
-```bash
-python -m pytest -q tests                        # guards, call flow with a fake Twilio, incoming calls, JAM rooms
-node --test tests/jam/logic.test.mjs             # JAM music theory and gesture mapping
-node tests/jam/smoke.mjs http://localhost:8000   # JAM in real Chrome (Playwright, fake camera)
-```
-
-The video call was tested end to end with two Chrome browsers (video both ways, signed sentence heard by the
-guest). The Meet extension was tested in a live Google Meet call and on a stand-in meeting page (voice in the
-outgoing microphone, caption in the outgoing video).
-
----
-
-## 8. Sign recognition accuracy
-
-| Step | Detail |
-|---|---|
-| Candidates | ASL-LEX 2.0 frequency ratings, six published core-vocabulary lists and phone-call vocabulary |
-| Measurement | Each candidate run through the Fingertips pipeline on 8 real signers' clips from ASL Citizen; signs the model confuses were dropped |
-| Result | 88.9% (1,422 of 1,600 clips) recognized within the 200-sign set; 68.1% when all 2,730 signs are allowed |
-| Pipeline fix | Sending only frames with visible hands cut accuracy from 89.5% to 77.1%; the browser now sends the whole sign plus half a second before it |
-
-The test clips may overlap the model's training data, so accuracy with new signers will be lower. The scripts
-are in `eval_signs/`. The sign cards are built by `eval_signs/make_cards.py` from `eval_signs/howto.json`.
-
----
-
-## 9. Limitations
-
-- Recognizes isolated ASL signs, one at a time. Continuous ASL sentences, fingerspelling and other sign languages
-  are not supported.
-- Some numbers have no sign in the model (two, four, five, ten): type them instead.
-- Tested with real hands and real calls, but not yet with Deaf users.
-- Video calls are one-to-one, and guest voice captions need Chrome.
-- The Meet extension works in Chrome with Google Meet only.
-- Incoming calls ring only while the app is open in a browser tab.
+## Sources
+
+- World Health Organization, *Deafness and hearing loss* fact sheet, March 2026.
+- BT and UK Council on Deafness, survey on telephone access for Deaf and hard-of-hearing people.
+- National Deaf Center on Postsecondary Outcomes, *Deaf People and Employment in the United States*.
+- NSF-funded research on Deaf learners in machining and manufacturing training.
+- Google, Gemini API documentation on video understanding (agentic video figures are Google-reported).
+- ASL Citizen dataset (Microsoft Research) and SignBart, used for sign recognition.

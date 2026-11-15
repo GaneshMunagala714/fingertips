@@ -2,7 +2,7 @@
 
 Labels from the build spec (§21). **Nothing here has touched a real phone, a real meeting or a live
 AI key yet**: the team hasn't provided Twilio, Gemini or Vultr credentials (see `WHAT_I_NEED.md`).
-So nothing that needs them can be "Working and verified". Updated 2026-11-14.
+So nothing that needs them can be "Working and verified".
 
 - **Working and verified:** run and observed on this laptop.
 - **Implemented but unverified:** code and offline tests exist; needs a real service, device or person.
@@ -16,7 +16,7 @@ So nothing that needs them can be "Working and verified". Updated 2026-11-14.
 | Incoming calls | Implemented but unverified | Rings only while the app is open (no push notifications) |
 | Call progress (Dialing, Ringing, They picked up, Connected) from real carrier events | Implemented but unverified | Shows Twilio's status callbacks only; the fake line correctly stays at "Starting the call..." |
 | Guards: no invented facts, "no" kept, hedges kept, money/bookings confirmed, no duplicates | Working and verified (offline) | `eval/bench.py`: 40/40 scripted calls, 36/36 guard units |
-| Barge-in: caller talks over the voice, unsaid rest kept (also a reply still queued behind a filler, fixed 2026-11-14) | Implemented but unverified | Bench cases pass; needs a real call |
+| Barge-in: caller talks over the voice, unsaid rest kept (also a reply still queued behind a filler) | Implemented but unverified | Bench cases pass; needs a real call |
 | Quick replies, customizable (Yes, No, Please repeat that, Give me a moment, …) | Working and verified (in browser) | Settings → Quick replies; always one tap away in a call |
 | Typing as a first-class input | Working and verified (in browser, fake line) | |
 | Caption size (Small → Extra large; 22 px+ at Medium) | Working and verified (in browser) | Extra large measured at 31.9 px |
@@ -75,3 +75,5 @@ So nothing that needs them can be "Working and verified". Updated 2026-11-14.
 | Vultr deploy | Blocked | No server or domain yet |
 | Typed frontend/backend contract | Done | `app/src/contract.ts`, `docs/CONTRACT.md`; every event carries `eid` + `ts` |
 | Product name | Done: **Fingertip** | Set in one place per surface (`app/src/brand.ts`). Web search found no communication app by that name; no trademark search done |
+
+

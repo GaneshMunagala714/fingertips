@@ -1,5 +1,11 @@
-# Automatic HTTPS + WSS. Set DOMAIN in .env (an A record pointing at the Vultr box).
+# Automatic HTTPS + WSS. Set DOMAIN in .env (A records for DOMAIN and learn.DOMAIN pointing at the Vultr box).
 {$DOMAIN} {
 	encode gzip
 	reverse_proxy app:8000
+}
+
+# Learn: the video-to-lesson workspace (learn/)
+learn.{$DOMAIN} {
+	encode gzip
+	reverse_proxy learn:8000
 }

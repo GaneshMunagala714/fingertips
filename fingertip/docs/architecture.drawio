@@ -1,0 +1,165 @@
+<mxfile host="app.diagrams.net" type="device">
+  <diagram id="overview" name="1. Overview">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t" value="FingerTips: one ecosystem, four tools" style="text;html=1;fontSize=24;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="700" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="call" value="&lt;b&gt;Call&lt;/b&gt;&lt;br&gt;Sign during a real phone call&lt;br&gt;&lt;i&gt;Everyday: Connect&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="280" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="meet" value="&lt;b&gt;Meet&lt;/b&gt;&lt;br&gt;Captions from your hands, in Meet and Zoom&lt;br&gt;&lt;i&gt;School &amp;amp; work: Participate&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="370" y="100" width="280" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="learn" value="&lt;b&gt;Learn&lt;/b&gt;&lt;br&gt;Any hands-on video becomes a lesson&lt;br&gt;&lt;i&gt;Learning: Grow&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="100" width="280" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="play" value="&lt;b&gt;Play&lt;/b&gt;&lt;br&gt;Gestures become music you can see&lt;br&gt;&lt;i&gt;Expression: Express&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=14;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="100" width="280" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="app" value="&lt;b&gt;Signer app&lt;/b&gt; (React PWA, on the phone)&lt;br&gt;MediaPipe hand + pose tracking runs on the device.&lt;br&gt;Only x/y landmarks leave the phone, never video." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="280" width="610" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="lapp" value="&lt;b&gt;Learn workspace&lt;/b&gt; (learn/)&lt;br&gt;Upload once, watch forever. Saved lessons never call the model again." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="700" y="280" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="srv" value="&lt;b&gt;FastAPI server on Vultr&lt;/b&gt; (Docker + Caddy, HTTPS/WSS)&lt;br&gt;Sign classifier (SignBart ONNX, ~8 ms/sign) · call controller · guards · approvals" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="450" width="610" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="gem" value="&lt;b&gt;Gemini&lt;/b&gt;&lt;br&gt;writes replies, reads video" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="620" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="grok" value="&lt;b&gt;Grok Voice&lt;/b&gt;&lt;br&gt;speaks approved words" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="255" y="620" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tw" value="&lt;b&gt;Twilio&lt;/b&gt;&lt;br&gt;the real phone line" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="470" y="620" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="lgem" value="&lt;b&gt;Gemini&lt;/b&gt;&lt;br&gt;video + audio understanding" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#333333;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="750" y="450" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="call" target="app"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="meet" target="app"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="learn" target="lapp"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e4" value="landmarks, taps, text" style="endArrow=block;startArrow=block;html=1;strokeWidth=2;fontSize=12;" edge="1" parent="1" source="app" target="srv"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e5" style="endArrow=block;startArrow=block;html=1;strokeWidth=1;" edge="1" parent="1" source="srv" target="gem"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e6" style="endArrow=block;html=1;strokeWidth=1;" edge="1" parent="1" source="srv" target="grok"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e7" style="endArrow=block;startArrow=block;html=1;strokeWidth=1;" edge="1" parent="1" source="srv" target="tw"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e8" value="once per video" style="endArrow=block;html=1;strokeWidth=1;fontSize=12;" edge="1" parent="1" source="lapp" target="lgem"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e9" value="runs fully in the browser" style="endArrow=block;html=1;strokeWidth=1;dashed=1;fontSize=12;" edge="1" parent="1" source="play"><mxGeometry relative="1" as="geometry"><mxPoint x="1170" y="300" as="targetPoint" /></mxGeometry></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="call" name="2. Call">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t" value="Call: you sign, they hear a human voice" style="text;html=1;fontSize=24;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="700" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a" value="&lt;b&gt;1. You sign&lt;/b&gt;&lt;br&gt;Camera in the PWA.&lt;br&gt;MediaPipe finds hands + pose in a Web Worker." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="110" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="b" value="&lt;b&gt;2. Words&lt;/b&gt;&lt;br&gt;One sign per pause.&lt;br&gt;SignBart (ONNX) on the server names it in ~8 ms." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="280" y="110" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="c" value="&lt;b&gt;3. Gemini&lt;/b&gt;&lt;br&gt;Turns signs + what the caller said into one natural sentence." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="520" y="110" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="d" value="&lt;b&gt;4. You approve&lt;/b&gt;&lt;br&gt;Guards check every number, time and name. Money or bookings need a tap." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="760" y="110" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="e" value="&lt;b&gt;5. Grok Voice&lt;/b&gt;&lt;br&gt;Speaks the approved words verbatim, in phone audio (μ-law 8 kHz)." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="110" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="f" value="&lt;b&gt;6. Twilio&lt;/b&gt;&lt;br&gt;Real phone call. They hear a person, install nothing." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="110" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="ab" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="a" target="b"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="bc" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="b" target="c"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="cd" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="c" target="d"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="de" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="d" target="e"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ef" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="e" target="f"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="back" value="&lt;b&gt;Coming back:&lt;/b&gt; the caller's speech → speech-to-text → live captions on your phone" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="520" y="330" width="440" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="fb" style="endArrow=block;html=1;strokeWidth=1;dashed=1;edgeStyle=orthogonalEdgeStyle;" edge="1" parent="1" source="f" target="back"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1340" y="360" /></Array></mxGeometry></mxCell>
+        <mxCell id="ba" style="endArrow=block;html=1;strokeWidth=1;dashed=1;edgeStyle=orthogonalEdgeStyle;" edge="1" parent="1" source="back" target="a"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="140" y="360" /></Array></mxGeometry></mxCell>
+        <mxCell id="vultr" value="Steps 2 to 5 are orchestrated by one FastAPI service on &lt;b&gt;Vultr&lt;/b&gt; (server/app). No keys? It falls back to a rules brain and a fake phone line, so every screen still works." style="text;html=1;whiteSpace=wrap;fontSize=13;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="280" y="450" width="920" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="meet" name="3. Meet">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="500" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t" value="Meet: meetings caption voices, now they caption hands" style="text;html=1;fontSize=24;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a" value="&lt;b&gt;Chrome extension&lt;/b&gt;&lt;br&gt;Runs inside Google Meet / Zoom Web. Opens a signing panel." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="110" width="220" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="b" value="&lt;b&gt;Server&lt;/b&gt;&lt;br&gt;Signs → words → a sentence you approve." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="320" y="110" width="220" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="c" value="&lt;b&gt;Caption in your camera&lt;/b&gt;&lt;br&gt;Drawn onto your video tile, so everyone sees it." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="600" y="80" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d" value="&lt;b&gt;Voice in the mic&lt;/b&gt; (optional)&lt;br&gt;Gemini TTS or ElevenLabs speaks it." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="600" y="180" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e" value="&lt;b&gt;Everyone in the meeting&lt;/b&gt;&lt;br&gt;Nothing to install." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="900" y="130" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ab" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="a" target="b"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="bc" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="b" target="c"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="bd" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="b" target="d"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ce" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="c" target="e"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="de" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="d" target="e"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="learn" name="4. Learn">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t" value="Learn: one phone video becomes an accessible lesson" style="text;html=1;fontSize=24;fontStyle=1;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="900" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="a" value="&lt;b&gt;1. Phone video&lt;/b&gt;&lt;br&gt;Someone does the job once. Upload it." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="110" width="220" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="b" value="&lt;b&gt;2. Gemini watches and listens&lt;/b&gt;&lt;br&gt;Workspace map · steps with MM:SS times · which hand · where (0–1000 coords)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="320" y="110" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="c" value="&lt;b&gt;3. Steps as structured data&lt;/b&gt;&lt;br&gt;Validated JSON, saved as study.json" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="640" y="110" width="220" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="d" value="&lt;b&gt;4. Accessible lesson&lt;/b&gt;&lt;br&gt;Loops each step, captions what the hands do, numbered map, typed Q&amp;amp;A" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="920" y="110" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="ab" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="a" target="b"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="bc" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="b" target="c"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="cd" style="endArrow=block;html=1;strokeWidth=2;" edge="1" parent="1" source="c" target="d"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="time" value="under 40 s from upload to lesson" style="text;html=1;fontSize=13;fontStyle=2;align=center;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="320" y="220" width="540" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="srv" value="&lt;b&gt;FastAPI&lt;/b&gt; (app/main.py)&lt;br&gt;engine.py runs the Gemini passes · chart.py draws the map · copilot.py answers questions · template.py keeps station templates" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="320" y="300" width="540" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="cache" value="&lt;b&gt;Watching is free&lt;/b&gt;&lt;br&gt;A saved lesson opens straight from disk. No model call, no GPU, no waiting." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#82b366;strokeWidth=2;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="920" y="300" width="260" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="sc" style="endArrow=block;html=1;strokeWidth=1;dashed=1;" edge="1" parent="1" source="c" target="cache"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="cdd" style="endArrow=block;html=1;strokeWidth=1;dashed=1;" edge="1" parent="1" source="cache" target="d"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
