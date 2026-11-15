@@ -400,7 +400,7 @@ async function refreshSuggestions(hint = '', speakOnTap = !hint) {
     const r = await api('/api/suggest', { hint })
     $('aiSrc').textContent = `· ${r.source}, ${r.ms} ms${r.dropped.length ? `, ${r.dropped.length} unsafe dropped` : ''}`
     if (!hint) lastSuggestions = r.replies
-    chips($('sugs'), r.replies, speakOnTap ? (t) => { sayIt(t); $('draft').value = ''; growDraft() } : (t) => { $('draft').value = t; growDraft(); $('draft').focus() })
+    chips($('sugs'), r.replies, speakOnTap ? (t) => { cancelAutoSend(); sayIt(t); $('draft').value = ''; growDraft() } : (t) => { $('draft').value = t; growDraft(); $('draft').focus() })
     return r
   } catch (e) { $('aiSrc').textContent = '' }
 }
@@ -480,6 +480,7 @@ function onAslState(st) {
 }
 async function onAslSegment(frames, why, meta = {}) {
   if (state.status !== 'in-progress') return
+  cancelAutoSend()
   signTag('Recognizing…'); firedUntil = performance.now() + 900
   try {
     const r = await api('/api/asl/classify', { frames, why, ...meta, vocab: { 'asl-everyday': 'everyday', 'asl-top200': 'top200' }[signMode()] || 'all' })
@@ -502,6 +503,7 @@ function addSignedWord(w) {
   try { navigator.vibrate?.(20) } catch {}
 }
 function showChoices(words) {
+  document.querySelector('#signedRow .sug-label').textContent = 'Did you sign'
   $('signedRow').hidden = !words.length
   chips($('signed'), words, addSignedWord)
   if (words.length) {
@@ -509,11 +511,38 @@ function showChoices(words) {
     x.onclick = () => showChoices([]); $('signed').append(x)
   }
 }
-function onAslPhraseEnd() {
-  if (!signedSincePhrase || !$('draft').value.trim()) return
+// After the hands drop, send automatically: sentence from the signed words, short countdown, then it is spoken.
+// Signing again, tapping a different suggestion, typing, or Cancel stops it.
+let autoTimer = null
+function cancelAutoSend() {
+  if (!autoTimer) return
+  clearTimeout(autoTimer); autoTimer = null
+  showChoices([]); firedUntil = 0
+}
+async function onAslPhraseEnd() {
+  const words = $('draft').value.trim()
+  if (!signedSincePhrase || !words) return
   signedSincePhrase = 0
   signTag('Making a sentence…'); firedUntil = performance.now() + 1500
-  refreshSuggestions($('draft').value, true)
+  const r = await refreshSuggestions(words, true)
+  if (!store.get('tb.autosend', true) || state.status !== 'in-progress') return
+  if ($('draft').value.trim() !== words || signedSincePhrase) return   // they kept signing or typing
+  const text = r?.replies?.[0] || words
+  let n = 3
+  $('signedRow').hidden = false
+  document.querySelector('#signedRow .sug-label').textContent = 'Auto-send'
+  chips($('signed'), ['Cancel sending'], () => { cancelAutoSend(); signTag('Not sent. Tap a reply or Send.') ; firedUntil = performance.now() + 2500 })
+  const tick = () => {
+    if (n === 0) {
+      autoTimer = null; showChoices([])
+      sayIt(text); $('draft').value = ''; growDraft()
+      signTag(`Sent: “${text}”`, 'fired'); firedUntil = performance.now() + 2000
+      return
+    }
+    signTag(`Sending “${text}” in ${n}…`, 'rec'); firedUntil = performance.now() + 1100
+    n--; autoTimer = setTimeout(tick, 1000)
+  }
+  tick()
 }
 
 async function showSignList() {
@@ -612,6 +641,8 @@ $('selfview').onclick = showSignList
 $('signsClose').onclick = () => $('signsDlg').close()
 $('autoCam').checked = store.get('tb.autocam', true)
 $('autoCam').onchange = (e) => store.set('tb.autocam', e.target.checked)
+$('autoSend').checked = store.get('tb.autosend', true)
+$('autoSend').onchange = (e) => store.set('tb.autosend', e.target.checked)
 buildKeypad()
 chips($('quick'), QUICK, (t) => sayIt(t))
 for (const b of document.querySelectorAll('.tabbar button')) b.onclick = () => showTab(b.dataset.tab)
@@ -640,7 +671,7 @@ $('sizeBtn').onclick = () => {
 }
 $('sendBtn').onclick = () => sayIt($('draft').value)
 $('expandBtn').onclick = () => refreshSuggestions($('draft').value)
-$('draft').addEventListener('input', growDraft)
+$('draft').addEventListener('input', () => { cancelAutoSend(); growDraft() })
 $('draft').addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sayIt($('draft').value) }
 })

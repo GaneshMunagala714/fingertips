@@ -35,8 +35,8 @@ TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")
 FROM = os.getenv("TWILIO_NUMBER", "")
 PUBLIC_URL = os.getenv("PUBLIC_URL", "").rstrip("/")
 VALIDATE = os.getenv("VALIDATE_TWILIO_SIGNATURE", "true").lower() != "false"
-GREETING = os.getenv("GREETING", "Hi! I'm Deaf, so an app is reading your words to me and speaking my typed "
-                                 "replies. Please give me a moment to answer.")
+USER_NAME = os.getenv("USER_NAME", "Ganesh")
+GREETING = os.getenv("GREETING", f"Hi, this is {USER_NAME}.")
 DIAL_COOLDOWN_S = 10
 RING_TIMEOUT_S = int(os.getenv("RING_TIMEOUT_S", "30"))
 DECLINE_SAY = "Sorry, I can't take your call right now. Please try again later."
