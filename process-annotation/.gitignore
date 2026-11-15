@@ -1,8 +1,0 @@
-.env
-.venv/
-__pycache__/
-*.pyc
-deploy/oracle/.access-code
-# runtime data: new uploads and the downloaded model stay local; the demo lesson and station template are committed
-data/models/
-data/uploads/
