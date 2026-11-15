@@ -15,6 +15,7 @@ Built in 36 hours at HackUMass XIV.
 
 | | |
 |---|---|
+| Demo video | https://youtu.be/y6x7Rp9-KN8 |
 | Live calling app | https://66-135-26-183.sslip.io (Chrome on a laptop) |
 | Phone number | +1 (878) 877-6285 |
 | Google Meet extension | [talkbridge-meet.zip](https://66-135-26-183.sslip.io/talkbridge-meet.zip) |
