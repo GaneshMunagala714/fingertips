@@ -36,7 +36,7 @@ FROM = os.getenv("TWILIO_NUMBER", "")
 PUBLIC_URL = os.getenv("PUBLIC_URL", "").rstrip("/")
 VALIDATE = os.getenv("VALIDATE_TWILIO_SIGNATURE", "true").lower() != "false"
 USER_NAME = os.getenv("USER_NAME", "Ganesh")
-GREETING = os.getenv("GREETING", f"Hi, this is {USER_NAME}.")
+GREETING = os.getenv("GREETING", f"Hi, this is {USER_NAME}'s interpreter. How are you?")
 DIAL_COOLDOWN_S = 10
 RING_TIMEOUT_S = int(os.getenv("RING_TIMEOUT_S", "30"))
 DECLINE_SAY = "Sorry, I can't take your call right now. Please try again later."
@@ -383,6 +383,16 @@ async def relay(ws: WebSocket) -> None:
 
 WEB = ROOT / "web"
 app.mount("/static", StaticFiles(directory=WEB), name="static")
+
+
+@app.middleware("http")
+async def no_stale_app(request: Request, call_next):
+    """Browsers must re-check the page and scripts on every load (cheap 304 if unchanged), so a deploy shows up at once."""
+    resp = await call_next(request)
+    p = request.url.path
+    if p == "/" or p.startswith("/static/") or p.startswith("/jam"):
+        resp.headers["Cache-Control"] = "no-cache"
+    return resp
 
 
 @app.get("/")
