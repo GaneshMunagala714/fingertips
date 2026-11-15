@@ -71,8 +71,12 @@
   @keyframes scroll { to { transform:translateX(-50%); } }
 
   /* cards */
-  section.apps { padding:110px clamp(16px,6vw,96px); }
-  .h2 { font-size:clamp(40px,6vw,84px); line-height:.95; letter-spacing:-.035em; margin:0 0 56px; font-weight:800; max-width:900px; }
+  section.apps { padding:110px clamp(16px,6vw,96px); background:linear-gradient(180deg, rgba(5,7,13,0) 0, rgba(5,7,13,.82) 140px, rgba(5,7,13,.9) 100%); }
+  .stats, .src, footer { background:rgba(5,7,13,.9); }
+  .src { margin-top:0; padding-bottom:90px; margin-bottom:0; }
+  .stats { padding-top:20px; }
+  .label { display:flex; align-items:center; gap:16px; margin:0 0 36px; font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); }
+  .label i { flex:1; height:1px; background:linear-gradient(90deg,var(--line),transparent); }
   .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr)); gap:22px; }
   .card { --c:var(--call); position:relative; border-radius:28px; padding:34px; min-height:380px; display:flex; flex-direction:column; gap:14px; background:rgba(15,18,26,.72); border:1px solid var(--line); overflow:hidden; transform-style:preserve-3d; transition:transform .2s ease-out, border-color .3s; will-change:transform; }
   .card::before { content:""; position:absolute; inset:0; background:radial-gradient(520px circle at var(--mx,50%) var(--my,0%), color-mix(in srgb, var(--c) 32%, transparent), transparent 60%); opacity:0; transition:opacity .35s; pointer-events:none; }
@@ -153,7 +157,7 @@
   </div></div>
 
   <section class="apps" id="apps">
-    <h2 class="h2 reveal">Four ways to be <span class="grad">heard.</span></h2>
+    <div class="label reveal"><span>The apps</span><i></i><span>Call · Meet · Learn · Play</span></div>
     <div class="grid">
       <article class="card reveal" style="--c:var(--call)">
         <div class="viz"><span class="ring"></span><span class="ring"></span><span class="ring"></span></div>
