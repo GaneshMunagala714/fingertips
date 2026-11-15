@@ -1,0 +1,1231 @@
+{
+  "id": "f40d0d9e907c4c7a8ff049e512a24a27",
+  "number": 1,
+  "created_at": 1791770374.0850995,
+  "status": "ready",
+  "progress": "",
+  "error": null,
+  "header": {
+    "project": "",
+    "product": "",
+    "job": "Handle install",
+    "line": "Line 3 / OP4",
+    "takt": "",
+    "operator": "",
+    "prepared_by": "",
+    "date": "2026-10-11"
+  },
+  "source_name": "handle-install-op4.mp4",
+  "duration": 90.48,
+  "engine": "gemini",
+  "cycles": [
+    {
+      "index": 1,
+      "start": 1.4,
+      "end": 89.8,
+      "abnormal": false,
+      "note": ""
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "element_id": "E1",
+      "cycle": 1,
+      "start": 1.4,
+      "end": 4.4,
+      "title": "Position bolt catch in fixture",
+      "breakpoint": "hands at fixture",
+      "description": "Align and position the small bolt catch component into the lower receiver seated in the left fixture",
+      "category": "value_add",
+      "hand": "both",
+      "tools": [],
+      "materials": [
+        "lower receiver",
+        "bolt catch"
+      ],
+      "key_points": [
+        "Ensure proper alignment of pin hole"
+      ],
+      "transcript": [
+        {
+          "t": 1.4,
+          "text": "Right hand grasps a bolt catch from the blue bin beside the screw feeder"
+        },
+        {
+          "t": 1.9,
+          "text": "Both hands orient the bolt catch"
+        },
+        {
+          "t": 3.0,
+          "text": "Both hands place and seat the bolt catch into the fixture"
+        }
+      ],
+      "location_id": "L1",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s2",
+      "element_id": "E2",
+      "cycle": 1,
+      "start": 4.4,
+      "end": 5.1,
+      "title": "Grab hanging electric screwdriver",
+      "breakpoint": "R hand reaches up",
+      "description": "Grasp the suspended electric torque screwdriver with the right hand",
+      "category": "necessary_nva",
+      "hand": "R",
+      "tools": [
+        "hanging electric screwdriver"
+      ],
+      "materials": [],
+      "key_points": [],
+      "transcript": [
+        {
+          "t": 4.4,
+          "text": "Right hand grasps and pulls down the hanging electric screwdriver towards the component"
+        }
+      ],
+      "location_id": "L2",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s3",
+      "element_id": "E3",
+      "cycle": 1,
+      "start": 5.1,
+      "end": 7.0,
+      "title": "Pick screw with screwdriver",
+      "breakpoint": "screwdriver reaches feeder",
+      "description": "Insert magnetic bit of screwdriver into automatic screw feeder to retrieve a screw",
+      "category": "necessary_nva",
+      "hand": "R",
+      "tools": [
+        "hanging electric screwdriver",
+        "screw feeder"
+      ],
+      "materials": [
+        "screw"
+      ],
+      "key_points": [
+        "Confirm screw is seated straight on magnetic bit"
+      ],
+      "transcript": [
+        {
+          "t": 5.1,
+          "text": "Right hand presses the electric screwdriver tip into the screw feeder opening to pick up a screw"
+        },
+        {
+          "t": 6.6,
+          "text": "Right hand lifts the electric screwdriver away from the screw feeder"
+        }
+      ],
+      "location_id": "L1",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s4",
+      "element_id": "E4",
+      "cycle": 1,
+      "start": 7.0,
+      "end": 13.5,
+      "title": "Drive screw into receiver",
+      "breakpoint": "screwdriver at receiver",
+      "description": "Drive the screw into the bolt catch pin hole on the lower receiver until driver clutch disengages",
+      "category": "value_add",
+      "hand": "R",
+      "tools": [
+        "hanging electric screwdriver"
+      ],
+      "materials": [
+        "screw"
+      ],
+      "key_points": [
+        "Hold driver perpendicular to prevent cross-threading"
+      ],
+      "transcript": [
+        {
+          "t": 7.0,
+          "text": "Right hand drives the first screw into the receiver using the electric screwdriver"
+        },
+        {
+          "t": 8.0,
+          "text": "Right hand lifts the electric screwdriver"
+        },
+        {
+          "t": 8.4,
+          "text": "Right hand positions the electric screwdriver onto the adjacent screw"
+        },
+        {
+          "t": 8.8,
+          "text": "Right hand presses down the electric screwdriver to drive the screw into the receiver"
+        },
+        {
+          "t": 12.3,
+          "text": "Right hand lifts the electric screwdriver off the assembly"
+        }
+      ],
+      "location_id": "L1",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s5",
+      "element_id": "E5",
+      "cycle": 1,
+      "start": 13.5,
+      "end": 14.0,
+      "title": "Release electric screwdriver",
+      "breakpoint": "screwdriver moves up",
+      "description": "Release the suspended screwdriver so it retracts overhead",
+      "category": "necessary_nva",
+      "hand": "R",
+      "tools": [
+        "hanging electric screwdriver"
+      ],
+      "materials": [],
+      "key_points": [],
+      "transcript": [
+        {
+          "t": 13.5,
+          "text": "Right hand releases the electric screwdriver"
+        }
+      ],
+      "location_id": "L2",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s6",
+      "element_id": "E6",
+      "cycle": 1,
+      "start": 14.0,
+      "end": 15.8,
+      "title": "Remove receiver from fixture",
+      "breakpoint": "hands grasp receiver",
+      "description": "Lift the lower receiver out of the left assembly fixture",
+      "category": "necessary_nva",
+      "hand": "both",
+      "tools": [],
+      "materials": [
+        "lower receiver"
+      ],
+      "key_points": [],
+      "transcript": [
+        {
+          "t": 14.0,
+          "text": "Both hands lift the receiver assembly from the fixture"
+        },
+        {
+          "t": 15.3,
+          "text": "Right hand releases the receiver"
+        }
+      ],
+      "location_id": "L1",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s7",
+      "element_id": "E7",
+      "cycle": 1,
+      "start": 15.8,
+      "end": 17.8,
+      "title": "Grab castle nut",
+      "breakpoint": "R hand moves to bin",
+      "description": "Walk to center station and pick one black castle nut from bin L9",
+      "category": "necessary_nva",
+      "hand": "R",
+      "tools": [],
+      "materials": [
+        "castle nut"
+      ],
+      "key_points": [],
+      "transcript": [
+        {
+          "t": 15.8,
+          "text": "Left hand places the assembled unit onto the workbench"
+        },
+        {
+          "t": 15.8,
+          "text": "Right hand reaches into the blue bin containing black castle nuts"
+        },
+        {
+          "t": 16.4,
+          "text": "Right hand grasps a black castle nut and lifts it out of the bin"
+        }
+      ],
+      "location_id": "L9",
+      "walk": true,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s8",
+      "element_id": "E8",
+      "cycle": 1,
+      "start": 17.8,
+      "end": 18.8,
+      "title": "Grab buffer tube",
+      "breakpoint": "L hand reaches box",
+      "description": "Reach into box L3 with left hand and retrieve one cylindrical black buffer tube",
+      "category": "necessary_nva",
+      "hand": "L",
+      "tools": [],
+      "materials": [
+        "buffer tube"
+      ],
+      "key_points": [],
+      "transcript": [
+        {
+          "t": 17.8,
+          "text": "Left hand brings the buffer tube down toward the mounting jig"
+        }
+      ],
+      "location_id": "L3",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s9",
+      "element_id": "E9",
+      "cycle": 1,
+      "start": 18.8,
+      "end": 21.2,
+      "title": "Thread castle nut on buffer tube",
+      "breakpoint": "castle nut touches tube",
+      "description": "Place buffer tube into vertical fixture L4 and start the castle nut onto the threads by hand",
+      "category": "value_add",
+      "hand": "both",
+      "tools": [
+        "buffer tube fixture"
+      ],
+      "materials": [
+        "buffer tube",
+        "castle nut"
+      ],
+      "key_points": [
+        "Ensure castle nut orientation has notches facing rear"
+      ],
+      "transcript": [
+        {
+          "t": 18.8,
+          "text": "Both hands align the castle nut onto the top of the buffer tube"
+        },
+        {
+          "t": 20.0,
+          "text": "Right hand threads the castle nut clockwise down onto the buffer tube"
+        }
+      ],
+      "location_id": "L4",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s10",
+      "element_id": "E10",
+      "cycle": 1,
+      "start": 21.2,
+      "end": 22.0,
+      "title": "Grab hanging nut runner",
+      "breakpoint": "R hand reaches up",
+      "description": "Reach up with right hand and pull down the hanging pneumatic nut runner",
+      "category": "necessary_nva",
+      "hand": "R",
+      "tools": [
+        "hanging nut runner"
+      ],
+      "materials": [],
+      "key_points": [],
+      "transcript": [
+        {
+          "t": 21.2,
+          "text": "Right hand reaches up toward the hanging nut runner"
+        },
+        {
+          "t": 21.6,
+          "text": "Right hand grasps the hanging nut runner"
+        }
+      ],
+      "location_id": "L7",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s11",
+      "element_id": "E11",
+      "cycle": 1,
+      "start": 22.0,
+      "end": 26.8,
+      "title": "Run castle nut down tube",
+      "breakpoint": "tool contacts castle nut",
+      "description": "Apply nut runner socket onto the castle nut and spin it down the buffer tube threads",
+      "category": "value_add",
+      "hand": "R",
+      "tools": [
+        "hanging nut runner"
+      ],
+      "materials": [
+        "castle nut",
+        "buffer tube"
+      ],
+      "key_points": [
+        "Run nut completely to base of threaded section"
+      ],
+      "transcript": [
+        {
+          "t": 22.0,
+          "text": "Right hand lowers the driver socket onto the castle nut"
+        },
+        {
+          "t": 22.6,
+          "text": "Right hand pushes down on the driver to run the castle nut down the tube"
+        },
+        {
+          "t": 23.6,
+          "text": "Left hand releases the tube"
+        }
+      ],
+      "location_id": "L4",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s12",
+      "element_id": "E12",
+      "cycle": 1,
+      "start": 26.8,
+      "end": 27.2,
+      "title": "Release nut runner",
+      "breakpoint": "R hand releases tool",
+      "description": "Release the nut runner to let it retract overhead",
+      "category": "necessary_nva",
+      "hand": "R",
+      "tools": [
+        "hanging nut runner"
+      ],
+      "materials": [],
+      "key_points": [],
+      "transcript": [
+        {
+          "t": 26.8,
+          "text": "Right hand releases the hanging nut runner"
+        }
+      ],
+      "location_id": "L7",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s13",
+      "element_id": "E13",
+      "cycle": 1,
+      "start": 27.2,
+      "end": 29.8,
+      "title": "Grab and slide end plate",
+      "breakpoint": "R hand reaches bin",
+      "description": "Pick a black receiver end plate from bin L8 and slide it onto the buffer tube against the castle nut",
+      "category": "value_add",
+      "hand": "R",
+      "tools": [],
+      "materials": [
+        "end plate",
+        "buffer tube"
+      ],
+      "key_points": [
+        "Index tab on end plate must align with bottom slot"
+      ],
+      "transcript": [
+        {
+          "t": 27.2,
+          "text": "Left hand reaches into the cardboard box"
+        },
+        {
+          "t": 27.5,
+          "text": "Left hand grasps a black end plate"
+        },
+        {
+          "t": 28.0,
+          "text": "Both hands orient the end plate"
+        },
+        {
+          "t": 29.2,
+          "text": "Both hands slide the end plate onto the vertical cylinder on the fixture"
+        }
+      ],
+      "location_id": "L8",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s14",
+      "element_id": "E14",
+      "cycle": 1,
+      "start": 29.8,
+      "end": 30.8,
+      "title": "Remove buffer tube from fixture",
+      "breakpoint": "hands lift tube",
+      "description": "Lift the assembled buffer tube and lower receiver together off fixture L4",
+      "category": "necessary_nva",
+      "hand": "both",
+      "tools": [],
+      "materials": [
+        "buffer tube"
+      ],
+      "key_points": [],
+      "transcript": [
+        {
+          "t": 29.8,
+          "text": "Right hand grasps the buffer tube in the fixture"
+        },
+        {
+          "t": 30.1,
+          "text": "Right hand lifts the buffer tube up out of the fixture"
+        }
+      ],
+      "location_id": "L4",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s15",
+      "element_id": "E15",
+      "cycle": 1,
+      "start": 30.8,
+      "end": 36.0,
+      "title": "Thread buffer tube into receiver",
+      "breakpoint": "tube engages receiver threads",
+      "description": "Thread the buffer tube into the rear ring of the lower receiver until close to the buffer retainer hole",
+      "category": "value_add",
+      "hand": "both",
+      "tools": [],
+      "materials": [
+        "buffer tube",
+        "lower receiver"
+      ],
+      "key_points": [
+        "Do not overtighten past buffer retainer recess"
+      ],
+      "transcript": [
+        {
+          "t": 30.8,
+          "text": "Right hand turns the buffer tube into the rear of the receiver to thread it in while left hand holds the receiver"
+        },
+        {
+          "t": 35.6,
+          "text": "Right hand releases the buffer tube"
+        }
+      ],
+      "location_id": "L5",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s16",
+      "element_id": "E16",
+      "cycle": 1,
+      "start": 36.0,
+      "end": 42.6,
+      "title": "Pick buffer retainer and spring",
+      "breakpoint": "hand reaches bin L10",
+      "description": "Pick one small coil spring and one buffer retainer pin from bin L10",
+      "category": "necessary_nva",
+      "hand": "R",
+      "tools": [],
+      "materials": [
+        "buffer retainer spring",
+        "buffer retainer pin"
+      ],
+      "key_points": [],
+      "transcript": [
+        {
+          "t": 36.0,
+          "text": "Left hand places the lower receiver onto the work surface"
+        },
+        {
+          "t": 36.2,
+          "text": "Right hand reaches into the middle blue bin of springs"
+        },
+        {
+          "t": 36.6,
+          "text": "Left hand reaches into the second blue bin from the left"
+        },
+        {
+          "t": 36.9,
+          "text": "Right hand takes a spring and left hand takes a part"
+        },
+        {
+          "t": 37.3,
+          "text": "Both hands bring the spring and part together"
+        },
+        {
+          "t": 39.6,
+          "text": "Left hand returns the part to the leftmost blue bin"
+        },
+        {
+          "t": 40.0,
+          "text": "Right hand reaches into the middle blue bin of springs"
+        },
+        {
+          "t": 40.4,
+          "text": "Left hand picks a buffer retainer from the leftmost blue bin"
+        },
+        {
+          "t": 40.7,
+          "text": "Right hand picks a spring from the middle blue bin"
+        },
+        {
+          "t": 41.1,
+          "text": "Both hands bring the buffer retainer and spring together"
+        },
+        {
+          "t": 41.6,
+          "text": "Right hand slides the spring onto the buffer retainer held in the left hand"
+        }
+      ],
+      "location_id": "L10",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s17",
+      "element_id": "E17",
+      "cycle": 1,
+      "start": 42.6,
+      "end": 48.8,
+      "title": "Install buffer retainer and tube",
+      "breakpoint": "spring placed in hole",
+      "description": "Place retainer spring and pin into receiver well, depress pin, and screw buffer tube forward over pin collar",
+      "category": "value_add",
+      "hand": "both",
+      "tools": [],
+      "materials": [
+        "buffer retainer spring",
+        "buffer retainer pin",
+        "buffer tube"
+      ],
+      "key_points": [
+        "Keep retainer pin depressed while threading tube lip over the rim"
+      ],
+      "transcript": [
+        {
+          "t": 42.6,
+          "text": "Left hand positions the buffer retainer and spring into the hole at the rear of the receiver"
+        },
+        {
+          "t": 43.4,
+          "text": "Left hand presses down on the buffer retainer pin"
+        },
+        {
+          "t": 44.3,
+          "text": "Right hand turns the buffer tube to capture the retainer"
+        },
+        {
+          "t": 45.6,
+          "text": "Right hand screws and aligns the buffer tube while left hand holds the receiver"
+        },
+        {
+          "t": 48.3,
+          "text": "Both hands lift the assembled receiver from the workbench"
+        }
+      ],
+      "location_id": "L5",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s18",
+      "element_id": "E18",
+      "cycle": 1,
+      "start": 48.8,
+      "end": 50.0,
+      "title": "Check buffer retainer retention",
+      "breakpoint": "hand checks retainer",
+      "description": "Inspect and verify buffer retainer pin is captured and springs freely",
+      "category": "necessary_nva",
+      "hand": "both",
+      "tools": [],
+      "materials": [
+        "lower receiver assembly"
+      ],
+      "key_points": [
+        "Retainer must not pop out when released"
+      ],
+      "transcript": [
+        {
+          "t": 48.8,
+          "text": "Right index finger presses the buffer retainer inside the receiver to check retention"
+        },
+        {
+          "t": 49.1,
+          "text": "Left hand rests the lower receiver assembly upright on the table and releases it"
+        },
+        {
+          "t": 49.1,
+          "text": "Right hand reaches into the blue bin of small black parts"
+        }
+      ],
+      "location_id": "L5",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s19",
+      "element_id": "E19",
+      "cycle": 1,
+      "start": 50.0,
+      "end": 53.6,
+      "title": "Pick takedown detent and spring",
+      "breakpoint": "hand reaches bin L10",
+      "description": "Pick one takedown pin detent and one small detent spring from bin L10",
+      "category": "necessary_nva",
+      "hand": "R",
+      "tools": [],
+      "materials": [
+        "takedown detent pin",
+        "takedown detent spring"
+      ],
+      "key_points": [],
+      "transcript": [
+        {
+          "t": 50.0,
+          "text": "Right hand picks a small detent pin from the third compartment of the blue divided tray"
+        },
+        {
+          "t": 50.4,
+          "text": "Right hand positions the detent pin at the small hole at the rear of the receiver"
+        },
+        {
+          "t": 50.7,
+          "text": "Right hand inserts the detent pin into the rear hole"
+        },
+        {
+          "t": 51.4,
+          "text": "Right hand presses the detent pin into the hole"
+        },
+        {
+          "t": 52.7,
+          "text": "Right hand reaches into the second compartment of the blue divided tray"
+        },
+        {
+          "t": 53.0,
+          "text": "Right hand picks a spring from the compartment"
+        }
+      ],
+      "location_id": "L10",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s20",
+      "element_id": "E20",
+      "cycle": 1,
+      "start": 53.6,
+      "end": 57.2,
+      "title": "Insert takedown detent and spring",
+      "breakpoint": "parts enter hole",
+      "description": "Insert takedown pin detent followed by the spring into the rear receiver channel",
+      "category": "value_add",
+      "hand": "both",
+      "tools": [],
+      "materials": [
+        "takedown detent pin",
+        "takedown detent spring"
+      ],
+      "key_points": [
+        "Ensure detent pin goes in pointed-end first"
+      ],
+      "transcript": [
+        {
+          "t": 53.6,
+          "text": "Right hand picks a takedown spring from the middle blue bin"
+        },
+        {
+          "t": 55.7,
+          "text": "Right hand brings the spring to the rear of the lower receiver"
+        },
+        {
+          "t": 56.0,
+          "text": "Right hand inserts the spring into the detent channel hole at the back of the receiver"
+        },
+        {
+          "t": 57.0,
+          "text": "Right hand releases the spring and reaches back towards the bins"
+        }
+      ],
+      "location_id": "L5",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s21",
+      "element_id": "E21",
+      "cycle": 1,
+      "start": 57.2,
+      "end": 64.8,
+      "title": "Push end plate over spring",
+      "breakpoint": "hand slides plate forward",
+      "description": "Slide the end plate forward against the rear of receiver, compressing and capturing the detent spring",
+      "category": "value_add",
+      "hand": "both",
+      "tools": [],
+      "materials": [
+        "end plate",
+        "lower receiver"
+      ],
+      "key_points": [
+        "Ensure spring is not kinked or bent during plate closure"
+      ],
+      "transcript": [
+        {
+          "t": 57.2,
+          "text": "Right hand reaches into the blue bin on the table"
+        },
+        {
+          "t": 58.9,
+          "text": "Right hand picks up a small silver pin"
+        },
+        {
+          "t": 59.3,
+          "text": "Right hand uses the pin to push the detent spring into the rear of the receiver"
+        },
+        {
+          "t": 60.1,
+          "text": "Push the end plate forward over the spring"
+        },
+        {
+          "t": 60.6,
+          "text": "Right hand withdraws the silver pin"
+        },
+        {
+          "t": 61.0,
+          "text": "Right hand presses the end plate firmly flush against the receiver"
+        },
+        {
+          "t": 64.4,
+          "text": "Right hand releases the end plate"
+        }
+      ],
+      "location_id": "L5",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s22",
+      "element_id": "E22",
+      "cycle": 1,
+      "start": 64.8,
+      "end": 75.8,
+      "title": "Hand-tighten castle nut",
+      "breakpoint": "fingers turn castle nut",
+      "description": "Turn castle nut forward clockwise against the end plate until hand tight",
+      "category": "value_add",
+      "hand": "both",
+      "tools": [],
+      "materials": [
+        "castle nut"
+      ],
+      "key_points": [
+        "Ensure end plate remains seated flush against receiver"
+      ],
+      "transcript": [
+        {
+          "t": 64.8,
+          "text": "Right hand turns the castle nut down the buffer tube"
+        },
+        {
+          "t": 66.0,
+          "text": "Right hand grasps the buffer tube and screws it into the lower receiver"
+        },
+        {
+          "t": 71.0,
+          "text": "Right hand screws the castle nut down against the end plate until hand-tight"
+        },
+        {
+          "t": 75.0,
+          "text": "Both hands tilt the receiver assembly horizontally"
+        }
+      ],
+      "location_id": "L5",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s23",
+      "element_id": "E23",
+      "cycle": 1,
+      "start": 75.8,
+      "end": 77.0,
+      "title": "Move receiver to right fixture",
+      "breakpoint": "hands move receiver right",
+      "description": "Pick up receiver assembly and transfer it rightward to lower receiver fixture L11",
+      "category": "necessary_nva",
+      "hand": "both",
+      "tools": [],
+      "materials": [
+        "lower receiver assembly"
+      ],
+      "key_points": [],
+      "transcript": [
+        {
+          "t": 75.8,
+          "text": "Both hands lower the receiver assembly onto the fixture block"
+        },
+        {
+          "t": 76.3,
+          "text": "Both hands press the receiver assembly down onto the fixture block"
+        }
+      ],
+      "location_id": "L11",
+      "walk": true,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s24",
+      "element_id": "E24",
+      "cycle": 1,
+      "start": 77.0,
+      "end": 82.2,
+      "title": "Grab and lubricate buffer spring",
+      "breakpoint": "hand reaches spring box",
+      "description": "Retrieve one long recoil buffer spring from box L13 and dip the lead coil into lubricant cup L12",
+      "category": "value_add",
+      "hand": "R",
+      "tools": [],
+      "materials": [
+        "buffer spring",
+        "lubricant"
+      ],
+      "key_points": [
+        "Coat outer tip of spring evenly in lubricant"
+      ],
+      "transcript": [
+        {
+          "t": 77.0,
+          "text": "Right hand reaches into the cardboard box and lifts out a buffer spring"
+        },
+        {
+          "t": 78.5,
+          "text": "Left hand holds the green cup to stabilize it"
+        },
+        {
+          "t": 79.3,
+          "text": "Right hand dips the end of the spring into the green lubricant cup"
+        },
+        {
+          "t": 80.8,
+          "text": "Right hand lifts the spring out of the cup"
+        }
+      ],
+      "location_id": "L13",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s25",
+      "element_id": "E25",
+      "cycle": 1,
+      "start": 82.2,
+      "end": 84.4,
+      "title": "Grab buffer weight",
+      "breakpoint": "R hand reaches top shelf",
+      "description": "Reach to top shelf bin L14 with right hand and grasp one steel buffer weight",
+      "category": "necessary_nva",
+      "hand": "R",
+      "tools": [],
+      "materials": [
+        "buffer weight"
+      ],
+      "key_points": [],
+      "transcript": [
+        {
+          "t": 82.2,
+          "text": "Right hand reaches into the right blue bin on the shelf above"
+        },
+        {
+          "t": 82.7,
+          "text": "Right hand grasps and removes a buffer weight"
+        },
+        {
+          "t": 83.0,
+          "text": "Right hand brings the buffer weight to the spring held in the left hand"
+        },
+        {
+          "t": 83.3,
+          "text": "Right hand inserts the buffer weight into the end of the spring"
+        },
+        {
+          "t": 84.0,
+          "text": "Both hands push the buffer weight into the spring"
+        }
+      ],
+      "location_id": "L14",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s26",
+      "element_id": "E26",
+      "cycle": 1,
+      "start": 84.4,
+      "end": 87.2,
+      "title": "Assemble buffer weight to spring",
+      "breakpoint": "weight meets spring",
+      "description": "Push the tail end of the buffer weight into the lubricated front end of the buffer spring",
+      "category": "value_add",
+      "hand": "both",
+      "tools": [],
+      "materials": [
+        "buffer weight",
+        "buffer spring"
+      ],
+      "key_points": [
+        "Press until collar snaps securely over spring coil"
+      ],
+      "transcript": [
+        {
+          "t": 84.4,
+          "text": "Right hand positions the buffer weight at the right end of the spring held in the left hand"
+        },
+        {
+          "t": 84.7,
+          "text": "Right hand inserts the buffer weight into the end of the spring"
+        },
+        {
+          "t": 85.2,
+          "text": "Both hands push and twist the spring onto the buffer weight until seated"
+        }
+      ],
+      "location_id": "L11",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s27",
+      "element_id": "E27",
+      "cycle": 1,
+      "start": 87.2,
+      "end": 89.4,
+      "title": "Insert buffer and spring into tube",
+      "breakpoint": "spring enters buffer tube",
+      "description": "Slide buffer spring assembly into receiver buffer tube until buffer latches behind retainer pin",
+      "category": "value_add",
+      "hand": "both",
+      "tools": [],
+      "materials": [
+        "buffer assembly",
+        "buffer tube"
+      ],
+      "key_points": [
+        "Confirm buffer clicks past the buffer retainer pin"
+      ],
+      "transcript": [
+        {
+          "t": 87.2,
+          "text": "Both hands push the buffer and spring into the buffer tube"
+        },
+        {
+          "t": 87.8,
+          "text": "Right hand presses the buffer past the buffer retainer"
+        },
+        {
+          "t": 88.2,
+          "text": "Release the buffer and lower receiver"
+        }
+      ],
+      "location_id": "L11",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    },
+    {
+      "id": "s28",
+      "element_id": "E28",
+      "cycle": 1,
+      "start": 89.4,
+      "end": 89.8,
+      "title": "Aside assembled receiver",
+      "breakpoint": "hands set receiver down",
+      "description": "Place finished lower receiver assembly on fixture L11 and release",
+      "category": "necessary_nva",
+      "hand": "both",
+      "tools": [],
+      "materials": [
+        "lower receiver assembly"
+      ],
+      "key_points": [],
+      "transcript": [
+        {
+          "t": 89.4,
+          "text": "Left hand places the assembled receiver into the rack beneath the workbench"
+        }
+      ],
+      "location_id": "L11",
+      "walk": false,
+      "confidence": "high",
+      "edited": false
+    }
+  ],
+  "representative_cycle": 1,
+  "warnings": [],
+  "notes": "Handheld camera angles shifted frequently around the operator's shoulder, occasionally obstructing fine manipulation of detent pins between 00:37 and 00:41.\nLayout: Camera moved dynamically around the operator; bins and fixtures were mapped based on their positions relative to the operator facing the workbench.",
+  "updated_at": 1791771195.2452054,
+  "station_key": "line-3-op4",
+  "layout_source": "detected",
+  "layout": [
+    {
+      "id": "L1",
+      "label": "Left assembly fixture",
+      "type": "fixture",
+      "column": "far_left",
+      "row": "front",
+      "shelf": null,
+      "order": 1
+    },
+    {
+      "id": "L2",
+      "label": "Hanging electric screwdriver",
+      "type": "tool",
+      "column": "far_left",
+      "row": "middle",
+      "shelf": null,
+      "order": 1
+    },
+    {
+      "id": "L3",
+      "label": "Box of buffer tubes",
+      "type": "bin",
+      "column": "left",
+      "row": "back",
+      "shelf": null,
+      "order": 1
+    },
+    {
+      "id": "L4",
+      "label": "Buffer tube fixture",
+      "type": "fixture",
+      "column": "center",
+      "row": "front",
+      "shelf": null,
+      "order": 1
+    },
+    {
+      "id": "L5",
+      "label": "Middle assembly mat",
+      "type": "bench",
+      "column": "center",
+      "row": "front",
+      "shelf": null,
+      "order": 2
+    },
+    {
+      "id": "L6",
+      "label": "Tweezers",
+      "type": "tool",
+      "column": "center",
+      "row": "front",
+      "shelf": null,
+      "order": 3
+    },
+    {
+      "id": "L7",
+      "label": "Hanging nut runner",
+      "type": "tool",
+      "column": "center",
+      "row": "middle",
+      "shelf": null,
+      "order": 1
+    },
+    {
+      "id": "L8",
+      "label": "Bin of end plates",
+      "type": "bin",
+      "column": "center",
+      "row": "middle",
+      "shelf": null,
+      "order": 2
+    },
+    {
+      "id": "L9",
+      "label": "Bin of castle nuts",
+      "type": "bin",
+      "column": "center",
+      "row": "middle",
+      "shelf": null,
+      "order": 3
+    },
+    {
+      "id": "L10",
+      "label": "Bin of detent springs and pins",
+      "type": "bin",
+      "column": "center",
+      "row": "middle",
+      "shelf": null,
+      "order": 4
+    },
+    {
+      "id": "L11",
+      "label": "Lower receiver fixture",
+      "type": "fixture",
+      "column": "right",
+      "row": "front",
+      "shelf": null,
+      "order": 1
+    },
+    {
+      "id": "L12",
+      "label": "Lubricant cup",
+      "type": "equipment",
+      "column": "right",
+      "row": "middle",
+      "shelf": null,
+      "order": 1
+    },
+    {
+      "id": "L13",
+      "label": "Box of buffer springs",
+      "type": "bin",
+      "column": "right",
+      "row": "back",
+      "shelf": null,
+      "order": 1
+    },
+    {
+      "id": "L14",
+      "label": "Top shelf bin, buffer weights",
+      "type": "bin",
+      "column": "right",
+      "row": "back",
+      "shelf": "top",
+      "order": 1
+    }
+  ]
+}
