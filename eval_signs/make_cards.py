@@ -55,25 +55,66 @@ def arr(f, k, n):
     return np.asarray(v, dtype=float)[:, :2] if v else None
 
 
-def draw(frames, W=230, H=210):
+PALM = [0, 1, 5, 9, 13, 17]
+FINGERS = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16], [17, 18, 19, 20]]
+DOM, OTHER = "#c2410c", "#1d4ed8"
+
+
+def _wrist(f, k):
+    h = arr(f, k, 21)
+    return h[0] if h is not None and np.isfinite(h[0]).all() else None
+
+
+def describe(frames, hf, dom, move, sw):
+    """One plain line from the signer's own motion: hands, where, how it moves."""
+    other = "lh" if dom == "rh" else "rh"
+    both = sum(1 for i in hf if arr(frames[i], other, 21) is not None) > 0.5 * len(hf) and move[other] > 0.25 * sw
+    mid = hf[len(hf) // 2]
+    po, w = arr(frames[mid], "pose", 33), _wrist(frames[mid], dom)
+    where = ""
+    if po is not None and w is not None:
+        nose_y, sh_y = po[0][1], (po[11][1] + po[12][1]) / 2
+        hand = arr(frames[mid], dom, 21)
+        y = np.nanmean(hand[:, 1]) if hand is not None else w[1]
+        where = ("by the forehead" if y < nose_y - 0.35 * sw else "by the face" if y < nose_y + 0.2 * sw
+                 else "at the chin / neck" if y < sh_y else "at the chest" if y < sh_y + 0.75 * sw else "low, at the waist")
+    path = [p for p in (_wrist(frames[i], dom) for i in hf) if p is not None]
+    how = "hold it still"
+    if len(path) > 3:
+        net = path[-1] - path[0]
+        total = float(np.sum(np.linalg.norm(np.diff(path, axis=0), axis=1)))
+        n = float(np.linalg.norm(net))
+        if total < 0.25 * sw:
+            how = "hold it still"
+        elif n < 0.3 * total:
+            P = np.asarray(path); ext = P.max(0) - P.min(0)
+            how = "small circles" if min(ext) > 0.45 * max(ext) else "repeat the movement (tap / shake)"
+        else:
+            dx, dy = net
+            how = ("move up" if dy < 0 else "move down") if abs(dy) > 1.6 * abs(dx) else "move sideways" if abs(dx) > 1.6 * abs(dy) \
+                else ("move up and sideways" if dy < 0 else "move down and sideways")
+    # movement words (`how`) are left out: the clip includes the hands rising and dropping, which made them unreliable;
+    # the three panels show the movement instead
+    hands = "Two hands" if both else "One hand"
+    return f"{hands}, {where}." if where else f"{hands}."
+
+
+def draw(frames, PW=120, H=130):
+    """Three panels, Start -> Move -> End, from one real signer. Returns (svg, description)."""
     hf = [i for i, f in enumerate(frames) if f.get("lh") or f.get("rh")]
     if not hf:
         return "<svg/>", ""
     a, b = hf[0], hf[-1]
-    keys = [a + int((b - a) * t) for t in (0.08, 0.5, 0.92)]
-    # dominant hand = the one that moves most
-    def wrist(f, k):
-        h = arr(f, k, 21)
-        return h[0] if h is not None else None
     move = {}
     for k in ("lh", "rh"):
-        pts = [wrist(frames[i], k) for i in hf]
-        pts = [p for p in pts if p is not None]
-        move[k] = sum(np.linalg.norm(np.diff(pts, axis=0), axis=1)) if len(pts) > 2 else 0
+        pts = [p for p in (_wrist(frames[i], k) for i in hf) if p is not None]
+        move[k] = float(np.sum(np.linalg.norm(np.diff(pts, axis=0), axis=1))) if len(pts) > 2 else 0.0
     dom = max(move, key=move.get)
+    # start / end: first and last frames where the main hand is up; middle halfway
+    dh = [i for i in hf if arr(frames[i], dom, 21) is not None] or hf
+    keys = [dh[min(len(dh) - 1, int(len(dh) * 0.1))], dh[len(dh) // 2], dh[max(0, int(len(dh) * 0.9) - 1)]]
 
-    # crop box: head + shoulders + all hand points in the sign
-    pts = []
+    pts, sws = [], []
     for i in range(a, b + 1):
         for k in ("lh", "rh"):
             h = arr(frames[i], k, 21)
@@ -81,69 +122,63 @@ def draw(frames, W=230, H=210):
                 pts.append(h)
         po = arr(frames[i], "pose", 33)
         if po is not None:
-            head_r = np.linalg.norm(po[7] - po[8]) * 0.75
-            pts.append(np.vstack([po[[0, 7, 8, 11, 12]], po[0] - [0, head_r * 1.15]]))   # include the top of the head
-    P = np.concatenate(pts)
-    P = P[np.isfinite(P).all(1)]
+            sw = np.linalg.norm(po[11] - po[12]); sws.append(sw)
+            pts.append(np.vstack([po[[0, 11, 12]], po[0] - [0, sw * 0.45], (po[11] + po[12]) / 2 + [0, sw * 0.5]]))
+    P = np.concatenate(pts); P = P[np.isfinite(P).all(1)]
+    sw = float(np.median(sws)) if sws else 0.2
     lo, hi = np.percentile(P, 1, axis=0), np.percentile(P, 99, axis=0)
-    c, span = (lo + hi) / 2, max(hi - lo) * 1.08 + 1e-6
-    sx = lambda p: ((p[0] - c[0]) / span + 0.5) * W
-    sy = lambda p: ((p[1] - c[1]) / span + 0.5) * H + 4
-    out = [f'<svg viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg">']
+    c = (lo + hi) / 2
+    span = max((hi - lo)[0] * H / PW, (hi - lo)[1]) * 1.1 + 1e-6
+    W = PW * 3 + 2 * 22
+    out = [f'<svg viewBox="0 0 {W} {H + 16}" xmlns="http://www.w3.org/2000/svg">',
+           f'<defs><marker id="ah" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="{DOM}"/></marker></defs>']
 
-    def line(p, q, col, w, op):
-        if np.isfinite(p).all() and np.isfinite(q).all():
-            out.append(f'<line x1="{sx(p):.1f}" y1="{sy(p):.1f}" x2="{sx(q):.1f}" y2="{sy(q):.1f}" stroke="{col}" stroke-width="{w}" stroke-linecap="round" opacity="{op}"/>')
-
-    styles = [("#9aa3ad", 0.55), ("#5b6470", 0.75), ("#111", 1.0)]
-    for (i, (col, op)) in zip(keys, styles):
+    def panel(j, i, label):
+        ox = j * (PW + 22)
+        X = lambda p: ox + ((p[0] - c[0]) / span) * H + PW / 2
+        Y = lambda p: ((p[1] - c[1]) / span + 0.5) * H
+        ok = lambda p: p is not None and np.isfinite(p).all()
+        L = lambda p, q, col, w, op=1: out.append(f'<line x1="{X(p):.1f}" y1="{Y(p):.1f}" x2="{X(q):.1f}" y2="{Y(q):.1f}" stroke="{col}" stroke-width="{w}" stroke-linecap="round" stroke-linejoin="round" opacity="{op}"/>') if ok(p) and ok(q) else None
+        out.append(f'<rect x="{ox + 0.5}" y="0.5" width="{PW - 1}" height="{H - 1}" rx="8" fill="#f6f6f4" stroke="#ddd"/>')
+        out.append(f'<clipPath id="c{j}"><rect x="{ox}" y="0" width="{PW}" height="{H}" rx="8"/></clipPath><g clip-path="url(#c{j})">')
         f = frames[i]
         po = arr(f, "pose", 33)
         if po is not None:
-            if i == keys[-1]:   # head once, from the last frame
-                nose, le, re_ = po[0], po[7], po[8]
-                r = max(np.linalg.norm(le - re_) / span * W * 0.62, 8)
-                out.append(f'<circle cx="{sx(nose):.1f}" cy="{sy(nose):.1f}" r="{r:.1f}" fill="#fafafa" stroke="#111" stroke-width="2"/>')
-                for e in (2, 5):   # eyes
-                    out.append(f'<circle cx="{sx(po[e]):.1f}" cy="{sy(po[e]):.1f}" r="1.8" fill="#111"/>')
-                out.append(f'<line x1="{sx(po[9]):.1f}" y1="{sy(po[9]):.1f}" x2="{sx(po[10]):.1f}" y2="{sy(po[10]):.1f}" stroke="#111" stroke-width="1.6" stroke-linecap="round"/>')
-            for p, q in BODY:
-                line(po[p], po[q], col, 3 if i == keys[-1] else 2.2, op)
-        for k in ("lh", "rh"):
+            r = max(sw / span * H * 0.42, 9)
+            out.append(f'<circle cx="{X(po[0]):.1f}" cy="{Y(po[0]):.1f}" r="{r:.1f}" fill="#fff" stroke="#9aa0a6" stroke-width="2"/>')
+            for e in (2, 5):
+                out.append(f'<circle cx="{X(po[e]):.1f}" cy="{Y(po[e]):.1f}" r="1.6" fill="#666"/>')
+            L(po[11], po[12], "#9aa0a6", 5)
+            for p, q in ((11, 13), (13, 15), (12, 14), (14, 16)):
+                L(po[p], po[q], "#b5bac0", 5)
+        if j == 1:   # the main hand's whole path, on the middle panel
+            path = [p for p in (_wrist(frames[t], dom) for t in range(a, b + 1)) if p is not None]
+            if len(path) > 3 and move[dom] > 0.25 * sw:
+                path = path[:: max(1, len(path) // 24)]
+                d = " ".join(f"{'M' if n == 0 else 'L'}{X(p):.1f},{Y(p):.1f}" for n, p in enumerate(path))
+                out.append(f'<path d="{d}" fill="none" stroke="{DOM}" stroke-width="2.4" stroke-dasharray="5 3" marker-end="url(#ah)" opacity="0.85"/>')
+        for k in (("rh", "lh") if dom == "lh" else ("lh", "rh")):   # main hand drawn last, on top
             h = arr(f, k, 21)
-            if h is not None and i != keys[1]:   # hands at start (faint) and end (solid) only
-                hc = ("#c2410c" if k == dom else "#1d4ed8") if i == keys[-1] else col
-                for p, q in HAND:
-                    line(h[p], h[q], hc, 1.8 if i == keys[-1] else 1.3, op)
-    # dominant wrist path with arrowhead
-    path = [wrist(frames[i], dom) for i in range(a, b + 1)]
-    path = [p for p in path if p is not None and np.isfinite(p).all()]
-    if len(path) > 3 and move[dom] > 0.04:
-        path = path[:: max(1, len(path) // 24)]
-        d = " ".join(f"{'M' if j == 0 else 'L'}{sx(p):.1f},{sy(p):.1f}" for j, p in enumerate(path))
-        out.append('<defs><marker id="ah" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">'
-                   '<path d="M0,0 L10,5 L0,10 z" fill="#c2410c"/></marker></defs>')
-        out.append(f'<path d="{d}" fill="none" stroke="#c2410c" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#ah)" opacity="0.9"/>')
-    out.append("</svg>")
+            if h is None or not np.isfinite(h).all():
+                continue
+            col = DOM if k == dom else OTHER
+            poly = " ".join(f"{X(h[t]):.1f},{Y(h[t]):.1f}" for t in PALM)
+            out.append(f'<polygon points="{poly}" fill="{col}" fill-opacity="0.28" stroke="{col}" stroke-width="2" stroke-linejoin="round"/>')
+            for fg in FINGERS:
+                pts_ = [h[t] for t in fg]
+                d = " ".join(f"{'M' if n == 0 else 'L'}{X(p):.1f},{Y(p):.1f}" for n, p in enumerate(pts_))
+                out.append(f'<path d="{d}" fill="none" stroke="{col}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>')
+        out.append("</g>")
+        out.append(f'<text x="{ox + PW / 2}" y="{H + 12}" text-anchor="middle" font-size="10" fill="#555" font-family="-apple-system,Helvetica,Arial">{label}</text>')
+        if j < 2:
+            ax = ox + PW + 4
+            out.append(f'<path d="M{ax},{H / 2} L{ax + 13},{H / 2}" stroke="#888" stroke-width="2" marker-end="url(#ar)"/>')
 
-    # enlarged handshape of the dominant hand at the middle frame
-    h = None
-    for i in [keys[1], keys[2], keys[0]] + hf:
-        h = arr(frames[i], dom, 21)
-        if h is None:
-            h = arr(frames[i], "rh" if dom == "lh" else "lh", 21)
-        if h is not None and np.isfinite(h).all():
-            break
-    inset = ""
-    if h is not None and np.isfinite(h).all():
-        lo2, hi2 = h.min(0), h.max(0)
-        c2, s2 = (lo2 + hi2) / 2, max(hi2 - lo2) * 1.25 + 1e-6
-        fx = lambda p: ((p[0] - c2[0]) / s2 + 0.5) * 70
-        fy = lambda p: ((p[1] - c2[1]) / s2 + 0.5) * 70
-        seg = "".join(f'<line x1="{fx(h[p]):.1f}" y1="{fy(h[p]):.1f}" x2="{fx(h[q]):.1f}" y2="{fy(h[q]):.1f}" stroke="#c2410c" stroke-width="2.2" stroke-linecap="round"/>' for p, q in HAND)
-        tips = "".join(f'<circle cx="{fx(h[t]):.1f}" cy="{fy(h[t]):.1f}" r="2.6" fill="#c2410c"/>' for t in (4, 8, 12, 16, 20))
-        inset = f'<svg viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">{seg}{tips}</svg>'
-    return "".join(out), inset
+    out.append('<defs><marker id="ar" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#888"/></marker></defs>')
+    for j, (i, label) in enumerate(zip(keys, ("1  Start", "2  Move", "3  End"))):
+        panel(j, i, label)
+    out.append("</svg>")
+    return "".join(out), describe(frames, hf, dom, move, sw)
 
 
 def qr_svg(url):
@@ -185,13 +220,13 @@ def main():
         for g in gs:
             s = signs[g]
             fr = pick_clip(model, allowed, key(g), sorted(by.get(key(g), []))[:8], clipdir)
-            body, inset = draw(fr) if fr else ("<div class='nodraw'>no drawing</div>", "")
+            body, desc = draw(fr) if fr else ("<div class='nodraw'>no drawing</div>", "")
             word = s["word"]
             url = "https://www.signingsavvy.com/search/" + re.sub(r"[^a-z]+", "%20", word.lower().replace("'", "")).strip("%20")
             acc = s["correct_within_200"]
-            cards.append(f'''<div class="card"><div class="top"><b>{html.escape(word)}</b><span class="acc" title="recognized on {acc} of 8 test signers">{acc}/8</span></div>
-<div class="fig">{body}</div>
-<div class="bot"><div class="qr">{qr_svg(url)}</div><div class="inset" title="main handshape">{inset}</div><div class="gl">{html.escape(g)}<br><span>scan for video</span></div></div></div>''')
+            cards.append(f'''<div class="card"><div class="fig">{body}</div>
+<div class="bot"><div class="txt"><div class="top"><b>{html.escape(word)}</b><span class="acc" title="recognized on {acc} of 8 test signers">recognized {acc}/8</span></div>
+<div class="desc">{html.escape(desc)}</div></div><div class="qr">{qr_svg(url)}<span>video</span></div></div></div>''')
         cards.append("</div>")
     m = data["measured"]
     page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><title>TalkBridge ASL Top 200</title><style>
@@ -204,30 +239,30 @@ body {{ font: 11px/1.3 -apple-system, "Helvetica Neue", Arial, sans-serif; color
 .legend {{ display: flex; gap: 18px; align-items: center; margin: 14px 0; font-size: 12px; }}
 .sw {{ display: inline-block; width: 22px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }}
 h2.cat {{ font-size: 15px; margin: 10px 0 6px; break-after: avoid; }} h2.cat span {{ color: #777; font-weight: 400; }}
-.grid {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }}
-.card {{ border: 1px solid #bbb; border-radius: 8px; padding: 5px 6px 4px; break-inside: avoid; height: 2.05in; display: flex; flex-direction: column; }}
-.top {{ display: flex; justify-content: space-between; align-items: baseline; }}
-.top b {{ font-size: 15px; letter-spacing: -0.01em; }}
-.acc {{ font-size: 9px; color: #555; border: 1px solid #ccc; border-radius: 6px; padding: 0 4px; }}
-.fig {{ position: relative; flex: 1; min-height: 0; }}
-.fig > svg {{ width: 100%; height: 100%; }}
-.inset {{ width: 0.5in; height: 0.5in; border: 1px solid #e3b9a4; border-radius: 6px; background: #fff; flex: none; }}
-.inset svg {{ width: 100%; height: 100%; }}
-.bot {{ display: flex; gap: 6px; align-items: center; }}
-.qr svg {{ width: 0.5in; height: 0.5in; display: block; }}
-.gl {{ font-size: 8px; color: #666; line-height: 1.25; }} .gl span {{ color: #999; }}
+.grid {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }}
+.card {{ border: 1px solid #ccc; border-radius: 10px; padding: 7px 8px 6px; break-inside: avoid; display: flex; flex-direction: column; gap: 4px; }}
+.fig > svg {{ width: 100%; height: auto; display: block; }}
+.bot {{ display: flex; gap: 8px; align-items: center; }}
+.txt {{ flex: 1; min-width: 0; }}
+.top {{ display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }}
+.top b {{ font-size: 17px; letter-spacing: -0.01em; }}
+.acc {{ font-size: 8.5px; color: #666; white-space: nowrap; }}
+.desc {{ font-size: 11px; color: #333; margin-top: 2px; }}
+.qr {{ text-align: center; font-size: 7.5px; color: #888; }}
+.qr svg {{ width: 0.55in; height: 0.55in; display: block; }}
 </style></head><body>
 <section class="cover">
 <h1>TalkBridge: 200 ASL signs you can use on a call</h1>
 <p>Call the TalkBridge number, and when the call connects, sign one word at a time with a short pause between signs.
 Each recognized sign is added to the reply; drop your hands and TalkBridge turns the words into a sentence that is spoken to the caller after one tap.</p>
-<div class="legend"><span><i class="sw" style="background:#9aa3ad"></i>start</span><span><i class="sw" style="background:#5b6470"></i>middle</span>
-<span><i class="sw" style="background:#111"></i>end (body)</span><span><i class="sw" style="background:#c2410c"></i>main hand + its path</span><span><i class="sw" style="background:#1d4ed8"></i>other hand</span></div>
+<h3 style="margin:18px 0 6px">How to read a card</h3>
 <ul>
-<li>Each drawing is traced from a real Deaf signer in the ASL Citizen dataset, as you see them when facing them: faint = where the hands start, solid = where they end, dashed arrow = the path of the main hand. The small box next to the QR code shows the main handshape enlarged.</li>
-<li>Drawings are stick figures and can't show everything (palm direction, facial expression). Scan the QR code for a video of the sign.</li>
-<li>The number on each card is how many of 8 test signers the model recognized it for ({m["correct_within_200"]} of {m["clips"]} clips overall, {round(100*m["accuracy_within_200"])}%). Those clips may overlap the model's training data, so live accuracy will be lower.</li>
-<li>Numbers you can sign: zero, one, three, six, seven, eight, nine, eleven, hundred. For two, four, five, ten and other numbers, type them in the reply box.</li>
+<li><b>Read left to right: 1 Start &rarr; 2 Move &rarr; 3 End.</b> Each card shows one real Deaf signer from the ASL Citizen dataset at three moments of the sign.</li>
+<li><b style="color:#c2410c">Orange hand</b> = the main hand (the one that moves). <b style="color:#1d4ed8">Blue hand</b> = the other hand, if the sign uses two. The dashed orange arrow in the middle picture is the path the main hand takes.</li>
+<li>You are looking <b>at</b> the signer, like on a video call, so their right hand is on your left. Copy them as if they were a mirror.</li>
+<li>The line under the word (one or two hands, where) is measured from the signer's motion. It is a hint: drawings can't show palm direction or facial expression. <b>Scan the QR code to watch the sign.</b></li>
+<li>"Recognized 7/8" = TalkBridge recognized this sign for 7 of 8 test signers ({m["correct_within_200"]} of {m["clips"]} clips overall, {round(100*m["accuracy_within_200"])}%). Those clips may overlap the model's training data, so live accuracy will be lower.</li>
+<li>Numbers you can sign: zero, one, three, six, seven, eight, nine, eleven, hundred. Type other numbers in the reply box.</li>
 </ul>
 <p style="color:#555">Signs chosen from ASL-LEX 2.0 frequency ratings, six published core-vocabulary lists and phone-call vocabulary research.
 Recognition model: SignBart-ASL-2730 (trained on ASL Citizen), with preprocessing from Fingertip by Shruti. Drawings: ASL Citizen poses (Microsoft Research). Videos: Signing Savvy.</p>
