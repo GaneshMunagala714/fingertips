@@ -42,13 +42,13 @@ SignBart-ASL-2730 trained on ASL Citizen, and Google MediaPipe. JAM's finger-cou
 
 | | |
 |---|---|
-| 📞 **Make and take real calls** | Phone-style app: Keypad, Contacts, Recents. Dial any US number, or have people call the Fingertips number; incoming calls ring in the browser with **Accept / Decline**. |
-| 💬 **Live captions** | Everything the caller says appears as text, first as a draft, then final. Caption size is adjustable. |
-| 🤟 **Answer in ASL** | The camera turns on when the call connects. Sign one word at a time; drop your hands and Fingertips makes a sentence, counts down 3 seconds, and speaks it. |
-| ⌨️ **Or tap / type** | One-tap quick replies, AI reply suggestions, or a few typed words ("yes 8 works") that become a full sentence. |
-| 🛡️ **Safety guards** | The AI can't invent numbers or times, can't turn "no" into "yes", and money / booking replies need a confirm tap. |
-| 🖨️ **Sign cards** | A printable PDF of the 200 supported signs: numbered steps, pictures from real Deaf signers, QR code to a video. |
-| 🎶 **JAM** | A gesture instrument where every note is also drawn on screen; play together by invite link. |
+| **Make and take real calls** | Phone-style app: Keypad, Contacts, Recents. Dial any US number, or have people call the Fingertips number; incoming calls ring in the browser with **Accept / Decline**. |
+| **Live captions** | Everything the caller says appears as text, first as a draft, then final. Caption size is adjustable. |
+| **Answer in ASL** | The camera turns on when the call connects. Sign one word at a time; drop your hands and Fingertips makes a sentence, counts down 3 seconds, and speaks it. |
+| **Or tap / type** | One-tap quick replies, AI reply suggestions, or a few typed words ("yes 8 works") that become a full sentence. |
+| **Safety guards** | The AI can't invent numbers or times, can't turn "no" into "yes", and money / booking replies need a confirm tap. |
+| **Sign cards** | A printable PDF of the 200 supported signs: numbered steps, pictures from real Deaf signers, QR code to a video. |
+| **JAM** | A gesture instrument where every note is also drawn on screen; play together by invite link. |
 
 The caller first hears: *"Hi, this is Ganesh's interpreter. How are you?"* (set with `USER_NAME` or `GREETING` in `.env`).
 
