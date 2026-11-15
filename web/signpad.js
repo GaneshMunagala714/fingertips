@@ -21,7 +21,7 @@ const CSS = `
 .sp input { flex: 1; min-width: 0; font: inherit; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--sp-line, rgba(255,255,255,.18)); background: transparent; color: inherit; }
 `
 
-export function createSignPad({ container, video, stream = null, onSay, onPartial = () => {}, getHeard = () => '', vocab = 'top200' }) {
+export function createSignPad({ container, video, stream = null, onSay, onPartial = () => {}, onEvent = () => {}, getHeard = () => '', vocab = 'top200' }) {
   if (!document.getElementById('sp-css')) {
     const st = document.createElement('style'); st.id = 'sp-css'; st.textContent = CSS; document.head.append(st)
   }
@@ -55,9 +55,10 @@ export function createSignPad({ container, video, stream = null, onSay, onPartia
     cancel(); words.length = 0; renderWords()
     chips(r('sugRow'), r('sugs'), [], null); chips(r('choicesRow'), r('choices'), [], null)
     tag(`Said: “${text}”`, 'fired', 2500)
+    onEvent({ type: 'said', text })
     onSay(text)
   }
-  const add = (w) => { cancel(); words.push(w); renderWords(); chips(r('choicesRow'), r('choices'), [], null); chips(r('sugRow'), r('sugs'), [], null) }
+  const add = (w, sign = '') => { cancel(); words.push(w); renderWords(); onEvent({ type: 'word', word: w, sign, words: words.join(' ') }); chips(r('choicesRow'), r('choices'), [], null); chips(r('sugRow'), r('sugs'), [], null) }
 
   async function onSegment(frames, why, meta = {}) {
     cancel(); pending++
@@ -68,8 +69,9 @@ export function createSignPad({ container, video, stream = null, onSay, onPartia
       if (!res.ok) { tag(res.reason === 'too short' ? 'Too quick, sign again' : res.reason, 'err', 1400); return }
       if (res.unsure) {
         chips(r('choicesRow'), r('choices'), res.choices.map((c) => c.word), add)
+        onEvent({ type: 'unsure', choices: res.choices.map((c) => c.word) })
         tag(`Not sure: ${res.choices.slice(0, 2).map((c) => c.word).join(' or ')}?`, '', 1800)
-      } else { add(res.word); tag(`“${res.word}”`, 'fired', 1400) }
+      } else { add(res.word, res.sign); tag(`“${res.word}”`, 'fired', 1400) }
     } catch { tag('Sign server error', 'err', 1400) } finally { pending-- }
   }
 
@@ -85,6 +87,7 @@ export function createSignPad({ container, video, stream = null, onSay, onPartia
     } catch {}
     if (words.join(' ') !== text) return            // kept signing meanwhile
     chips(r('sugRow'), r('sugs'), replies.length ? replies : [text], say)
+    onEvent({ type: 'sentence', options: replies.length ? replies : [text] })
     if (!auto.checked) { tag('Tap a sentence to say it', '', 2500); return }
     const target = replies[0] || text
     let n = 3
@@ -92,6 +95,7 @@ export function createSignPad({ container, video, stream = null, onSay, onPartia
     const tick = () => {
       if (n === 0) { timer = null; say(target); return }
       r('count').textContent = `Sending “${target}” in ${n}…`; tag('', '', 1100)
+      onEvent({ type: 'countdown', text: target, n })
       n--; timer = setTimeout(tick, 1000)
     }
     tick()
@@ -107,8 +111,8 @@ export function createSignPad({ container, video, stream = null, onSay, onPartia
     else tag(st.visible ? 'Sign one word, then pause' : 'Raise your hands to sign')
   }
 
-  r('cancel').onclick = () => { cancel(); tag('Not sent. Tap a sentence, or keep signing.', '', 2500) }
-  r('clear').onclick = () => { cancel(); words.length = 0; renderWords(); chips(r('sugRow'), r('sugs'), [], null); chips(r('choicesRow'), r('choices'), [], null) }
+  r('cancel').onclick = () => { cancel(); onEvent({ type: 'cancel' }); tag('Not sent. Tap a sentence, or keep signing.', '', 2500) }
+  r('clear').onclick = () => { cancel(); onEvent({ type: 'clear' }); words.length = 0; renderWords(); chips(r('sugRow'), r('sugs'), [], null); chips(r('choicesRow'), r('choices'), [], null) }
   r('form').onsubmit = (e) => { e.preventDefault(); const v = r('input').value; r('input').value = ''; say(v) }
   r('input').oninput = cancel
   const start = async () => {

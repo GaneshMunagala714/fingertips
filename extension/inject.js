@@ -169,6 +169,7 @@
       const audioOut = a.length ? mixedAudio(stream) : []
       const out = new MediaStream([...audioOut, ...videoOut])
       window.__talkbridgeWrapped = (window.__talkbridgeWrapped || 0) + 1
+      window.__talkbridgeState = { video: (window.__talkbridgeState?.video || !!v.length), audio: (window.__talkbridgeState?.audio || !!a.length) }
       window.postMessage({ talkbridge: 'wrapped', video: !!v.length, audio: !!a.length, mode: window.__talkbridgeMode || '' }, '*')
       return out
     } catch (e) {
@@ -186,6 +187,8 @@
       cap.at = performance.now()
     } else if (m.talkbridge === 'burn') {
       cap.burn = !!m.on
+    } else if (m.talkbridge === 'hello') {          // the panel loaded after Meet opened the mic: tell it again
+      if (window.__talkbridgeState) window.postMessage({ talkbridge: 'wrapped', ...window.__talkbridgeState, mode: window.__talkbridgeMode || '' }, '*')
     } else if (m.talkbridge === 'micmode') {
       voiceOnly = !!m.voiceOnly
       for (const x of mixes) x.micGain.gain.value = voiceOnly ? 0 : 1

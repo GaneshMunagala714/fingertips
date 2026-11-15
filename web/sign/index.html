@@ -32,6 +32,7 @@ const pad = createSignPad({
   container: $('pad'), video: $('cam'),
   onSay: (text) => post({ type: 'say', text }),
   onPartial: (text) => post({ type: 'partial', text }),
+  onEvent: (ev) => post({ ...ev, type: 'event', kind: ev.type }),
 })
 pad.start()
 window.addEventListener('beforeunload', () => post({ type: 'closed' }))
