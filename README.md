@@ -12,7 +12,9 @@ speaks your reply. The person on the other end uses an ordinary phone and instal
 | **ASL sign cards (PDF)** | [print/asl-top200-cards.pdf](print/asl-top200-cards.pdf) |
 
 Built by Ganesh Munagala at **HackUMass XIV** (Nov 13–15, 2026). Sign recognition uses the model and
-preprocessing from **Fingertip by Shruti**, used with permission (see [Credits](#credits)).
+preprocessing from [Fingertip by Shruti](https://github.com/Shrutibrahma/HackUMass-26) (used with permission),
+SignBart-ASL-2730 trained on ASL Citizen, and Google MediaPipe. JAM's finger-count → chord idea is from
+[Gesture Synth](https://github.com/ericwei97-cloud/gesture-synth) by Eric Wei.
 
 ---
 
@@ -30,7 +32,6 @@ preprocessing from **Fingertip by Shruti**, used with permission (see [Credits](
 10. [Tests](#tests)
 11. [How the 200 signs were chosen and measured](#how-the-200-signs-were-chosen-and-measured)
 12. [Limits (honest)](#limits-honest)
-13. [Credits](#credits)
 
 ---
 
@@ -226,11 +227,3 @@ Scripts are in `eval_signs/`; the sign cards are built by `eval_signs/make_cards
 - Tested by us with real hands and real calls, not yet with Deaf users. That's the next step.
 - The incoming-call screen works while the app is open in a tab (no push notifications yet).
 
-## Credits
-
-- **Fingertip by Shruti** ([Shrutibrahma/HackUMass-26](https://github.com/Shrutibrahma/HackUMass-26)), in `fingertip/`:
-  the SignBart model wrapper and preprocessing that TalkBridge's sign recognition runs on. Used with permission.
-- **SignBart-ASL-2730**, trained on **ASL Citizen** (Microsoft Research). Sign card pictures are traced from ASL Citizen poses.
-- **Google MediaPipe** Tasks Vision for hand and pose tracking. **Twilio** ConversationRelay. **Google Gemini**.
-- Sign videos linked from **Signing Savvy**. Frequency data from **ASL-LEX 2.0**.
-- JAM's finger-count → chord idea from **[Gesture Synth](https://github.com/ericwei97-cloud/gesture-synth)** by Eric Wei (credited; no code copied).
