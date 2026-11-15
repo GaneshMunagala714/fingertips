@@ -16,7 +16,8 @@ Built in 36 hours at HackUMass XIV.
 | | |
 |---|---|
 | Demo video | https://youtu.be/y6x7Rp9-KN8 |
-| Live calling app | https://66-135-26-183.sslip.io (Chrome on a laptop) |
+| Everything in one place | https://66-135-26-183.sslip.io (Chrome on a laptop) |
+| Phone calls | https://66-135-26-183.sslip.io/call |
 | Phone number | +1 (878) 877-6285 |
 | Google Meet extension | [talkbridge-meet.zip](https://66-135-26-183.sslip.io/talkbridge-meet.zip) |
 | ASL sign cards | [print/asl-top200-cards.pdf](print/asl-top200-cards.pdf) |

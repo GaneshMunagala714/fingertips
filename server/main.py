@@ -391,12 +391,17 @@ async def no_stale_app(request: Request, call_next):
     """Browsers must re-check the page and scripts on every load (cheap 304 if unchanged), so a deploy shows up at once."""
     resp = await call_next(request)
     p = request.url.path
-    if p == "/" or p.startswith("/static/") or p.startswith("/jam"):
+    if p in ("/", "/call") or p.startswith("/static/") or p.startswith("/jam"):
         resp.headers["Cache-Control"] = "no-cache"
     return resp
 
 
 @app.get("/")
+async def home() -> FileResponse:
+    return FileResponse(WEB / "home.html")
+
+
+@app.get("/call")
 async def index() -> FileResponse:
     return FileResponse(WEB / "index.html")
 
