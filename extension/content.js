@@ -1,4 +1,4 @@
-// TalkBridge for Google Meet: the panel on the Meet page.
+// Fingertips for Google Meet: the panel on the Meet page.
 //  * "Open signing window" opens <server>/sign. Signed sentences come back here by postMessage.
 //  * Each sentence is fetched as speech (via bg.js -> /api/tts) and handed to inject.js, which mixes it into
 //    the microphone Meet is sending and draws it as a caption on the camera. Everyone in the meeting hears and
@@ -39,7 +39,7 @@
   const panel = document.createElement('div'); panel.id = 'tb-panel'
   panel.innerHTML = `
     <div class="tb-card" hidden>
-      <b>TalkBridge</b>
+      <b>Fingertips</b>
       <div class="tb-st" data-r="st">Checking your camera and mic…</div>
       <button class="tb-b primary" data-r="sign">Open signing window</button>
       <form data-r="form"><input type="text" data-r="input" placeholder="Type something to say"><button class="tb-b primary">Say</button></form>
@@ -48,7 +48,7 @@
       <label><input type="checkbox" data-r="burn" checked> Show my sentence as a caption on my camera</label>
       <div class="tb-last" data-r="last"></div>
     </div>
-    <button class="tb-fab" data-r="fab">🤟 TalkBridge</button>`
+    <button class="tb-fab" data-r="fab">🤟 Fingertips</button>`
   document.documentElement.append(panel)
   // What you are signing, readable for you (Meet mirrors your self-view, so the camera caption reads backwards to you)
   const live = document.createElement('div'); live.id = 'tb-live'; live.hidden = true; live.setAttribute('aria-live', 'polite')
@@ -79,12 +79,12 @@
 
   function status() {
     const e = r('st')
-    if (wrapped.audio) { e.textContent = 'Ready: your sentences go into your Meet microphone' + (wrapped.video ? ' and camera.' : '.') + (meetMuted() ? ' Meet is muted: TalkBridge unmutes it while speaking.' : ''); e.className = 'tb-st ok' }
+    if (wrapped.audio) { e.textContent = 'Ready: your sentences go into your Meet microphone' + (wrapped.video ? ' and camera.' : '.') + (meetMuted() ? ' Meet is muted: Fingertips unmutes it while speaking.' : ''); e.className = 'tb-st ok' }
     else { e.textContent = 'Not connected to your mic yet. Turn your microphone (and camera) off and on once in Meet, or reload the page and join again.'; e.className = 'tb-st bad' }
   }
   const toPage = (m, transfer) => window.postMessage({ talkbridge: m.type, ...m }, '*', transfer || [])
 
-  // Meet's own mute silences the whole mic track, TalkBridge voice included. If Meet is muted when a sentence is
+  // Meet's own mute silences the whole mic track, Fingertips voice included. If Meet is muted when a sentence is
   // ready, unmute it for the sentence and mute it again afterwards.
   const meetMic = () => [...document.querySelectorAll('[data-is-muted]')].find((b) => /microphone/i.test(b.getAttribute('aria-label') || ''))
   const meetMuted = () => meetMic()?.getAttribute('data-is-muted') === 'true'
@@ -128,7 +128,7 @@
       }
       return
     }
-    if (ev.origin !== new URL(server).origin) return  // only the TalkBridge signing window
+    if (ev.origin !== new URL(server).origin) return  // only the Fingertips signing window
     if (d.talkbridge === 'event') onSignEvent(d)
     else if (d.talkbridge === 'partial' && d.text) toPage({ type: 'caption', text: d.text, final: false })
     else if (d.talkbridge === 'say') say(d.text)

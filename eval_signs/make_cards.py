@@ -232,10 +232,10 @@ def main():
             cards.append(f'''<div class="card"><div class="head"><b>{html.escape(word)}</b><div class="qr">{qr_svg(url)}<span>watch</span></div></div>
 <ol class="steps">{steps}</ol>
 <div class="fig">{body}</div>
-<div class="meta">TalkBridge recognized this for {acc} of 8 test signers</div></div>''')
+<div class="meta">Fingertips recognized this for {acc} of 8 test signers</div></div>''')
         cards.append("</div>")
     m = data["measured"]
-    page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><title>TalkBridge ASL Top 200</title><style>
+    page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Fingertips ASL Top 200</title><style>
 @page {{ size: letter; margin: 0.4in; }}
 * {{ box-sizing: border-box; }}
 body {{ font: 11px/1.3 -apple-system, "Helvetica Neue", Arial, sans-serif; color: #111; margin: 0; }}
@@ -258,16 +258,16 @@ h2.cat {{ font-size: 15px; margin: 10px 0 6px; break-after: avoid; }} h2.cat spa
 .qr svg {{ width: 0.5in; height: 0.5in; display: block; }}
 </style></head><body>
 <section class="cover">
-<h1>TalkBridge: 200 ASL signs you can use on a call</h1>
-<p>Call the TalkBridge number, and when the call connects, sign one word at a time with a short pause between signs.
-Each recognized sign is added to the reply; drop your hands and TalkBridge turns the words into a sentence that is spoken to the caller after one tap.</p>
+<h1>Fingertips: 200 ASL signs you can use on a call</h1>
+<p>Call the Fingertips number, and when the call connects, sign one word at a time with a short pause between signs.
+Each recognized sign is added to the reply; drop your hands and Fingertips turns the words into a sentence that is spoken to the caller after one tap.</p>
 <h3 style="margin:18px 0 6px">How to read a card</h3>
 <ul>
 <li><b>Follow the numbered steps.</b> "Main hand" = your dominant hand (right hand if you're right-handed); "other hand" = the one that stays still. The steps describe the common form of the sign; some signers use a variant, so <b>scan the QR code to watch it</b> when unsure.</li>
 <li><b>The small pictures show one real Deaf signer</b> (ASL Citizen dataset) at three moments: 1 Start &rarr; 2 Move &rarr; 3 End.</li>
 <li><b style="color:#c2410c">Orange hand</b> = the main hand (the one that moves). <b style="color:#1d4ed8">Blue hand</b> = the other hand, if the sign uses two. The dashed orange arrow in the middle picture is the path the main hand takes.</li>
 <li>You are looking <b>at</b> the signer, like on a video call, so their right hand is on your left. Copy them as if they were a mirror.</li>
-<li>"Recognized 7/8" = TalkBridge recognized this sign for 7 of 8 test signers ({m["correct_within_200"]} of {m["clips"]} clips overall, {round(100*m["accuracy_within_200"])}%). Those clips may overlap the model's training data, so live accuracy will be lower.</li>
+<li>"Recognized 7/8" = Fingertips recognized this sign for 7 of 8 test signers ({m["correct_within_200"]} of {m["clips"]} clips overall, {round(100*m["accuracy_within_200"])}%). Those clips may overlap the model's training data, so live accuracy will be lower.</li>
 <li>Numbers you can sign: zero, one, three, six, seven, eight, nine, eleven, hundred. Type other numbers in the reply box.</li>
 </ul>
 <p style="color:#555">Signs chosen from ASL-LEX 2.0 frequency ratings, six published core-vocabulary lists and phone-call vocabulary research.

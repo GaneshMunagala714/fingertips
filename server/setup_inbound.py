@@ -1,4 +1,4 @@
-"""Point the Twilio number's incoming-call webhook at this TalkBridge server.
+"""Point the Twilio number's incoming-call webhook at this Fingertips server.
 
 Run after PUBLIC_URL changes (new tunnel, or the Vultr deploy):
     .venv/bin/python -m server.setup_inbound

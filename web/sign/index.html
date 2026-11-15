@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TalkBridge Signing</title>
+<title>Fingertips Signing</title>
 <style>
   :root { --bg: #1c1c1e; --fg: #f5f5f7; --dim: #a1a1a6; }
   * { box-sizing: border-box; }
@@ -16,7 +16,7 @@
 </style>
 </head>
 <body>
-  <h1>TalkBridge signing</h1>
+  <h1>Fingertips signing</h1>
   <div class="status" id="status"></div>
   <video id="cam" playsinline muted autoplay></video>
   <div id="pad"></div>
@@ -27,7 +27,7 @@ const $ = (id) => document.getElementById(id)
 const meeting = window.opener
 const post = (m) => { try { meeting?.postMessage({ talkbridge: m.type, ...m }, '*') } catch {} }
 if (meeting) { $('status').textContent = 'Connected to your meeting tab'; $('status').className = 'status ok' }
-else { $('status').textContent = 'Open this window from the TalkBridge button in Google Meet to speak into the meeting.'; $('status').className = 'status bad' }
+else { $('status').textContent = 'Open this window from the Fingertips button in Google Meet to speak into the meeting.'; $('status').className = 'status bad' }
 const pad = createSignPad({
   container: $('pad'), video: $('cam'),
   onSay: (text) => post({ type: 'say', text }),

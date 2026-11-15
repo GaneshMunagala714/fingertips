@@ -1,10 +1,10 @@
-// TalkBridge for Google Meet: page-side script. Adapted from the Fingertip meeting extension by Shruti
+// Fingertips for Google Meet: page-side script. Adapted from the Fingertip meeting extension by Shruti
 // (Shrutibrahma/HackUMass-26, extension/inject.js), used with permission.
 // Runs in the meeting page's MAIN world at document_start (manifest "world": "MAIN"), before Meet/Zoom ask for
 // the camera. It wraps getUserMedia so that:
 //   * video: every camera frame gets the signer's approved caption drawn into it. The meeting then sends that
 //     video to everyone, so remote attendees see the captions with nothing installed on their side.
-//   * audio: approved TalkBridge speech is mixed into the microphone track (optional "Voice it").
+//   * audio: approved Fingertips speech is mixed into the microphone track (optional "Voice it").
 // Messages come from the extension's content script via window.postMessage:
 //   {talkbridge:'caption', text, final}   {talkbridge:'burn', on}   {talkbridge:'play', audio:ArrayBuffer}
 (() => {
@@ -57,7 +57,7 @@
     ctx.font = `700 ${tf}px system-ui, sans-serif`
     ctx.textAlign = 'left'
     ctx.fillStyle = 'rgba(0,0,0,0.6)'
-    const tag = cap.final ? 'CC · signed via TalkBridge' : 'CC · signing…'
+    const tag = cap.final ? 'CC · signed via Fingertips' : 'CC · signing…'
     const tw = ctx.measureText(tag).width + tf
     ctx.fillRect(x, y - tf * 1.7, tw, tf * 1.5)
     ctx.fillStyle = '#9fe8c3'
@@ -103,7 +103,7 @@
         window.__talkbridgeMode = 'insertable-streams'
         return gen
       } catch (e) {
-        console.warn('[TalkBridge] insertable streams failed, using canvas', e)
+        console.warn('[Fingertips] insertable streams failed, using canvas', e)
       }
     }
     // Fallback: canvas capture.
@@ -134,7 +134,7 @@
   }
 
   // ------------------------------------------------------------------ audio mixer
-  // Outgoing mic = (real mic x micGain) + TalkBridge voice. "Voice only" (default) keeps the real mic silent, so
+  // Outgoing mic = (real mic x micGain) + Fingertips voice. "Voice only" (default) keeps the real mic silent, so
   // you can leave Meet's mic ON and people hear only your signed sentences. Every mic track Meet opens gets a mix.
   const mixes = new Set()
   let voiceOnly = true
@@ -173,7 +173,7 @@
       window.postMessage({ talkbridge: 'wrapped', video: !!v.length, audio: !!a.length, mode: window.__talkbridgeMode || '' }, '*')
       return out
     } catch (e) {
-      console.warn('[TalkBridge] could not add captions; using the plain camera', e)
+      console.warn('[Fingertips] could not add captions; using the plain camera', e)
       return stream
     }
   }
@@ -207,7 +207,7 @@
         s.start()
         window.postMessage({ talkbridge: 'played', ok: live.length > 0, tracks: live.length, state: audioCtx.state, seconds: buf.duration }, '*')
       } catch (e) {
-        console.warn('[TalkBridge] meeting voice playback failed', e)
+        console.warn('[Fingertips] meeting voice playback failed', e)
         window.postMessage({ talkbridge: 'played', ok: false, error: String(e) }, '*')
       }
     }

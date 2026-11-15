@@ -1,4 +1,4 @@
-"""TalkBridge server: one live phone call at a time, for one user.
+"""Fingertips server: one live phone call at a time, for one user.
 
 Browser  <-- /ws -->  this server  <-- /twilio/relay (ConversationRelay WebSocket) -->  Twilio  <-->  phone
 Twilio does speech-to-text (caller -> captions) and text-to-speech (approved text -> caller).
@@ -43,7 +43,7 @@ DECLINE_SAY = "Sorry, I can't take your call right now. Please try again later."
 BUSY_SAY = "Sorry, I'm on another call right now. Please try again later."
 E164 = re.compile(r"^\+[1-9]\d{7,14}$")
 
-app = FastAPI(title="TalkBridge")
+app = FastAPI(title="Fingertips")
 app.include_router(jam.router)
 app.include_router(meet.router)
 app.include_router(asl.router)

@@ -1,7 +1,7 @@
-"""On a Mac running the server locally: bring the TalkBridge window to the front when a call comes in.
+"""On a Mac running the server locally: bring the Fingertips window to the front when a call comes in.
 
 A web page can't raise its own window, but the server runs on the same Mac, so it asks macOS to.
-Chrome first (finds the existing TalkBridge tab, else opens one); any other browser gets `open <url>`.
+Chrome first (finds the existing Fingertips tab, else opens one); any other browser gets `open <url>`.
 Off when MAC_POPUP=off or not on macOS (e.g. the Docker/Vultr deploy).
 """
 from __future__ import annotations

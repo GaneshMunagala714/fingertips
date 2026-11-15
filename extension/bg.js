@@ -1,4 +1,4 @@
-// Service worker: talks to the TalkBridge server for the meeting page (no CORS needed from here).
+// Service worker: talks to the Fingertips server for the meeting page (no CORS needed from here).
 const DEFAULT_SERVER = 'https://66-135-26-183.sslip.io'
 const server = async () => ((await chrome.storage.sync.get('server')).server || DEFAULT_SERVER).replace(/\/+$/, '')
 

@@ -1,4 +1,4 @@
-"""Signing outside phone calls: TalkBridge video calls (/v/<room>) and the Google Meet extension.
+"""Signing outside phone calls: Fingertips video calls (/v/<room>) and the Google Meet extension.
 
 Both turn signed (or typed) words into a sentence, then into speech that the other side hears:
   * /api/sentence  words -> sentence options (Gemini, with the same rules fallback as calls)

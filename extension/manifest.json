@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "TalkBridge for Google Meet",
+  "name": "Fingertips for Google Meet",
   "version": "1.2.0",
-  "description": "Sign or type in Google Meet: TalkBridge speaks your sentence into your microphone and shows it as a caption on your camera, so everyone hears and sees it.",
+  "description": "Sign or type in Google Meet: Fingertips speaks your sentence into your microphone and shows it as a caption on your camera, so everyone hears and sees it.",
   "permissions": ["storage"],
   "host_permissions": ["https://66-135-26-183.sslip.io/*", "http://localhost/*", "http://127.0.0.1/*"],
   "optional_host_permissions": ["https://*/*"],

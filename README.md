@@ -1,7 +1,7 @@
-# TalkBridge
+# Fingertips
 
 **Your hands. Your voice.** Real phone calls for Deaf, hard-of-hearing and nonspeaking people.
-The caller's words show up as live captions; you answer in **ASL**, by tapping or by typing, and TalkBridge
+The caller's words show up as live captions; you answer in **ASL**, by tapping or by typing, and Fingertips
 speaks your reply. The person on the other end uses an ordinary phone and installs nothing.
 
 | | |
@@ -42,9 +42,9 @@ SignBart-ASL-2730 trained on ASL Citizen, and Google MediaPipe. JAM's finger-cou
 
 | | |
 |---|---|
-| 📞 **Make and take real calls** | Phone-style app: Keypad, Contacts, Recents. Dial any US number, or have people call the TalkBridge number; incoming calls ring in the browser with **Accept / Decline**. |
+| 📞 **Make and take real calls** | Phone-style app: Keypad, Contacts, Recents. Dial any US number, or have people call the Fingertips number; incoming calls ring in the browser with **Accept / Decline**. |
 | 💬 **Live captions** | Everything the caller says appears as text, first as a draft, then final. Caption size is adjustable. |
-| 🤟 **Answer in ASL** | The camera turns on when the call connects. Sign one word at a time; drop your hands and TalkBridge makes a sentence, counts down 3 seconds, and speaks it. |
+| 🤟 **Answer in ASL** | The camera turns on when the call connects. Sign one word at a time; drop your hands and Fingertips makes a sentence, counts down 3 seconds, and speaks it. |
 | ⌨️ **Or tap / type** | One-tap quick replies, AI reply suggestions, or a few typed words ("yes 8 works") that become a full sentence. |
 | 🛡️ **Safety guards** | The AI can't invent numbers or times, can't turn "no" into "yes", and money / booking replies need a confirm tap. |
 | 🖨️ **Sign cards** | A printable PDF of the 200 supported signs: numbered steps, pictures from real Deaf signers, QR code to a video. |
@@ -85,10 +85,10 @@ camera ──► MediaPipe (in your browser) ──► landmarks only ──► 
 
 ## Sign in video calls and Google Meet
 
-Phone calls aren't the only place. The same signing panel works in video calls: you sign, **TalkBridge speaks your
+Phone calls aren't the only place. The same signing panel works in video calls: you sign, **Fingertips speaks your
 sentence into your microphone** (Gemini speech), so the other person hears it, and shows it as a caption.
 
-**TalkBridge video call** (`/v/<room>`)
+**Fingertips video call** (`/v/<room>`)
 1. On the Keypad, tap the **video** button. You get a call page with an invite link.
 2. Send the link. The other person opens it in Chrome and taps **Join call**: no app, no sign-up.
 3. Sign (or type) on the right. They **hear your sentence in a voice** and see it as a caption over your video.
@@ -97,12 +97,12 @@ sentence into your microphone** (Gemini speech), so the other person hears it, a
 **Google Meet extension** (`extension/`)
 1. Download **[talkbridge-meet.zip](https://66-135-26-183.sslip.io/talkbridge-meet.zip)** and unzip it.
 2. In Chrome open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked**, pick the `talkbridge-meet` folder.
-3. Open Google Meet **after** installing (or turn your mic and camera off and on once). Click **🤟 TalkBridge** at the bottom left.
+3. Open Google Meet **after** installing (or turn your mic and camera off and on once). Click **🤟 Fingertips** at the bottom left.
 4. **Open signing window**, sign, drop your hands. Your sentence is **spoken into your Meet microphone** and drawn as a
    caption on your camera, so everyone in the meeting hears and sees it. Nobody else installs anything.
 
 How: the extension wraps the camera and microphone Meet asks for (`extension/inject.js`, adapted from the
-Fingertip meeting extension): your mic and the TalkBridge voice are mixed into one track, and each camera frame
+Fingertip meeting extension): your mic and the Fingertips voice are mixed into one track, and each camera frame
 gets the caption drawn in. Tested in real Chrome on a stand-in meeting page (voice reaches the outgoing mic,
 caption is in the outgoing video) and video call end to end with two browsers; not yet on a live Meet call.
 

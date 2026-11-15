@@ -1,4 +1,4 @@
-"""ASL word recognition for TalkBridge calls.
+"""ASL word recognition for Fingertips calls.
 
 The model and its exact preprocessing come from Fingertip by Shruti (fingertip/server/app/signs/models.py,
 used with permission): SignBart-ASL-2730, trained on ASL Citizen, 2,730 isolated ASL signs.

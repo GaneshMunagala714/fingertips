@@ -1,4 +1,4 @@
-# Vultr deploy: TalkBridge behind Caddy (automatic HTTPS). Run from this folder:
+# Vultr deploy: Fingertips behind Caddy (automatic HTTPS). Run from this folder:
 #   DOMAIN=<ip-with-dashes>.sslip.io docker compose up -d --build
 services:
   app:

@@ -1,4 +1,4 @@
-// TalkBridge browser app: a phone-style dialer + call screen. Captions in, approved replies out.
+// Fingertips browser app: a phone-style dialer + call screen. Captions in, approved replies out.
 // No secrets here; all keys stay on the server. Contacts and recents live only in this browser.
 const $ = (id) => document.getElementById(id)
 const QUICK = ['Yes.', 'No.', 'One moment, please.', 'Could you repeat that, please?', 'Thank you!', 'Thank you, goodbye!']
@@ -289,7 +289,7 @@ function renderCall() {
   $('callName').textContent = c ? c.name : (state.to ? pretty(state.to) : 'Calling')
   const inbound = state.direction === 'inbound'
   $('callSub').textContent = c ? `mobile  ${pretty(state.to)}` : (inbound ? 'Unknown caller' : 'Unknown')
-  $('callMeta').textContent = s === 'incoming' ? 'Incoming call · TalkBridge' : `${inbound ? 'Incoming' : 'TalkBridge'} call · live captions`
+  $('callMeta').textContent = s === 'incoming' ? 'Incoming call · Fingertips' : `${inbound ? 'Incoming' : 'Fingertips'} call · live captions`
   $('saveCallerBtn').hidden = !!c || !state.to
 
   const live = LIVE.has(s), over = OVER.has(s) || s === 'idle'
@@ -549,7 +549,7 @@ async function showSignList() {
   const ul = $('signList'); ul.innerHTML = ''
   document.querySelector('#signsDlg .sign-cloud')?.remove()
   if (signMode() === 'quick') {
-    $('signsHelp').textContent = 'Hold a sign steady for about a second. The ring fills, then TalkBridge says the reply out loud on the call.'
+    $('signsHelp').textContent = 'Hold a sign steady for about a second. The ring fills, then Fingertips says the reply out loud on the call.'
     const m = await camModule().catch(() => null)
     for (const s of Object.values(m?.SIGNS || {})) {
       const li = document.createElement('li')
@@ -561,7 +561,7 @@ async function showSignList() {
     aslInfo ??= await fetch('/api/asl/info').then((r) => r.json()).catch(() => null)
     const all = signMode() === 'asl-all'
     $('signsHelp').textContent = aslInfo?.ready
-      ? `Sign one word at a time in ASL, with a short pause between signs. Each sign is added to your reply. Drop your hands when you're done and TalkBridge turns the words into a sentence you can send with one tap. ${all ? `Listening for all ${aslInfo.signs.toLocaleString()} ASL signs; the ones below are the most reliable.` : signMode() === 'asl-top200' ? `Listening for the ${aslInfo.top200.length} most-used everyday signs below, chosen from ASL frequency research and tested on real signers:` : 'Listening for these everyday signs only:'} Model: ${aslInfo.credit}.`
+      ? `Sign one word at a time in ASL, with a short pause between signs. Each sign is added to your reply. Drop your hands when you're done and Fingertips turns the words into a sentence you can send with one tap. ${all ? `Listening for all ${aslInfo.signs.toLocaleString()} ASL signs; the ones below are the most reliable.` : signMode() === 'asl-top200' ? `Listening for the ${aslInfo.top200.length} most-used everyday signs below, chosen from ASL frequency research and tested on real signers:` : 'Listening for these everyday signs only:'} Model: ${aslInfo.credit}.`
       : `ASL model isn't available: ${aslInfo?.error || 'server unreachable'}`
     const cloud = document.createElement('div'); cloud.className = 'sign-cloud'
     for (const g of (signMode() === 'asl-top200' && aslInfo?.top200?.length ? aslInfo.top200 : aslInfo?.everyday) || []) { const sp = document.createElement('span'); sp.textContent = g.replace(/\./g, '').replace(/-/g, ' ').toLowerCase(); cloud.append(sp) }
@@ -596,18 +596,18 @@ function startRinging() {
   unlockAudio(); trill()
   ringTimer = setInterval(() => { trill(); try { navigator.vibrate?.([400, 200, 400]) } catch {} }, 2500)
   const c = findContact(state.to), who = c ? c.name : pretty(state.to)
-  const base = 'TalkBridge'; let flip = false
+  const base = 'Fingertips'; let flip = false
   titleTimer = setInterval(() => { document.title = (flip = !flip) ? `Incoming call: ${who}` : base }, 900)
   try {
     if ('Notification' in window && Notification.permission === 'granted') {
-      note = new Notification('Incoming call', { body: `${who} is calling you on TalkBridge`, tag: 'tb-call', requireInteraction: true })
+      note = new Notification('Incoming call', { body: `${who} is calling you on Fingertips`, tag: 'tb-call', requireInteraction: true })
       note.onclick = () => { window.focus(); note?.close() }
     }
   } catch {}
 }
 function stopRinging() {
   clearInterval(ringTimer); ringTimer = null
-  clearInterval(titleTimer); titleTimer = null; document.title = 'TalkBridge'
+  clearInterval(titleTimer); titleTimer = null; document.title = 'Fingertips'
   try { note?.close() } catch {} note = null
   try { navigator.vibrate?.(0) } catch {}
 }
