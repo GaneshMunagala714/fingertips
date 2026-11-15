@@ -478,11 +478,11 @@ function onAslState(st) {
   if (st.signing) signTag('Reading your sign…', 'rec')
   else signTag(st.visible ? 'Sign, then pause' : 'Raise your hands to sign')
 }
-async function onAslSegment(frames) {
+async function onAslSegment(frames, why, meta = {}) {
   if (state.status !== 'in-progress') return
   signTag('Recognizing…'); firedUntil = performance.now() + 900
   try {
-    const r = await api('/api/asl/classify', { frames, vocab: { 'asl-everyday': 'everyday', 'asl-top200': 'top200' }[signMode()] || 'all' })
+    const r = await api('/api/asl/classify', { frames, why, ...meta, vocab: { 'asl-everyday': 'everyday', 'asl-top200': 'top200' }[signMode()] || 'all' })
     if (!r.ok) { signTag(r.reason === 'too short' ? 'Too quick, sign again' : r.reason, 'err'); firedUntil = performance.now() + 1400; return }
     if (r.unsure) {
       showChoices(r.choices.map((c) => c.word))

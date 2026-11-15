@@ -30,6 +30,7 @@ UNSURE_P = {"everyday": 0.45, "top200": 0.40, "all": 0.30}
 TOP200_FILE = ROOT / "server" / "data" / "asl_top200.json"   # eval_signs/: research + measured on ASL Citizen clips
 UNSURE_MARGIN = 0.12
 MAX_FRAMES = 240
+DEBUG_DIR = ROOT / "logs" / "asl"      # every sign the browser sends + what the model said (for tuning)
 
 _model = None
 _everyday: set[str] = set()
@@ -85,13 +86,29 @@ def classify(frames: list[dict], vocab: str = "all") -> dict:
 class ClassifyIn(BaseModel):
     frames: list[dict] = Field(default_factory=list)
     vocab: str = "all"
+    why: str = ""
+    fps: float = 0
+    handFrames: int = 0
+
+
+def _debug_save(body: ClassifyIn, out: dict) -> None:
+    try:
+        DEBUG_DIR.mkdir(parents=True, exist_ok=True)
+        name = time.strftime("%H%M%S") + f"-{int(time.time() * 1000) % 1000:03d}-{out.get('sign', 'none')}"
+        (DEBUG_DIR / f"{name}.json").write_text(json.dumps({"meta": body.model_dump(exclude={"frames"}), "out": out, "frames": body.frames}))
+    except Exception as e:
+        log.warning("asl debug save failed: %s", e)
 
 
 @router.post("/api/asl/classify")
 async def asl_classify(body: ClassifyIn) -> dict:
     if body.vocab not in ("all", "everyday", "top200"):
         raise HTTPException(400, "vocab must be 'all', 'top200' or 'everyday'")
-    return await asyncio.to_thread(classify, body.frames[:MAX_FRAMES], body.vocab)
+    out = await asyncio.to_thread(classify, body.frames[:MAX_FRAMES], body.vocab)
+    log.info("asl sign: %s frames (%s with hands, %s fps, end=%s) -> %s", len(body.frames), body.handFrames, body.fps, body.why,
+             " | ".join(f"{c['word']} {c['p']:.2f}" for c in out.get("choices", [])) or out.get("reason"))
+    _debug_save(body, out)
+    return out
 
 
 @router.get("/api/asl/info")

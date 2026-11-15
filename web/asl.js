@@ -15,6 +15,7 @@ const MOVE_SPEED = 0.008     // motion needed to start the next sign after a sti
 const MAX_MS = 3500
 const MIN_FRAMES = 8
 const PHRASE_MS = 1400
+const PREROLL = 15           // ~0.5 s before the hands come up: the model was trained on whole clips (rest -> sign -> rest)
 
 let hands = null, pose = null, loading = null
 let stream = null, video = null, running = false, cb = null, watchdog = null, scheduled = false
@@ -120,11 +121,12 @@ function step() {
   lastWrist = visible ? wrists[0] : null
 
   if (!seg) {
-    preroll.push(frame); if (preroll.length > 4) preroll.shift()
+    preroll.push(frame); if (preroll.length > PREROLL) preroll.shift()
     if (visible) goneSince = 0
     else { goneSince ||= now; armed = true }
     if (visible && (armed || speed > MOVE_SPEED)) {
-      seg = { frames: [...preroll], t0: now, stillSince: 0 }
+      seg = { frames: [...preroll], n: preroll.length + 1, t0: now, stillSince: 0 }
+      preroll = []
       armed = false; phraseOpen = true
     } else if (!visible && phraseOpen && now - goneSince > PHRASE_MS) {
       phraseOpen = false
@@ -138,10 +140,13 @@ function step() {
       : seg.stillSince && now - seg.stillSince > STILL_MS && dur > 600 ? 'still'
       : dur > MAX_MS ? 'long' : null
     if (why) {
-      const frames = seg.frames.filter((f) => f.lh || f.rh)
+      // keep the hand-less frames too (hands rising / dropping): cutting them cost 12 points on ASL Citizen clips
+      const frames = seg.frames
+      const handFrames = frames.filter((f) => f.lh || f.rh).length
+      const fps = Math.round((frames.length - seg.n) / Math.max(0.05, (now - seg.t0) / 1000))
       seg = null
       if (why !== 'dropped') armed = false        // wait for real movement before the next sign
-      if (frames.length >= MIN_FRAMES) cb.onSegment?.(frames, why)
+      if (handFrames >= MIN_FRAMES) cb.onSegment?.(frames, why, { fps, handFrames })
     }
   }
   cb.onState?.({ phase: 'ready', visible, signing: !!seg, ms: seg ? now - seg.t0 : 0 })
