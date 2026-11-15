@@ -16,7 +16,6 @@
   const cap = { text: '', final: true, at: 0, burn: true }
   const FINAL_MS = 7000
   let audioCtx = null
-  let voiceIn = null
 
   // ------------------------------------------------------------------ caption drawing
   function wrap(ctx, text, maxW, maxLines) {
@@ -135,13 +134,30 @@
   }
 
   // ------------------------------------------------------------------ audio mixer
+  // Outgoing mic = (real mic x micGain) + TalkBridge voice. "Voice only" (default) keeps the real mic silent, so
+  // you can leave Meet's mic ON and people hear only your signed sentences. Every mic track Meet opens gets a mix.
+  const mixes = new Set()
+  let voiceOnly = true
   function mixedAudio(stream) {
     audioCtx ||= new AudioContext()
+    const real = stream.getAudioTracks()[0]
     const dest = audioCtx.createMediaStreamDestination()
-    audioCtx.createMediaStreamSource(new MediaStream(stream.getAudioTracks())).connect(dest)
-    voiceIn = audioCtx.createGain()
-    voiceIn.connect(dest)
-    return dest.stream.getAudioTracks()
+    const micGain = audioCtx.createGain(); micGain.gain.value = voiceOnly ? 0 : 1
+    audioCtx.createMediaStreamSource(new MediaStream([real])).connect(micGain).connect(dest)
+    const voice = audioCtx.createGain(); voice.gain.value = 1.4
+    voice.connect(dest)
+    const mix = { micGain, voice, track: dest.stream.getAudioTracks()[0] }
+    mixes.add(mix)
+    const out = mix.track
+    // look like the real microphone to the meeting app (device id, label) and release it when stopped
+    const stop = out.stop.bind(out)
+    out.stop = () => { try { real.stop() } catch {} mixes.delete(mix); stop() }
+    Object.defineProperty(out, 'label', { value: real.label })
+    out.getSettings = () => real.getSettings()
+    out.getCapabilities = () => real.getCapabilities?.() ?? {}
+    out.getConstraints = () => real.getConstraints()
+    out.applyConstraints = (c) => real.applyConstraints(c)
+    return [out]
   }
 
   md.getUserMedia = async (constraints) => {
@@ -170,20 +186,26 @@
       cap.at = performance.now()
     } else if (m.talkbridge === 'burn') {
       cap.burn = !!m.on
+    } else if (m.talkbridge === 'micmode') {
+      voiceOnly = !!m.voiceOnly
+      for (const x of mixes) x.micGain.gain.value = voiceOnly ? 0 : 1
     } else if (m.talkbridge === 'play' && m.audio) {
       try {
         audioCtx ||= new AudioContext()
-        if (audioCtx.state === 'suspended') await audioCtx.resume()
+        if (audioCtx.state !== 'running') await audioCtx.resume()
         const buf = await audioCtx.decodeAudioData(m.audio)
+        const live = [...mixes].filter((x) => x.track.readyState === 'live')
         const s = audioCtx.createBufferSource()
         s.buffer = buf
-        if (voiceIn) s.connect(voiceIn)
+        for (const x of live) s.connect(x.voice)
         const monitor = audioCtx.createGain()
         monitor.gain.value = 0.18
         s.connect(monitor).connect(audioCtx.destination)
         s.start()
+        window.postMessage({ talkbridge: 'played', ok: live.length > 0, tracks: live.length, state: audioCtx.state, seconds: buf.duration }, '*')
       } catch (e) {
         console.warn('[TalkBridge] meeting voice playback failed', e)
+        window.postMessage({ talkbridge: 'played', ok: false, error: String(e) }, '*')
       }
     }
   })

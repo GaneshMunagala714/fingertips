@@ -33,6 +33,7 @@
       <div class="tb-st" data-r="st">Checking your camera and mic…</div>
       <button class="tb-b primary" data-r="sign">Open signing window</button>
       <form data-r="form"><input type="text" data-r="input" placeholder="Type something to say"><button class="tb-b primary">Say</button></form>
+      <label><input type="checkbox" data-r="voiceOnly" checked> Voice only: keep my real microphone silent (leave Meet's mic on)</label>
       <label><input type="checkbox" data-r="burn" checked> Show my sentence as a caption on my camera</label>
       <div class="tb-last" data-r="last"></div>
     </div>
@@ -44,10 +45,17 @@
 
   function status() {
     const e = r('st')
-    if (wrapped.audio) { e.textContent = 'Ready: your sentences go into your Meet microphone' + (wrapped.video ? ' and camera.' : '.'); e.className = 'tb-st ok' }
+    if (wrapped.audio) { e.textContent = 'Ready: your sentences go into your Meet microphone' + (wrapped.video ? ' and camera.' : '.') + (meetMuted() ? ' Meet is muted: TalkBridge unmutes it while speaking.' : ''); e.className = 'tb-st ok' }
     else { e.textContent = 'Not connected to your mic yet. Turn your microphone (and camera) off and on once in Meet, or reload the page and join again.'; e.className = 'tb-st bad' }
   }
   const toPage = (m, transfer) => window.postMessage({ talkbridge: m.type, ...m }, '*', transfer || [])
+
+  // Meet's own mute silences the whole mic track, TalkBridge voice included. If Meet is muted when a sentence is
+  // ready, unmute it for the sentence and mute it again afterwards.
+  const meetMic = () => [...document.querySelectorAll('[data-is-muted]')].find((b) => /microphone/i.test(b.getAttribute('aria-label') || ''))
+  const meetMuted = () => meetMic()?.getAttribute('data-is-muted') === 'true'
+  let remute = false
+  const sendMicMode = () => toPage({ type: 'micmode', voiceOnly: r('voiceOnly').checked })
 
   async function say(text) {
     text = String(text || '').trim().slice(0, 400)
@@ -58,7 +66,9 @@
       if (!res || res.error) { r('last').textContent = `Shown as caption only (${res?.error || 'voice unavailable'})`; return }
       const bin = atob(res.audio), buf = new Uint8Array(bin.length)
       for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i)
-      toPage({ type: 'play', audio: buf.buffer }, [buf.buffer])
+      remute = false
+      if (meetMuted()) { meetMic().click(); remute = true }
+      setTimeout(() => toPage({ type: 'play', audio: buf.buffer }, [buf.buffer]), remute ? 350 : 0)
       r('last').textContent = `Said: “${text}”`
     })
   }
@@ -69,12 +79,17 @@
   }
   r('form').onsubmit = (e) => { e.preventDefault(); say(r('input').value); r('input').value = '' }
   r('burn').onchange = () => { burn = r('burn').checked; toPage({ type: 'burn', on: burn }) }
+  r('voiceOnly').onchange = sendMicMode
 
   window.addEventListener('message', (ev) => {
     const d = ev.data
     if (!d || typeof d.talkbridge !== 'string') return
     if (ev.source === window) {                       // from inject.js
-      if (d.talkbridge === 'wrapped') { wrapped.audio ||= d.audio; wrapped.video ||= d.video; status() }
+      if (d.talkbridge === 'wrapped') { wrapped.audio ||= d.audio; wrapped.video ||= d.video; sendMicMode(); status() }
+      if (d.talkbridge === 'played') {
+        if (!d.ok) r('last').textContent = 'Your voice could not reach the Meet microphone. Turn your mic off and on once in Meet, then try again.'
+        if (remute) setTimeout(() => { if (!meetMuted()) meetMic()?.click(); remute = false }, (d.seconds || 3) * 1000 + 800)
+      }
       return
     }
     if (ev.origin !== new URL(server).origin) return  // only the TalkBridge signing window
