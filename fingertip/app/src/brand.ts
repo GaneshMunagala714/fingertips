@@ -5,3 +5,5 @@
  */
 export const APP_NAME = 'Fingertip'
 export const TAGLINE = 'Your hands. Your voice. Your world.'
+
+

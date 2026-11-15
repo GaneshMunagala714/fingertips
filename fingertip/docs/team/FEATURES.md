@@ -1,6 +1,6 @@
 # Fingertip: every feature, what it's for, and what's new about it
 
-Written 2026-11-14 for review by another agent or teammate. Every row names its code and its
+Written for review by another agent or teammate. Every row names its code and its
 evidence, so each claim can be checked. Status labels (spec §21):
 
 - **Verified**: run and observed (offline, fake phone line or browser, as stated).
@@ -113,7 +113,7 @@ verified, so if it fails, switch those passes to the Files API (`GeminiVideo.pre
 | 7.5 | Real-call checker that logs to `eval/live_calls.md` | Built; never run | `scripts/live_check.py` |
 | 7.6 | Design gallery: every screen with fixture data | Verified | `/#gallery` (27 frames) |
 | 7.7 | Installable web app (PWA), name Fingertip | Verified (manifest) | `app/public/manifest.webmanifest` |
-| 7.8 | Tests: server 40 + 1 skipped, app 12 + 1 skipped | Verified 2026-11-14 | `server/tests`, `app/src/**/*.test.ts` |
+| 7.8 | Tests: server 40 + 1 skipped, app 12 + 1 skipped | Verified | `server/tests`, `app/src/**/*.test.ts` |
 
 ---
 
@@ -121,6 +121,8 @@ verified, so if it fails, switch those passes to the Files API (`GeminiVideo.pre
 
 1. **Check every "Verified" row** by running it: `python eval/bench.py`, `cd server && python -m pytest -q tests`, `cd app && npx vitest run && npm run build`, and open `/#gallery`.
 2. **Check every "Novelty" claim** against prior art: Rylo (formerly Nagish), InnoCaption, CapTel, Sorenson, Convo, Purple VRS, Google Live Transcribe and Project Activate, Apple Live Speech, Be My Eyes / Be My AI, Sign-Speak, SignAll, AAC apps (Proloquo, Spoken). Downgrade any claim a shipped product already covers.
-3. **Look for overclaiming** in `README.md`, `docs/SUBMISSION.md` and the UI text: nothing unverified may be described as working.
+3. **Look for overclaiming** in `README.md`, `SUBMISSION.md` and the UI text: nothing unverified may be described as working.
 4. **Re-check the privacy promises:** raw sign video stays on the device; Show it clips go to Google and are deleted after 24 h; transcripts are saved only on tap.
 5. **Once keys exist:** update every Blocked/Unverified row from real results (`eval/live_calls.md`, `eval/sign_eval.py`, Show it on 3–4 real clips) before submission.
+
+

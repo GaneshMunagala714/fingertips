@@ -251,8 +251,10 @@ audio, and a signer the model has never seen.
 
 ## More detail
 
-- `docs/FEATURES.md`: every feature with its code location and evidence
-- `docs/STATUS.md`: what's verified
+- `FEATURES.md`: every feature with its code location and evidence
+- `STATUS.md`: what's verified
 - `MISSION.md`: goals and rules
 - `DECISIONS.md`: why things are the way they are
 - `HANDOFF.md`: first hour on the real server and first real call
+
+

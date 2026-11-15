@@ -108,3 +108,5 @@ Required checks across every case (M2 acceptance: 100%):
 - Held-out signer accuracy and full-phrase success: sign recognition is M3 (plan in model/PLAN.md).
 - Live latencies (caption, draft, first audio after Send): see `/api/health` after real calls (M5).
 - Gemini brain: run `python eval/bench.py --live` once GEMINI_API_KEY is set.
+
+

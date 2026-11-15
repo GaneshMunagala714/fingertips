@@ -1,6 +1,6 @@
 """Twilio ConversationRelay adapter: TwiML builders and WebSocket message shapes.
 
-Everything protocol-specific lives here. Checked against Twilio's docs on 2026-11-14
+Everything protocol-specific lives here. Checked against Twilio's docs
 (websocket-messages, twiml/connect/conversationrelay, voice-configuration, onboarding):
 message shapes, attribute names, the v3/v4 voice format and audio tags all match. See D-028.
 
@@ -106,3 +106,5 @@ def text_message(text: str, *, interruptible: bool = True, preemptible: bool = T
 
 def end_message(reason: str = "hangup") -> str:
     return json.dumps({"type": "end", "handoffData": json.dumps({"reason": reason})})
+
+

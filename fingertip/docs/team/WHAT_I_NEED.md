@@ -1,6 +1,6 @@
 # What I need from you to get Fingertip running
 
-Everything that can be built and tested without accounts is done (`docs/STATUS.md`). This is the
+Everything that can be built and tested without accounts is done (`STATUS.md`). This is the
 complete list of what only you can provide, in the order that unblocks the most.
 
 **Never paste keys or passwords into the chat.** Put them in the `.env` file at the project root
@@ -71,6 +71,8 @@ Twilio at the server.
 - **1–4 in `.env`:** restart the server, confirm `/api/health` shows `twilio: true` and `gemini.model_ok: true`, run `python eval/bench.py --live` (safety bench against real Gemini).
 - **5 + 6:** start the tunnel, point Twilio at it, make the first real call, fix whatever breaks, and log it.
 - **7 + 8:** deploy to Vultr, move Twilio to the permanent address, and re-run the call test there.
-- **9:** run the signing session, tune the "unsure" threshold, and write the measured accuracy into `docs/STATUS.md`.
+- **9:** run the signing session, tune the "unsure" threshold, and write the measured accuracy into `STATUS.md`.
 - **10–12:** test Meet, Zoom/Teams and another language, then update the status table with what actually worked.
-- Finally: rehearse the demo script, record the backup video of the real system, and fill in the blanks in `docs/SUBMISSION.md`.
+- Finally: rehearse the demo script, record the backup video of the real system, and fill in the blanks in `SUBMISSION.md`.
+
+
