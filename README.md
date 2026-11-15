@@ -63,10 +63,14 @@ The caller first hears: *"Hi, this is Ganesh's interpreter. How are you?"* (set 
 
 ## Answering in ASL
 
-```
-camera ──► MediaPipe (in your browser) ──► landmarks only ──► server: SignBart model ──► word
-                                                                                          │
-   caller hears it ◄── Twilio voice ◄── 3-second countdown ◄── Gemini makes a sentence ◄──┘
+```mermaid
+flowchart LR
+    A["🤟 You sign<br/>one word at a time"] --> B["MediaPipe<br/>in your browser"]
+    B -- "landmarks only" --> C["SignBart model<br/>on the server"]
+    C --> D["Words<br/><i>hello · thank you</i>"]
+    D -- "hands down" --> E["Gemini<br/>makes a sentence"]
+    E --> F["⏱ 3-second<br/>countdown"]
+    F --> G["🔊 They hear it"]
 ```
 
 - **One sign at a time.** A sign starts when your hand comes up and moves; it ends when your hands drop
@@ -131,21 +135,35 @@ follow the music without hearing it.
 
 ## How it works
 
+**On a phone call**
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Y as 🧑 You (browser)
+    participant S as ⚙️ Fingertips server
+    participant T as ☎️ Twilio
+    participant C as 📱 Caller (any phone)
+
+    C->>T: speaks
+    T->>S: speech → text
+    S->>Y: live captions
+    Note over Y: you sign one word at a time<br/>(MediaPipe, video stays on your device)
+    Y->>S: hand + pose landmarks
+    Note over S: SignBart → words<br/>Gemini → sentence<br/>guards → safety checks
+    S->>Y: sentence + 3-second countdown
+    S->>T: text to speak
+    T->>C: hears your sentence
 ```
-                    ┌─────────────────────────────── your browser ───────────────────────────────┐
-                    │  phone UI (web/)   captions   replies   MediaPipe hand + pose (web/asl.js)  │
-                    └──────────┬───────────────────────────────────────────────────▲─────────────┘
-                               │ /api, /ws  (HTTPS via Caddy)                       │ captions, call state
-                    ┌──────────▼──────────────────── FastAPI (server/) ────────────┴──────────────┐
-                    │  main.py: calls, incoming, relay   asl.py: SignBart (ONNX)   ai.py: Gemini   │
-                    │  guards.py: safety checks          jam.py: JAM rooms                         │
-                    └──────────┬──────────────────────────────────────────────────▲─────────────┘
-                     REST: dial, answer           WebSocket /twilio/relay: text in / text out
-                    ┌──────────▼──────────────────────────────────────────────────┴─────────────┐
-                    │  Twilio Voice + ConversationRelay (speech-to-text, text-to-speech)         │
-                    └──────────────────────────────────┬────────────────────────────────────────┘
-                                                       │ ordinary phone call
-                                                    📱 caller
+
+**On a video call or in Google Meet**, the same signing panel is used, but there is no Twilio: the server turns the
+sentence into a voice (Gemini speech), and your browser mixes it into the microphone the call is sending.
+
+```mermaid
+flowchart LR
+    A["🤟 You sign"] --> B["⚙️ Fingertips server<br/>word → sentence → voice"]
+    B --> C["🎙️ Your call microphone<br/><i>video call page or Meet extension</i>"]
+    C --> D["🎧 They hear it<br/>and see a caption"]
 ```
 
 - **Twilio ConversationRelay** turns the caller's speech into text (captions) and your approved text into speech.
@@ -157,7 +175,7 @@ follow the music without hearing it.
 ## Repository layout
 
 ```
-talkbridge/
+fingertips/
 ├── server/                  FastAPI backend
 │   ├── main.py              calls, incoming calls, Twilio relay socket, web routes
 │   ├── asl.py               /api/asl/classify: SignBart ASL model, top-200 filter, sign logging
