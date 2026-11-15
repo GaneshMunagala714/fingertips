@@ -191,7 +191,7 @@ You need: Python 3.12+, a Twilio account with a phone number, a public HTTPS add
 (a free `cloudflared` tunnel works), and optionally a Gemini API key.
 
 ```bash
-git clone https://github.com/GaneshMunagala714/talkbridge && cd talkbridge
+git clone https://github.com/GaneshMunagala714/fingertips && cd fingertips
 python3 -m venv .venv && . .venv/bin/activate
 pip install -r server/requirements.txt
 cp .env.example .env                               # fill in the values below
