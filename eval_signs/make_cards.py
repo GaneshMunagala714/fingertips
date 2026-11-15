@@ -193,6 +193,10 @@ def main():
     index_path, clipdir, report, out = sys.argv[1:5]
     data = json.load(open(os.path.join(ROOT, "server", "data", "asl_top200.json")))
     signs = {s["gloss"]: s for s in data["signs"]}
+    howto = json.load(open(os.path.join(ROOT, "eval_signs", "howto.json")))
+    missing = [g for g in signs if g not in howto]
+    if missing:
+        print("no steps for:", missing)
     # categories from the report's tables
     cats, cur = [], None
     for line in open(report):
@@ -224,9 +228,11 @@ def main():
             word = s["word"]
             url = "https://www.signingsavvy.com/search/" + re.sub(r"[^a-z]+", "%20", word.lower().replace("'", "")).strip("%20")
             acc = s["correct_within_200"]
-            cards.append(f'''<div class="card"><div class="fig">{body}</div>
-<div class="bot"><div class="txt"><div class="top"><b>{html.escape(word)}</b><span class="acc" title="recognized on {acc} of 8 test signers">recognized {acc}/8</span></div>
-<div class="desc">{html.escape(desc)}</div></div><div class="qr">{qr_svg(url)}<span>video</span></div></div></div>''')
+            steps = "".join(f"<li>{html.escape(t)}</li>" for t in howto.get(g, []))
+            cards.append(f'''<div class="card"><div class="head"><b>{html.escape(word)}</b><div class="qr">{qr_svg(url)}<span>watch</span></div></div>
+<ol class="steps">{steps}</ol>
+<div class="fig">{body}</div>
+<div class="meta">TalkBridge recognized this for {acc} of 8 test signers</div></div>''')
         cards.append("</div>")
     m = data["measured"]
     page = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><title>TalkBridge ASL Top 200</title><style>
@@ -240,16 +246,16 @@ body {{ font: 11px/1.3 -apple-system, "Helvetica Neue", Arial, sans-serif; color
 .sw {{ display: inline-block; width: 22px; height: 4px; border-radius: 2px; vertical-align: middle; margin-right: 5px; }}
 h2.cat {{ font-size: 15px; margin: 10px 0 6px; break-after: avoid; }} h2.cat span {{ color: #777; font-weight: 400; }}
 .grid {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }}
-.card {{ border: 1px solid #ccc; border-radius: 10px; padding: 7px 8px 6px; break-inside: avoid; display: flex; flex-direction: column; gap: 4px; }}
+.card {{ border: 1px solid #ccc; border-radius: 10px; padding: 8px 10px 6px; break-inside: avoid; display: flex; flex-direction: column; gap: 4px; }}
+.head {{ display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }}
+.head b {{ font-size: 22px; letter-spacing: -0.01em; line-height: 1.1; }}
+.steps {{ margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.35; min-height: 3.2em; }}
+.steps li {{ margin: 1px 0; }} .steps li::marker {{ font-weight: 700; color: #c2410c; }}
+.fig {{ width: 78%; margin: 2px auto 0; }}
 .fig > svg {{ width: 100%; height: auto; display: block; }}
-.bot {{ display: flex; gap: 8px; align-items: center; }}
-.txt {{ flex: 1; min-width: 0; }}
-.top {{ display: flex; justify-content: space-between; align-items: baseline; gap: 6px; }}
-.top b {{ font-size: 17px; letter-spacing: -0.01em; }}
-.acc {{ font-size: 8.5px; color: #666; white-space: nowrap; }}
-.desc {{ font-size: 11px; color: #333; margin-top: 2px; }}
-.qr {{ text-align: center; font-size: 7.5px; color: #888; }}
-.qr svg {{ width: 0.55in; height: 0.55in; display: block; }}
+.meta {{ font-size: 8.5px; color: #888; text-align: center; }}
+.qr {{ text-align: center; font-size: 7.5px; color: #888; flex: none; }}
+.qr svg {{ width: 0.5in; height: 0.5in; display: block; }}
 </style></head><body>
 <section class="cover">
 <h1>TalkBridge: 200 ASL signs you can use on a call</h1>
@@ -257,10 +263,10 @@ h2.cat {{ font-size: 15px; margin: 10px 0 6px; break-after: avoid; }} h2.cat spa
 Each recognized sign is added to the reply; drop your hands and TalkBridge turns the words into a sentence that is spoken to the caller after one tap.</p>
 <h3 style="margin:18px 0 6px">How to read a card</h3>
 <ul>
-<li><b>Read left to right: 1 Start &rarr; 2 Move &rarr; 3 End.</b> Each card shows one real Deaf signer from the ASL Citizen dataset at three moments of the sign.</li>
+<li><b>Follow the numbered steps.</b> "Main hand" = your dominant hand (right hand if you're right-handed); "other hand" = the one that stays still. The steps describe the common form of the sign; some signers use a variant, so <b>scan the QR code to watch it</b> when unsure.</li>
+<li><b>The small pictures show one real Deaf signer</b> (ASL Citizen dataset) at three moments: 1 Start &rarr; 2 Move &rarr; 3 End.</li>
 <li><b style="color:#c2410c">Orange hand</b> = the main hand (the one that moves). <b style="color:#1d4ed8">Blue hand</b> = the other hand, if the sign uses two. The dashed orange arrow in the middle picture is the path the main hand takes.</li>
 <li>You are looking <b>at</b> the signer, like on a video call, so their right hand is on your left. Copy them as if they were a mirror.</li>
-<li>The line under the word (one or two hands, where) is measured from the signer's motion. It is a hint: drawings can't show palm direction or facial expression. <b>Scan the QR code to watch the sign.</b></li>
 <li>"Recognized 7/8" = TalkBridge recognized this sign for 7 of 8 test signers ({m["correct_within_200"]} of {m["clips"]} clips overall, {round(100*m["accuracy_within_200"])}%). Those clips may overlap the model's training data, so live accuracy will be lower.</li>
 <li>Numbers you can sign: zero, one, three, six, seven, eight, nine, eleven, hundred. Type other numbers in the reply box.</li>
 </ul>
