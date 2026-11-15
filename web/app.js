@@ -639,6 +639,9 @@ $('signMode').value = signMode()
 $('signMode').onchange = (e) => { store.set('tb.signmode', e.target.value); if (cam?.isOn()) { stopCam(); startCam() } }
 $('selfview').onclick = showSignList
 $('signsClose').onclick = () => $('signsDlg').close()
+$('videoBtn').onclick = async () => {
+  try { const r = await api('/api/rooms', {}); location.href = r.host_url } catch (e) { flash(friendlyError(e.message)) }
+}
 $('autoCam').checked = store.get('tb.autocam', true)
 $('autoCam').onchange = (e) => store.set('tb.autocam', e.target.checked)
 $('autoSend').checked = store.get('tb.autosend', true)

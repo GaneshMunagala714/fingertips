@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TalkBridge Video</title>
+<style>
+  :root { --bg: #000; --panel: #1c1c1e; --fg: #f5f5f7; --dim: #a1a1a6; --line: rgba(255,255,255,.14); --blue: #0a84ff; --red: #ff453a; --green: #30d158; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font: 15px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+  .app { display: grid; grid-template-columns: 1fr; height: 100%; }
+  .app.host { grid-template-columns: 1fr 360px; }
+  .stage { position: relative; overflow: hidden; background: #111; min-height: 0; }
+  #remote { width: 100%; height: 100%; object-fit: cover; background: #111; }
+  #local { position: absolute; top: 16px; right: 16px; width: 22%; max-width: 220px; aspect-ratio: 3/4; object-fit: cover; border-radius: 14px; border: 2px solid rgba(255,255,255,.25); transform: scaleX(-1); background: #222; }
+  .waiting { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; color: var(--dim); }
+  .waiting b { display: block; color: var(--fg); font-size: 22px; margin-bottom: 6px; }
+  .cap { position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); width: min(92%, 900px); text-align: center; pointer-events: none; }
+  .cap span { display: inline; background: rgba(0,0,0,.78); color: #fff; padding: 6px 12px; border-radius: 10px; font-size: clamp(18px, 2.6vw, 30px); font-weight: 600; line-height: 1.6; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+  .cap span.partial { color: rgba(255,255,255,.75); font-weight: 500; }
+  .cap small { display: block; margin-bottom: 6px; font-size: 12px; color: #9fe8c3; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+  .bar { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); display: flex; gap: 12px; padding: 10px; border-radius: 999px; background: rgba(30,30,32,.8); backdrop-filter: blur(12px); }
+  .bar button { width: 52px; height: 52px; border-radius: 50%; border: 0; background: rgba(255,255,255,.16); color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .bar button[aria-pressed="true"] { background: #fff; color: #000; }
+  .bar button.end { background: var(--red); }
+  .side { background: var(--panel); border-left: 1px solid var(--line); padding: 18px; overflow-y: auto; display: grid; align-content: start; gap: 16px; }
+  .side h2 { margin: 0; font-size: 17px; }
+  .invite { display: grid; gap: 6px; }
+  .invite code { display: block; padding: 10px; border-radius: 10px; background: rgba(255,255,255,.08); word-break: break-all; font-size: 13px; }
+  .invite button, .pre button { font: inherit; border: 0; border-radius: 999px; padding: 10px 16px; cursor: pointer; background: var(--blue); color: #fff; font-weight: 600; }
+  .log { display: grid; gap: 6px; font-size: 14px; }
+  .log div { padding: 6px 10px; border-radius: 10px; background: rgba(255,255,255,.06); }
+  .log div.me { background: rgba(10,132,255,.22); }
+  .note { font-size: 12px; color: var(--dim); }
+  .pre { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(0,0,0,.92); z-index: 5; padding: 24px; }
+  .pre .card { max-width: 440px; text-align: center; display: grid; gap: 14px; }
+  .pre h1 { margin: 0; font-size: 28px; }
+  .pre p { margin: 0; color: var(--dim); }
+  #signVideo { display: none; }
+  @media (max-width: 760px) { .app.host { grid-template-columns: 1fr; grid-template-rows: 55vh auto; } .side { border-left: 0; border-top: 1px solid var(--line); } }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="stage">
+    <video id="remote" playsinline autoplay></video>
+    <div class="waiting" id="waiting"><div><b id="waitTitle">Waiting for the other person…</b><span id="waitText">Share the invite link. They join in the browser, no app.</span></div></div>
+    <video id="local" playsinline autoplay muted></video>
+    <div class="cap" id="cap" hidden><small id="capSrc"></small><span id="capText"></span></div>
+    <div class="bar">
+      <button id="muteBtn" aria-pressed="false" title="Mute your microphone">Mic</button>
+      <button id="camBtn" aria-pressed="false" title="Turn your camera off">Cam</button>
+      <button id="endBtn" class="end" title="End call">End</button>
+    </div>
+  </div>
+  <aside class="side" id="side" hidden>
+    <div class="invite">
+      <h2>Invite</h2>
+      <code id="inviteUrl"></code>
+      <button id="copyBtn">Copy invite link</button>
+    </div>
+    <div>
+      <h2 style="margin-bottom:10px">Sign or type</h2>
+      <div id="pad"></div>
+      <p class="note">They hear your sentence in a voice, and see it as a caption.</p>
+    </div>
+    <div>
+      <h2 style="margin-bottom:8px">Conversation</h2>
+      <div class="log" id="log"></div>
+    </div>
+  </aside>
+</div>
+<video id="signVideo" playsinline muted></video>
+
+<div class="pre" id="pre">
+  <div class="card">
+    <h1 id="preTitle">Video call</h1>
+    <p id="preText"></p>
+    <button id="joinBtn">Join</button>
+    <p class="note" id="preNote"></p>
+  </div>
+</div>
+
+<script type="module">
+import { createSignPad } from '/static/signpad.js'
+const $ = (id) => document.getElementById(id)
+const qs = new URLSearchParams(location.search)
+const room = decodeURIComponent(location.pathname.split('/').filter(Boolean).pop() || '')
+const isHost = qs.get('host') === '1'
+const cid = crypto.randomUUID()
+const inviteUrl = `${location.origin}/v/${encodeURIComponent(room)}`
+
+let ws = null, pc = null, polite = false, makingOffer = false, ignoreOffer = false, stream = null, iceServers = [{ urls: 'stun:stun.l.google.com:19302' }]
+let audioCtx = null, mixDest = null, micGain = null, lastHeard = '', capTimer = null, recog = null, ended = false
+window.__tb = { pc: () => pc, ctx: () => audioCtx }   // for tests
+
+// ---------- pre-join
+$('preTitle').textContent = isHost ? 'Start a video call' : 'You are invited to a video call'
+$('preText').textContent = isHost
+  ? 'You sign or type; the other person hears it spoken and sees it as a caption. What they say appears as captions for you.'
+  : 'The other person signs; you will hear their words spoken and see captions. What you say is captioned for them. No app or sign-up.'
+$('preNote').textContent = isHost ? 'Allow camera and microphone when asked.' : 'Use Chrome for live captions of your voice. Allow camera and microphone.'
+$('joinBtn').textContent = isHost ? 'Start call' : 'Join call'
+if (isHost) { $('app').classList.add('host'); $('side').hidden = false; $('inviteUrl').textContent = inviteUrl; $('waitText').textContent = 'Share the invite link on the right. They join in the browser, no app.' }
+else { $('waitTitle').textContent = 'Connecting…'; $('waitText').textContent = '' }
+$('copyBtn').onclick = async () => { try { await navigator.clipboard.writeText(inviteUrl); $('copyBtn').textContent = 'Copied' } catch { prompt('Copy this link', inviteUrl) } setTimeout(() => ($('copyBtn').textContent = 'Copy invite link'), 1500) }
+
+$('joinBtn').onclick = async () => {
+  $('joinBtn').disabled = true
+  fetch('/api/rooms/ice').then((r) => r.json()).then((j) => { iceServers = j }).catch(() => {})
+  try { stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } }, audio: { echoCancellation: true, noiseSuppression: true } }) }
+  catch { try { stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false }) } catch { stream = new MediaStream() } }
+  $('local').srcObject = new MediaStream(stream.getVideoTracks())
+  // Outgoing audio = microphone + TalkBridge voice, mixed (so the other side hears the spoken sentence)
+  audioCtx = new AudioContext()
+  mixDest = audioCtx.createMediaStreamDestination()
+  micGain = audioCtx.createGain(); micGain.connect(mixDest)
+  if (stream.getAudioTracks().length) audioCtx.createMediaStreamSource(new MediaStream(stream.getAudioTracks())).connect(micGain)
+  $('pre').hidden = true
+  if (isHost) {
+    createSignPad({ container: $('pad'), video: $('signVideo'), stream: stream.getVideoTracks().length ? new MediaStream(stream.getVideoTracks()) : null,
+      onSay: speak, onPartial: (t) => t && send({ type: 'caption', from: 'host', text: t, final: false, src: 'sign' }), getHeard: () => lastHeard })
+  } else startCaptioningMyVoice()
+  connect()
+}
+
+// ---------- speaking (host)
+async function speak(text) {
+  log(text, true)
+  send({ type: 'caption', from: 'host', text, final: true, src: 'voice' })
+  try {
+    const r = await fetch('/api/tts', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text }) })
+    if (!r.ok) throw new Error(await r.text())
+    const buf = await audioCtx.decodeAudioData(await r.arrayBuffer())
+    if (audioCtx.state === 'suspended') await audioCtx.resume()
+    const s = audioCtx.createBufferSource(); s.buffer = buf; s.connect(mixDest); s.start()
+  } catch (e) {
+    console.warn('voice failed, asking their browser to speak it', e)
+    send({ type: 'caption', from: 'host', text, final: true, src: 'say' })   // guest's browser reads it aloud instead
+  }
+}
+
+// ---------- captions of the guest's voice (guest browser, Chrome speech recognition)
+function startCaptioningMyVoice() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition
+  if (!SR) { $('waitText').textContent = 'Your browser can’t caption your voice; please use Chrome.'; return }
+  recog = new SR(); recog.continuous = true; recog.interimResults = true; recog.lang = 'en-US'
+  recog.onresult = (e) => {
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const res = e.results[i], text = res[0].transcript.trim()
+      if (text) send({ type: 'caption', from: 'guest', text, final: res.isFinal, src: 'voice' })
+    }
+  }
+  recog.onend = () => { if (!ended && $('muteBtn').getAttribute('aria-pressed') !== 'true') try { recog.start() } catch {} }
+  recog.onerror = () => {}
+  try { recog.start() } catch {}
+}
+
+// ---------- captions on screen
+function showCaption(m) {
+  const fromThem = m.from !== (isHost ? 'host' : 'guest')
+  if (!fromThem) return
+  $('cap').hidden = false
+  $('capSrc').textContent = m.from === 'host' ? (m.final ? 'Signed · TalkBridge' : 'Signing…') : 'They said'
+  const span = $('capText'); span.textContent = m.text; span.className = m.final ? '' : 'partial'
+  clearTimeout(capTimer); capTimer = setTimeout(() => ($('cap').hidden = true), m.final ? 7000 : 4000)
+  if (m.final) {
+    if (isHost) { lastHeard = m.text; log(m.text, false) }
+    if (!isHost && m.src === 'say' && 'speechSynthesis' in window) speechSynthesis.speak(new SpeechSynthesisUtterance(m.text))
+  }
+}
+function log(text, me) {
+  if (!isHost) return
+  const d = document.createElement('div'); d.className = me ? 'me' : ''; d.textContent = (me ? 'You: ' : 'They: ') + text
+  $('log').prepend(d)
+}
+
+// ---------- signaling + WebRTC (perfect negotiation)
+function send(m) { if (ws?.readyState === 1) ws.send(JSON.stringify(m)) }
+function connect() {
+  ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws/room/${encodeURIComponent(room)}?cid=${cid}`)
+  ws.onmessage = async (ev) => {
+    const m = JSON.parse(ev.data)
+    if (m.type === 'joined') { polite = m.polite; if (polite) makePc() }
+    else if (m.type === 'peer-joined') makePc()
+    else if (m.type === 'peer-left' || m.type === 'bye') { closePc(); waiting(isHost ? 'They left the call' : 'The call ended', isHost ? 'They can rejoin with the same link.' : '') }
+    else if (m.type === 'full') waiting('This call is full', 'Only two people can be in a TalkBridge video call.')
+    else if (m.type === 'caption') showCaption(m)
+    else if (m.type === 'offer' || m.type === 'answer') {
+      if (!pc) makePc()
+      const collision = m.type === 'offer' && (makingOffer || pc.signalingState !== 'stable')
+      ignoreOffer = !polite && collision
+      if (ignoreOffer) return
+      await pc.setRemoteDescription({ type: m.type, sdp: m.sdp })
+      if (m.type === 'offer') { await pc.setLocalDescription(); send({ type: 'answer', sdp: pc.localDescription.sdp }) }
+    } else if (m.type === 'candidate' && pc) {
+      try { await pc.addIceCandidate(m.candidate) } catch (e) { if (!ignoreOffer) console.warn(e) }
+    }
+  }
+  ws.onclose = () => { if (!ended) setTimeout(connect, 1500) }
+}
+function makePc() {
+  closePc()
+  pc = new RTCPeerConnection({ iceServers })
+  for (const t of stream.getVideoTracks()) pc.addTrack(t, stream)
+  pc.addTrack(mixDest.stream.getAudioTracks()[0], stream)
+  pc.onnegotiationneeded = async () => {
+    try { makingOffer = true; await pc.setLocalDescription(); send({ type: 'offer', sdp: pc.localDescription.sdp }) }
+    finally { makingOffer = false }
+  }
+  pc.onicecandidate = (e) => e.candidate && send({ type: 'candidate', candidate: e.candidate })
+  pc.ontrack = (e) => {
+    const rs = $('remote').srcObject instanceof MediaStream ? $('remote').srcObject : new MediaStream()
+    if (!rs.getTracks().includes(e.track)) rs.addTrack(e.track)
+    $('remote').srcObject = rs; $('remote').play().catch(() => {})
+    $('waiting').hidden = true
+  }
+  pc.onconnectionstatechange = () => { if (pc?.connectionState === 'failed') pc.restartIce?.() }
+}
+function closePc() { try { pc?.close() } catch {} pc = null; $('remote').srcObject = null }
+function waiting(t, s) { $('waiting').hidden = false; $('waitTitle').textContent = t; $('waitText').textContent = s }
+
+// ---------- controls
+$('muteBtn').onclick = () => { const m = $('muteBtn').getAttribute('aria-pressed') !== 'true'; $('muteBtn').setAttribute('aria-pressed', m); if (micGain) micGain.gain.value = m ? 0 : 1; if (recog) { try { m ? recog.stop() : recog.start() } catch {} } }
+$('camBtn').onclick = () => { const off = $('camBtn').getAttribute('aria-pressed') !== 'true'; $('camBtn').setAttribute('aria-pressed', off); stream?.getVideoTracks().forEach((t) => (t.enabled = !off)) }
+$('endBtn').onclick = () => { ended = true; send({ type: 'bye' }); closePc(); try { recog?.stop() } catch {} stream?.getTracks().forEach((t) => t.stop()); ws?.close(); waiting('Call ended', isHost ? 'Start a new call from TalkBridge.' : 'You can close this tab.') }
+</script>
+</body>
+</html>

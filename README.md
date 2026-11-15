@@ -8,6 +8,8 @@ speaks your reply. The person on the other end uses an ordinary phone and instal
 |---|---|
 | **Live app** | **https://66-135-26-183.sslip.io** (open in Chrome on a laptop) |
 | **Call it** | **+1 (878) 877-6285**: rings the open app, answer in the browser |
+| **Video call** | on the Keypad, tap the video button → share the invite link (the guest needs no app) |
+| **Google Meet extension** | [download](https://66-135-26-183.sslip.io/talkbridge-meet.zip) · [how to install](#sign-in-video-calls-and-google-meet) |
 | **JAM (music you can see)** | https://66-135-26-183.sslip.io/jam |
 | **ASL sign cards (PDF)** | [print/asl-top200-cards.pdf](print/asl-top200-cards.pdf) |
 
@@ -23,15 +25,16 @@ SignBart-ASL-2730 trained on ASL Citizen, and Google MediaPipe. JAM's finger-cou
 1. [What it does](#what-it-does)
 2. [Try it in 2 minutes](#try-it-in-2-minutes)
 3. [Answering in ASL](#answering-in-asl)
-4. [Safety guards](#safety-guards)
-5. [JAM: music you can see](#jam-music-you-can-see)
-6. [How it works](#how-it-works)
-7. [Repository layout](#repository-layout)
-8. [Run it yourself](#run-it-yourself)
-9. [Deploy (Vultr)](#deploy-vultr)
-10. [Tests](#tests)
-11. [How the 200 signs were chosen and measured](#how-the-200-signs-were-chosen-and-measured)
-12. [Limits (honest)](#limits-honest)
+4. [Sign in video calls and Google Meet](#sign-in-video-calls-and-google-meet)
+5. [Safety guards](#safety-guards)
+6. [JAM: music you can see](#jam-music-you-can-see)
+7. [How it works](#how-it-works)
+8. [Repository layout](#repository-layout)
+9. [Run it yourself](#run-it-yourself)
+10. [Deploy (Vultr)](#deploy-vultr)
+11. [Tests](#tests)
+12. [How the 200 signs were chosen and measured](#how-the-200-signs-were-chosen-and-measured)
+13. [Limits (honest)](#limits-honest)
 
 ---
 
@@ -79,6 +82,29 @@ camera ──► MediaPipe (in your browser) ──► landmarks only ──► 
   - **7 quick hand signs** (thumb up = "Yes.", flat palm = "One moment", fist = say the top suggestion, …): instant, no model.
 - **Privacy:** video never leaves your device. Only hand and body landmark coordinates are sent, one sign at a time.
 - **Speed:** the model takes about 12 ms per sign on the server's CPU.
+
+## Sign in video calls and Google Meet
+
+Phone calls aren't the only place. The same signing panel works in video calls: you sign, **TalkBridge speaks your
+sentence into your microphone** (Gemini speech), so the other person hears it, and shows it as a caption.
+
+**TalkBridge video call** (`/v/<room>`)
+1. On the Keypad, tap the **video** button. You get a call page with an invite link.
+2. Send the link. The other person opens it in Chrome and taps **Join call**: no app, no sign-up.
+3. Sign (or type) on the right. They **hear your sentence in a voice** and see it as a caption over your video.
+4. What they say is captioned for you (Chrome speech recognition in their browser).
+
+**Google Meet extension** (`extension/`)
+1. Download **[talkbridge-meet.zip](https://66-135-26-183.sslip.io/talkbridge-meet.zip)** and unzip it.
+2. In Chrome open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked**, pick the `talkbridge-meet` folder.
+3. Open Google Meet **after** installing (or turn your mic and camera off and on once). Click **🤟 TalkBridge** at the bottom left.
+4. **Open signing window**, sign, drop your hands. Your sentence is **spoken into your Meet microphone** and drawn as a
+   caption on your camera, so everyone in the meeting hears and sees it. Nobody else installs anything.
+
+How: the extension wraps the camera and microphone Meet asks for (`extension/inject.js`, adapted from the
+Fingertip meeting extension): your mic and the TalkBridge voice are mixed into one track, and each camera frame
+gets the caption drawn in. Tested in real Chrome on a stand-in meeting page (voice reaches the outgoing mic,
+caption is in the outgoing video) and video call end to end with two browsers; not yet on a live Meet call.
 
 ## Safety guards
 
@@ -138,6 +164,7 @@ talkbridge/
 │   ├── ai.py                Gemini sentence + reply suggestions (rules fallback)
 │   ├── guards.py            safety checks on every reply
 │   ├── jam.py               JAM multiplayer rooms
+│   ├── meet.py              video call rooms, /api/sentence, /api/tts (speech), Meet signing window
 │   ├── setup_inbound.py     points the Twilio number at this server
 │   ├── popup.py             Mac only: brings the tab forward on an incoming call
 │   └── data/asl_top200.json the 200 signs + measured accuracy
@@ -145,7 +172,11 @@ talkbridge/
 │   ├── index.html, app.js, style.css   phone UI, call screen, settings
 │   ├── asl.js               camera → MediaPipe → one sign at a time
 │   ├── signs.js             7 quick hand signs
+│   ├── signpad.js           signing panel shared by video calls and the Meet window
+│   ├── video/               video call page (host and guest)
+│   ├── sign/                signing window the Meet extension opens
 │   └── jam/                 JAM instrument
+├── extension/               Google Meet extension (Chrome, Manifest V3)
 ├── deploy/                  docker-compose.yml + Caddyfile (HTTPS) for a cloud server
 ├── Dockerfile
 ├── tests/                   pytest (guards, call flow, incoming calls, JAM) + JAM browser tests

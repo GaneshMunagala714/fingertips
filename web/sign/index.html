@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TalkBridge Signing</title>
+<style>
+  :root { --bg: #1c1c1e; --fg: #f5f5f7; --dim: #a1a1a6; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; padding: 14px; display: grid; gap: 12px; }
+  h1 { margin: 0; font-size: 18px; }
+  .status { font-size: 13px; color: var(--dim); }
+  .status.ok { color: #30d158; } .status.bad { color: #ff9f0a; }
+  video { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 12px; background: #000; transform: scaleX(-1); }
+</style>
+</head>
+<body>
+  <h1>TalkBridge signing</h1>
+  <div class="status" id="status"></div>
+  <video id="cam" playsinline muted autoplay></video>
+  <div id="pad"></div>
+  <p class="status">Sign one word at a time, then drop your hands. Your sentence is spoken into your meeting microphone and shown as a caption on your camera.</p>
+<script type="module">
+import { createSignPad } from '/static/signpad.js'
+const $ = (id) => document.getElementById(id)
+const meeting = window.opener
+const post = (m) => { try { meeting?.postMessage({ talkbridge: m.type, ...m }, '*') } catch {} }
+if (meeting) { $('status').textContent = 'Connected to your meeting tab'; $('status').className = 'status ok' }
+else { $('status').textContent = 'Open this window from the TalkBridge button in Google Meet to speak into the meeting.'; $('status').className = 'status bad' }
+const pad = createSignPad({
+  container: $('pad'), video: $('cam'),
+  onSay: (text) => post({ type: 'say', text }),
+  onPartial: (text) => post({ type: 'partial', text }),
+})
+pad.start()
+window.addEventListener('beforeunload', () => post({ type: 'closed' }))
+</script>
+</body>
+</html>

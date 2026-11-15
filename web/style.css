@@ -238,3 +238,6 @@ dialog input, dialog select { background: var(--bg3); border: 0; border-radius: 
 .call-screen.connected .caller .call-status { grid-column: 2; grid-row: 3; align-self: start; }
 .call-screen.connected .caller .selfview { grid-column: 3; grid-row: 1 / 4; width: 100px; }
 @media (min-width: 900px) { .call-screen.connected .caller .selfview { width: 168px; } }
+
+.round.video { background: #3a3a3c; color: #fff; }
+.round.video svg { width: 26px; height: 26px; }

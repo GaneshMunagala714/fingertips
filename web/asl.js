@@ -18,7 +18,7 @@ const PHRASE_MS = 1400
 const PREROLL = 15           // ~0.5 s before the hands come up: the model was trained on whole clips (rest -> sign -> rest)
 
 let hands = null, pose = null, loading = null
-let stream = null, video = null, running = false, cb = null, watchdog = null, scheduled = false
+let stream = null, ownStream = true, video = null, running = false, cb = null, watchdog = null, scheduled = false
 let lastTs = -1, lastTick = 0
 let seg = null               // { frames: [], t0, stillSince }
 let preroll = []
@@ -46,7 +46,8 @@ export async function start(videoEl, callbacks) {
   running = true
   cb.onState?.({ phase: 'starting' })
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 640 }, height: { ideal: 480 }, frameRate: { ideal: 30 }, facingMode: 'user' }, audio: false })
+    ownStream = !callbacks.stream     // a page that already has the camera open (video calls) can pass it in
+    stream = callbacks.stream || await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 640 }, height: { ideal: 480 }, frameRate: { ideal: 30 }, facingMode: 'user' }, audio: false })
     if (!running) { stopTracks(); return }
     video.srcObject = stream
     await video.play().catch(() => {})
@@ -79,7 +80,8 @@ export function stop() {
 export const isOn = () => running
 
 function stopTracks() {
-  stream?.getTracks().forEach((t) => t.stop()); stream = null
+  if (ownStream) stream?.getTracks().forEach((t) => t.stop())
+  stream = null
   if (video) video.srcObject = null
 }
 
