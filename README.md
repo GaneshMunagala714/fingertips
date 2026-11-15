@@ -65,12 +65,12 @@ The caller first hears: *"Hi, this is Ganesh's interpreter. How are you?"* (set 
 
 ```mermaid
 flowchart LR
-    A["🤟 You sign<br/>one word at a time"] --> B["MediaPipe<br/>in your browser"]
+    A["You sign<br/>one word at a time"] --> B["MediaPipe<br/>in your browser"]
     B -- "landmarks only" --> C["SignBart model<br/>on the server"]
     C --> D["Words<br/><i>hello · thank you</i>"]
     D -- "hands down" --> E["Gemini<br/>makes a sentence"]
-    E --> F["⏱ 3-second<br/>countdown"]
-    F --> G["🔊 They hear it"]
+    E --> F["3-second<br/>countdown"]
+    F --> G["They hear it"]
 ```
 
 - **One sign at a time.** A sign starts when your hand comes up and moves; it ends when your hands drop
@@ -140,10 +140,10 @@ follow the music without hearing it.
 ```mermaid
 sequenceDiagram
     autonumber
-    participant Y as 🧑 You (browser)
-    participant S as ⚙️ Fingertips server
-    participant T as ☎️ Twilio
-    participant C as 📱 Caller (any phone)
+    participant Y as You (browser)
+    participant S as Fingertips server
+    participant T as Twilio
+    participant C as Caller (any phone)
 
     C->>T: speaks
     T->>S: speech → text
@@ -161,9 +161,9 @@ sentence into a voice (Gemini speech), and your browser mixes it into the microp
 
 ```mermaid
 flowchart LR
-    A["🤟 You sign"] --> B["⚙️ Fingertips server<br/>word → sentence → voice"]
-    B --> C["🎙️ Your call microphone<br/><i>video call page or Meet extension</i>"]
-    C --> D["🎧 They hear it<br/>and see a caption"]
+    A["You sign"] --> B["Fingertips server<br/>word → sentence → voice"]
+    B --> C["Your call microphone<br/><i>video call page or Meet extension</i>"]
+    C --> D["They hear it<br/>and see a caption"]
 ```
 
 - **Twilio ConversationRelay** turns the caller's speech into text (captions) and your approved text into speech.
