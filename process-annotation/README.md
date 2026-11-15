@@ -1,147 +1,136 @@
-# Process Annotation · Work Standardization & Kaizen
+# Process Annotation · Learn any task, step by step
 
-Record a station on your phone → a Standardized Work Chart and a step-wise breakdown.
+**For Deaf, hard-of-hearing and non-speaking workers.** Film someone doing a hands-on job once.
+Process Annotation splits it into steps, plays each step on a loop at a speed you choose, writes out
+what the hands do, shows where each step happens on a map of the workspace, and answers questions
+you type. Nothing depends on hearing, speaking or an interpreter.
 
-## Run (Windows)
+## Why
 
-```powershell
+Hands-on jobs are usually taught by someone standing next to you and talking: "now grab the screw,
+not that one, the short one". For a Deaf or hard-of-hearing worker, or someone who doesn't speak,
+that teaching is easy to miss and hard to ask about. Videos help, but a real task is fast, the
+important moment lasts half a second, and the spoken explanation, if there is one, isn't in the
+picture.
+
+Process Annotation turns one ordinary phone video into a lesson you can follow with your eyes and
+your own pace.
+
+## What a learner gets
+
+| View | What it does |
+|---|---|
+| **Learn step by step** | One step at a time. The step repeats on a loop at 0.75× by default (down to 0.25×). Captions under the picture say what the hands do at that moment, so they never cover the work. Beside it: a plain explanation, which hand, how long it takes, what to watch out for, and the parts and tools you need. |
+| **All steps** | The whole task as a table: what to do, where, which hands, seconds, and a line-by-line description. Choose a row to watch that step. |
+| **Where it happens** | A top-down map of the workspace. Every step is a number at the spot where it happens, and arrows show where your hands go next. |
+| **Ask** | Type a question in your own words ("What do I need before I start?", "Explain step 3"). Answers use plain language, describe what you can see rather than hear, and come only from this lesson. |
+| **Station template** | For whoever sets up the station: the steps in your own words and order, where each one starts, which hand, the places on the map, and the workspace layout. Every new video of that station uses it. |
+
+Also: **Larger text** and **High contrast** switches (remembered between visits), full keyboard
+control (Space to play or pause, ↑ and ↓ to change step, ← and → to move frame by frame), a
+**Step guide to keep** download with a clip of every step, and a printable **Workspace map (PDF)**.
+
+If a step is hard to see in the video, the lesson says so plainly instead of pretending.
+
+## Try it
+
+You need Python 3.11+. ffmpeg comes with `imageio-ffmpeg`, so there's nothing else to install.
+
+```bash
 python -m venv .venv
-.venv\Scripts\activate
+.venv\Scripts\activate          # Windows    (Mac/Linux: source .venv/bin/activate)
 pip install -r requirements.txt
-copy .env.example .env      # then put your Gemini API key in .env
-python run.py               # opens on http://127.0.0.1:8000
+copy .env.example .env          # Mac/Linux: cp .env.example .env; then add your GEMINI_API_KEY
+python run.py                   # opens http://127.0.0.1:8000
 ```
 
-ffmpeg is bundled through `imageio-ffmpeg`; nothing else to install.
-Try the UI without an API key: set `WORKSTUDY_ENGINE=mock` (synthetic steps, not real analysis).
+A demo lesson is included: **Handle install** (28 steps, filmed on a phone at an assembly station),
+with its station template. It plays without an API key. You need `GEMINI_API_KEY` only to turn a
+new video into a lesson, to use **Ask**, or to use **Suggest a fix**.
 
-## What it produces
+To see the screens without a key or a real analysis, set `WORKSTUDY_ENGINE=mock`. That makes
+synthetic steps, not a real lesson.
 
-From a handheld phone video of a station, two outputs:
+## How a video becomes a lesson
 
-1. **Standardized Work Chart** (PDF / PNG): top view of the station drawn on a grid like the paper
-   form. Bins are shaded circles, benches and fixtures boxes, equipment crossed-out boxes. Every
-   step of the instruction cycle is a numbered circle at the place the hands go, with arrows in step
-   order (dashed where the operator walks). Header: job, from / to, date, line/operation. Footer:
-   quality and safety symbols, standard in-process stock, takt, cycle time.
-2. **Manual Time Observation Sheet** (PDF and XLSX), laid out like the paper form: Job/From,
-   Content/To, Line/Operation, Date, Shift, Takt, Prepared by, Operator; # | Work Element | Break
-   Point | cycles 1-10 | Lowest Repeatable | t adjusted | Highest | Fluctuation | Comments; Σt and
-   T - Σt; legend. The PDF circles the highest value, underlines the lowest repeatable and crosses
-   out excluded cycles. Whole seconds by default, rounded half up; an element that happened is
-   never written as 0. Set WORKSTUDY_SHEET_DECIMALS=1 for tenths.
-3. **Step-wise breakdown** (second sheet of the XLSX, and on screen): Step # | Step description |
-   Location | Hand | Time (s) | Value-add / Non-value-add | Transcript. Same numbers as the chart.
+All video understanding is done by Gemini. There's no tracking or pixel measurement.
 
-Buttons: Work chart (PDF), Time observation (PDF), Time observation (XLSX), Export all (zip).
+1. **The workspace.** Gemini maps the station from where the worker stands: bins, fixtures, tools
+   and benches, by column, row and shelf. Code turns that into the map.
+2. **The steps.** Gemini finds each step: when it starts and ends, which hand does it, and where the
+   hands go. If the station has a template, the video is split into the template's steps, in your
+   wording, so every video of that station reads the same way.
+3. **What the hands do.** A line-by-line description of each step ("Right hand presses the
+   screwdriver tip into the screw feeder"). These become the captions and the moment-by-moment list.
+4. **Plain explanations.** For each step: a short explanation, the parts and tools, and what to
+   watch out for.
 
-Elements are split like a time observation sheet (one hand action at one place: "Grab part",
-"Place part", "Grab drill"). WORKSTUDY_STEP_DETAIL=coarse gives larger work-instruction steps.
+The lesson is saved, so watching it never calls the model again.
 
-## How it works
+## Getting it right: Station template and Suggest a fix
 
-All video understanding is Gemini; there is no computer-vision tracking or pixel measurement.
+- **Station template.** Name the steps yourself, set where each one starts ("hand touches the
+  part"), put them in order, mark where to check your work or take care, and drag the bins and
+  fixtures into place. You can also import a photo of a paper step sheet. Saved per workplace and
+  reused for every new video there.
+- **Teach the exact step starts (optional).** Play a clean run and mark the frame where each step
+  starts. The app then lines up the other runs with yours, frame by frame, on your computer
+  (a small DINOv2 model, about 90 MB, downloaded once into `data/models`), and shows how close it
+  gets to your marks.
+- **Suggest a fix.** Type what's wrong in plain words ("step 4 is done with the left hand", "make
+  the descriptions simpler"). You see the exact changes before anything is saved, and lasting fixes
+  are remembered for that workplace.
 
-1. **Layout pass**: Gemini maps the station from the operator's viewpoint as categories only:
-   type, column (far left … far right), row (back / middle / front), shelf (top / middle /
-   bottom for stacked bins) and left-to-right order. Code turns these into chart positions.
-2. **Steps pass**: cycles, steps, times, and for every step the place (`location_id`) where the
-   hands go. Locations are checked: a reference that is not in the layout is matched to the
-   nearest label, or left empty with a warning so you can set it.
-3. Consecutive steps merge only when they have the same element in the same cycle with nothing in
-   between, never because titles look alike.
+## Settings
 
-Check the layout on the Work chart tab and correct a column, row, shelf or order if needed; the
-chart redraws and the layout is saved for the station (project + line/operation), so the next
-study of that station reuses it. Set a step's location on the Step breakdown tab.
+Everything is in `.env` (see `.env.example`):
 
-After a run, `python check_study.py` prints the layout, each step's location and three checks:
-every step has a valid location, chart numbers = breakdown numbers, no overlaps on the chart.
+| Setting | What it does |
+|---|---|
+| `GEMINI_API_KEY` | Needed for new lessons, Ask and Suggest a fix. Not needed to watch saved lessons. |
+| `WORKSTUDY_GEMINI_MODEL`, `WORKSTUDY_TIMING_MODEL`, `WORKSTUDY_COPILOT_MODEL` | Which Gemini models do the steps, the timing and the answers. |
+| `WORKSTUDY_FPS` | How many frames per second Gemini looks at (lowered automatically for long videos). |
+| `WORKSTUDY_AUTH=1` | Turns on accounts and teams (the default in Docker). Off when you run it locally. |
+| `WORKSTUDY_DATA` | Where lessons are stored (default `data/`). |
 
-The earlier modules (work instructions, time study, Kaizen, Copilot, line balancing) are still in
-the code. Set `WORKSTUDY_UI=full` in `.env` to show them.
+## Hosting
 
-## Accuracy, editing and units
+The `Dockerfile` runs anywhere that gives a container a persistent volume at `/data`. `render.yaml`
+sets up a Render service with a disk, and `deploy/oracle/` has scripts for a free Oracle Cloud VM.
+Keep one instance, because lessons are prepared in the web process. With accounts on, each team's
+lessons and templates stay in their own workspace, and `WORKSTUDY_SIGNUP_CODE` controls who can
+start a team.
 
-- **Tenths of a second** everywhere (4.9, 5.1). Each break point is a clock reading rounded to
-  0.1 s and an element is the difference of two readings, so elements always add up to the cycle.
-  `WORKSTUDY_SHEET_DECIMALS=0` switches back to whole seconds.
-- **Reference cycles** (Station template tab): mark your break points in up to 3 clean cycles
-  (M = mark, arrows = 0.1 s). Gemini gets a picture of every break point. Each marked cycle is
-  also timed blind (it never sees its own pictures), and the tab shows the measured error:
-  your mark vs Gemini, per element.
-- **Alignment (free, local)**: with reference cycles marked, every cycle is also matched frame
-  by frame to them (DINOv2-small, about 90 MB, downloaded once into `data/models`; runs on the CPU)
-  and your break points are carried over. **Re-time from marks (free)** on the Station template tab
-  does this without calling Gemini. Both Gemini and alignment time each marked cycle blind; per
-  element the one closer to your marks is used, and alignment is only used where its measured error
-  is at most 1 s. Readings where the two disagree by more than 1 s are marked ?. Alignment works
-  best on a fixed camera: on handheld video the picture changes with the camera angle, not only with
-  the work. On the 11-minute handheld test video it agreed with Gemini within 0.5 s on the clearly
-  visible early elements (3-8) and disagreed by several seconds on the late "pick part / insert
-  part" elements; only your marks can say which is right there, which is why both are measured.
-  Reading frames is slow on a laptop CPU (the 11-minute video took about 15-70 min at 2 frames per
-  second, depending on power mode; `WORKSTUDY_ALIGN_FPS`). It runs while Gemini works and is cached
-  per study, so re-timing afterwards takes seconds.
-- **Models**: element timing per cycle, the precision pass (high-resolution frames) and sheet photos use
-  `WORKSTUDY_TIMING_MODEL` (default setup: Gemini 4 Argon, Google's strongest); finding cycles, the
-  layout and transcripts use `WORKSTUDY_GEMINI_MODEL` (Gemini 3.8 Flash); Teach, descriptions and chat
-  use `WORKSTUDY_COPILOT_MODEL` (Argon). If the strong model fails on a call, that call falls back to
-  Flash. Cost: about $5-6 per 11-minute video with Argon (about $1-1.50 all-Flash); Google's announced
-  price changes (Argon from 2026-12-01, Flash from 2027-01-01) roughly double both.
-- **Timing passes**: 1) cycles and suggested X on the whole video; 2) each cycle's clip at 8 fps
-  with your elements and example pictures; 3) precision pass: every break point again in a 3 s
-  window at 10 fps (`WORKSTUDY_REFINE=0` turns it off). Readings Gemini cannot see stay blank.
-- **X is a suggestion** until you tick it (Time study sheets tab). Readings far from an element's
-  typical time are marked ? and kept out of lowest/highest unless Gemini saw a reason.
-- **Edit in the app**: step times per cycle (Step breakdown → Edit step times: Start = playhead,
-  ±0.1 s, not visible); the work chart (Work chart → Edit chart: places, order, walking, quality ◇
-  and safety ⊕ marks, drag the layout); study details (✎ Details: takt, operator, SWIP, shift).
-  Edited times count as checked.
+## Privacy
 
-## Teach it (feedback)
-
-The **Teach** button (bottom right of every study) takes feedback in plain words: "those bins are
-slightly closer together", "element 5 starts when the screw touches the part", "make the step
-descriptions more detailed". It answers with the exact changes (before -> after) and the
-instructions it would remember; nothing changes until you tick and apply them.
-
-- Layout and chart: places moved or re-spaced, renamed, re-typed; element places, hands, walking,
-  quality/safety marks. Element wording only changes when you ask for a rename.
-- Timing: break points you reword and notes per element go into every later timing of the station.
-- Descriptions: written for every element in the style you ask for; shown in the step breakdown and
-  exports.
-- Remembered instructions are listed on the Station template tab (What it has learned) and can be
-  deleted. They are added to the AI prompts for every later analysis of that station.
-
-## Accounts, teams and hosting
-
-Locally the app runs without accounts. With `WORKSTUDY_AUTH=1` (default in the Docker image) people
-sign up with email and password and either start a team or join one with its invite code (shown in
-the sidebar). Each team's studies and templates live in their own folder under `DATA/workspaces/`.
-`WORKSTUDY_SIGNUP_CODE` is the access code needed to start a new team (share it with the link), and
-`WORKSTUDY_MONTHLY_ANALYSES` caps paid video analyses per team per month (default 30).
-
-**Deploy on Render** (one service with a persistent disk, about $7/month plus disk):
-1. Push this folder to a private GitHub repository (`.env`, `data/` and `.venv/` are git-ignored).
-2. Render dashboard > New > Blueprint > pick the repository. `render.yaml` sets everything up.
-3. When asked, paste `GEMINI_API_KEY` and choose a `WORKSTUDY_SIGNUP_CODE`.
-4. Share the `https://process-annotation-xxxx.onrender.com` link and the access code.
-
-The `Dockerfile` runs anywhere that gives a container a persistent volume at `/data` (Railway,
-Fly.io, a company VM). Keep one instance: analyses run in the web process.
-
-## Data and privacy
-
-The Gemini engine uploads the proxy video to Google. Get sign-off before using real factory
-footage. Uploaded files are deleted from Gemini after analysis. Everything else stays in `data/`.
+To make a lesson, the video is uploaded to Google's Gemini API, and the uploaded copy is deleted
+once the analysis is done. Everything else stays in `data/` on your machine or server. **Ask the
+people in the video before filming them at work**, and get sign-off before using footage from a
+workplace.
 
 ## Known limits
 
-- Timing comes from the model, sampled at `WORKSTUDY_FPS`. Expect errors around ±0.5–1 s on
-  short elements. Verify flagged steps before using the numbers for a standard.
-- The work chart is a schematic from categories (column / row / shelf), not a measured floor plan.
-  Positions are only as good as the layout pass; check them against the station.
-- Splitting a step creates a new element in that cycle only; other cycles are not re-aligned.
-- The engine interface (`app/engine.py`) is where a local CV engine (MediaPipe + bench zones)
-  would plug in to keep video on the laptop.
+- Step times come from the model. Expect about ±0.5–1 s on very short steps. Teaching the exact step
+  starts makes them tighter.
+- The map is a schematic built from the places' positions (left/right, back/front, shelf), not a
+  measured floor plan. Check it against the real station and drag places to fix it.
+- Descriptions say what the camera shows. If a hand hides the part, the lesson can't see it either.
+  It marks such steps as hard to see, and **Ask** says when the video doesn't show something.
+- Ask answers in English text. It doesn't produce sign language.
+- The second demo video (an 11-minute recording of the same station) isn't in the repository,
+  because its 202 MB file is over GitHub's size limit. Its exported outputs are in `outputs/`.
+
+## Layout
+
+```
+app/main.py            web API and lesson storage
+app/engine.py          Gemini passes: workspace, steps, what the hands do
+app/chart.py           the workspace map (SVG, PNG, PDF)
+app/copilot.py         Ask: plain-language answers from the lesson only
+app/feedback.py        Suggest a fix
+app/template.py        station templates
+app/align.py           optional frame-by-frame step timing from your marks
+app/static/index.html  the whole interface
+data/                  the demo lesson and its station template
+outputs/               maps and exports from earlier runs
+```
